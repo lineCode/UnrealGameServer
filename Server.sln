@@ -1,0 +1,69 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32630.194
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerCore", "ServerCore\ServerCore.vcxproj", "{2A3C3F00-BDC1-41A4-9943-9B8C0FD74BC6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameServer", "GameServer\GameServer.vcxproj", "{425928D9-911C-4924-9904-2431998E1E07}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{D1084513-F382-4967-A040-4C7F25CE0276}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PacketGenerator", "Tools\PacketGenerator\PacketGenerator.pyproj", "{C40C2C52-C948-4B0E-BDEF-A5AAABECFD43}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PacketProtocol", "PacketProtocol", "{6727F1D1-B3DC-404F-8C78-75BFEB25A7A1}"
+	ProjectSection(SolutionItems) = preProject
+		Common\Protobuf\bin\Templates\AutoPacket.h = Common\Protobuf\bin\Templates\AutoPacket.h
+		Common\Protobuf\bin\Enum.proto = Common\Protobuf\bin\Enum.proto
+		Common\Protobuf\bin\GenPackets.bat = Common\Protobuf\bin\GenPackets.bat
+		Common\Protobuf\bin\Protocol.proto = Common\Protobuf\bin\Protocol.proto
+		Common\Protobuf\bin\Struct.proto = Common\Protobuf\bin\Struct.proto
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2A3C3F00-BDC1-41A4-9943-9B8C0FD74BC6}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{2A3C3F00-BDC1-41A4-9943-9B8C0FD74BC6}.Debug|x64.ActiveCfg = Debug|x64
+		{2A3C3F00-BDC1-41A4-9943-9B8C0FD74BC6}.Debug|x64.Build.0 = Debug|x64
+		{2A3C3F00-BDC1-41A4-9943-9B8C0FD74BC6}.Debug|x86.ActiveCfg = Debug|Win32
+		{2A3C3F00-BDC1-41A4-9943-9B8C0FD74BC6}.Debug|x86.Build.0 = Debug|Win32
+		{2A3C3F00-BDC1-41A4-9943-9B8C0FD74BC6}.Release|Any CPU.ActiveCfg = Release|Win32
+		{2A3C3F00-BDC1-41A4-9943-9B8C0FD74BC6}.Release|x64.ActiveCfg = Release|x64
+		{2A3C3F00-BDC1-41A4-9943-9B8C0FD74BC6}.Release|x64.Build.0 = Release|x64
+		{2A3C3F00-BDC1-41A4-9943-9B8C0FD74BC6}.Release|x86.ActiveCfg = Release|Win32
+		{2A3C3F00-BDC1-41A4-9943-9B8C0FD74BC6}.Release|x86.Build.0 = Release|Win32
+		{425928D9-911C-4924-9904-2431998E1E07}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{425928D9-911C-4924-9904-2431998E1E07}.Debug|x64.ActiveCfg = Debug|x64
+		{425928D9-911C-4924-9904-2431998E1E07}.Debug|x64.Build.0 = Debug|x64
+		{425928D9-911C-4924-9904-2431998E1E07}.Debug|x86.ActiveCfg = Debug|Win32
+		{425928D9-911C-4924-9904-2431998E1E07}.Debug|x86.Build.0 = Debug|Win32
+		{425928D9-911C-4924-9904-2431998E1E07}.Release|Any CPU.ActiveCfg = Release|Win32
+		{425928D9-911C-4924-9904-2431998E1E07}.Release|x64.ActiveCfg = Release|x64
+		{425928D9-911C-4924-9904-2431998E1E07}.Release|x64.Build.0 = Release|x64
+		{425928D9-911C-4924-9904-2431998E1E07}.Release|x86.ActiveCfg = Release|Win32
+		{425928D9-911C-4924-9904-2431998E1E07}.Release|x86.Build.0 = Release|Win32
+		{C40C2C52-C948-4B0E-BDEF-A5AAABECFD43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C40C2C52-C948-4B0E-BDEF-A5AAABECFD43}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C40C2C52-C948-4B0E-BDEF-A5AAABECFD43}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C40C2C52-C948-4B0E-BDEF-A5AAABECFD43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C40C2C52-C948-4B0E-BDEF-A5AAABECFD43}.Release|x64.ActiveCfg = Release|Any CPU
+		{C40C2C52-C948-4B0E-BDEF-A5AAABECFD43}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C40C2C52-C948-4B0E-BDEF-A5AAABECFD43} = {D1084513-F382-4967-A040-4C7F25CE0276}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7E38D004-4F17-4D4D-9FDF-FF771DB7D3B6}
+	EndGlobalSection
+EndGlobal
