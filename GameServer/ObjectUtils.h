@@ -23,5 +23,34 @@ public:
 	static Protocol::ObjectInfo* SetSpawnPacket(Protocol::SERVER_SPAWN& spawnpacket, GameObject* object);
 	static void SetMovePacket(Protocol::SERVER_MOVE& movepacket, GameObject* object);
 	static void SetSkillPacket(Protocol::SERVER_SKILL& skillpacket, GameObject* object, Protocol::CLIENT_SKILL& objectpkt);
+
+	static int32 sqrMagnitude(Protocol::Vector vector) { return (vector.x() * vector.x()) + (vector.y() * vector.y()) + (vector.z() * vector.z()); }
+	static float Magnitude(Protocol::Vector vector) { return static_cast<float>(sqrt(sqrMagnitude(vector))); }
+	static int VectorDistance(Protocol::Vector  vector) {return abs( vector.x()) + abs(vector.y()) + abs(vector.z());}
 };
 
+/*----------------------------------------------------------------------------------------------------
+이름     : Vector 연산자 오버라이딩
+용도     : Vector를 다양한 방식의 오버라이딩을 지원하기 위한 오퍼레이터들
+수정자   : 이민규
+수정날짜 : 2022.09.30
+-----------------------------------------------------------------------------------------------------*/
+static Protocol::Vector operator+(Protocol::Vector  vec1, Protocol::Vector  vc2)
+{
+	Protocol::Vector result;
+	result.set_x(vec1.x() + vc2.x());
+	result.set_y(vec1.y() + vc2.y());
+	result.set_z(vec1.z() + vc2.z());
+
+	return result;
+}
+
+static Protocol::Vector operator-(Protocol::Vector vec1, Protocol::Vector vc2)
+{
+	Protocol::Vector result;
+	result.set_x(vec1.x() - vc2.x());
+	result.set_y(vec1.y() - vc2.y());
+	result.set_z(vec1.z() - vc2.z());
+
+	return result;
+}

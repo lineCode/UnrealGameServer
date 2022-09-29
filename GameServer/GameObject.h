@@ -36,13 +36,18 @@ public:
 	int32 GetId() { return _Info.objectid(); }
 	void SetId(int32 id) { return _Info.set_objectid(id); }
 
+	virtual void Update();
 
 protected:
 	Protocol::ObjectType _ObjectType = Protocol::ObjectType::OBJECT_NONE;
+
 	int32 _Type = 0;
+
+	Protocol::ObjectState _ObjectState = Protocol::ObjectState::IDLE;
 
 	Protocol::ObjectInfo _Info;
 	GameRoom* _Room = nullptr;
+
 	
 };
 

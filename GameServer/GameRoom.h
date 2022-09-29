@@ -15,6 +15,8 @@ class Projectile;
 class GameRoom
 {
 public:
+	GameRoom();
+	void Init(int32 mapid);
 	void EnterGame(GameObject* gameobject);
 	void LeaveGame(int32 objectid);
 
@@ -25,8 +27,9 @@ public:
 	void PlayerSkill(Player* player, Protocol::CLIENT_SKILL& pkt);
 	void BroadCast(shared_ptr<class SendBuffer> sendbuffer);
 
-	void Update();
+	void update();
 
+	Player* FindPlayer(function<bool(Player*)> condition);
 private:
 	RWLOCK_USE;
 

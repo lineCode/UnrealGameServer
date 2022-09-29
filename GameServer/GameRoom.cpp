@@ -9,6 +9,23 @@
 #include "ServerSession.h"
 #include "ObjectUtils.h"
 
+GameRoom::GameRoom()
+{
+	Init(1);
+}
+
+void GameRoom::Init(int32 mapid)
+{
+	Monster * monster = ObjectManager::GetInstance().Add<Monster>(Protocol::MonsterType::SAVAROG);
+	Protocol::Vector vector;
+	vector.set_x(-2200.f);
+	vector.set_y(-150.f);
+	vector.set_z(97.6f);
+	monster->SetVector(vector);
+	monster->SetRoom(this);
+	EnterGame(monster);
+}
+
 /*---------------------------------------------------------------------------------------------
 이름     : GameRoom::EnterGame
 용도     : 플레이어를 방에 입장시키는 함수
@@ -52,9 +69,11 @@ void GameRoom::EnterGame(GameObject* gameobject)
 							ObjectUtils::SetSpawnPacket(spawnpacket, roomplayer);
 					}
 
+					for (const auto [id, roommonster] : _Monsters)
+						ObjectUtils::SetSpawnPacket(spawnpacket, roommonster);
+
 					player->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(spawnpacket));
 				}
-
 				break;
 			}
 
@@ -165,7 +184,7 @@ void GameRoom::LeaveGame(int32 objectid)
 		case Protocol::ObjectType::MONSTER:
 		{
 			// TODO : 몬스터를 방에서 제거시키는 부분
-			if (!_Monsters.contains(objectid))
+			if (_Monsters.contains(objectid) == false)
 				return;
 
 			Gdelete(_Monsters[objectid]);
@@ -176,7 +195,7 @@ void GameRoom::LeaveGame(int32 objectid)
 		case Protocol::ObjectType::PROJECTILE:
 		{
 			// TODO : 발사체를 방에서 제거시키는 부분
-			if (!_Projectiles.contains(objectid))
+			if (_Projectiles.contains(objectid) == false)
 				return;
 
 			Gdelete(_Projectiles[objectid]);
@@ -204,7 +223,7 @@ void GameRoom::LeaveGame(int32 objectid)
 이름     : GameRoom::PlayerMove
 용도     : 방에 있는 플레이어들에게 이동한 플레이어의 좌표 패킷을 보내주는 함수
 수정자   : 이민규
-수정날짜 : 2022.09.19
+수정날짜 : 2022.09.28
 ----------------------------------------------------------------------------------------------*/
 void GameRoom::PlayerMove(Player* player, Protocol::CLIENT_MOVE& pkt)
 {
@@ -252,26 +271,6 @@ void GameRoom::PlayerSkill(Player* player, Protocol::CLIENT_SKILL& pkt)
 }
 
 /*---------------------------------------------------------------------------------------------
-이름     : GameRoom::Update
-용도     : 방에 있는 Object들을 실시간으로 업데이트 해주는 함수
-수정자   : 이민규
-수정날짜 : 2022.09.23
-----------------------------------------------------------------------------------------------*/
-void GameRoom::Update()
-{
-	WRITELOCK;
-
-	for (const auto [id, projectile] : _Projectiles)
-	{
-		if (projectile->GetDeadTime() == true)
-		{
-			LeaveGame(id);
-			break;
-		}
-	}
-}
-
-/*---------------------------------------------------------------------------------------------
 이름     : GameRoom::BroadCast
 용도     : 방에 있는 모든 플레이어게 패킷을 전송해주는 함수
 수정자   : 이민규
@@ -283,5 +282,28 @@ void GameRoom::BroadCast(shared_ptr<SendBuffer> sendbuffer)
 
 	for (const auto [id, player] : _Players)
 		player->GetSession()->SendCheck(sendbuffer);
+}
+
+void GameRoom::update()
+{
+	for(const auto & [ID, monster] : _Monsters)
+		monster->Update();
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : GameRoom::FindPlayer
+용도     : 방에 있는 플레이어를 조건에 따라 검사 후 반환하는 함수
+수정자   : 이민규
+수정날짜 : 2022.09.29
+----------------------------------------------------------------------------------------------*/
+Player * GameRoom::FindPlayer(function<bool(Player*)> condition)
+{
+	for(const auto [ID, player] : _Players)
+	{
+		if (condition(player) == true)
+			return player;
+	}
+
+	return nullptr;
 }
 

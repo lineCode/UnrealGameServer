@@ -33,3 +33,7 @@ void GameObject::SetRotator(Protocol::Rotator newrotator)
 	rotator->set_yaw(newrotator.yaw());
 	rotator->set_roll(newrotator.roll());
 }
+
+void GameObject::Update()
+{
+}

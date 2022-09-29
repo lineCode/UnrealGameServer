@@ -13,7 +13,7 @@ class Projectile : public GameObject
 public:
 	Projectile();
 
-	void SetOwner(GameObject* owner) { _Owner = owner; }
+	void SetOwner(GameObject* owner) { _Owner = owner; }	
 	GameObject* GetOwner() { return _Owner; }
 
 	bool GetDeadTime();

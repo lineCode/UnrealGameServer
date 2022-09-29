@@ -8,7 +8,6 @@
 #include "ThreadManager.h"
 #include "ServerPacketManager.h"
 
-
 enum
 {
 	WORKER_TIME = 2000
@@ -49,12 +48,9 @@ int main(void)
 		});
 	}
 
-	// TODO : 발사체 업데이트 나중에 꼭 수정할것
-	while(true)
-	{
-		RoomManager::GetInstance().Find(1)->Update();
-		this_thread::sleep_for(100ms);
-	}
 
+	while(true)
+		RoomManager::GetInstance().Find(1)->update();
+	
 	GThreadManager->Join();
 }

@@ -28,20 +28,19 @@ ObjectManager& ObjectManager::GetInstance()
 ----------------------------------------------------------------------------------------------*/
 bool ObjectManager::Remove(int32 objectid)
 {
-	if(ObjectUtils::GetObjectType(objectid) == Protocol::ObjectType::PLAYER)
-	{
-		WRITELOCK;
-		if (_Players.contains(objectid) == false)
-			return false;
+	if (ObjectUtils::GetObjectType(objectid) != Protocol::ObjectType::PLAYER)
+		return false;
 
-		Gdelete(_Players[objectid]);
+	WRITELOCK;
+	if (_Players.contains(objectid) == false)
+		return false;
 
-		_Players.erase(objectid);
+	Gdelete(_Players[objectid]);
 
-		return true;
-	}
+	_Players.erase(objectid);
 
-	return false;
+	return true;
+
 }
 
 /*---------------------------------------------------------------------------------------------
@@ -53,17 +52,16 @@ bool ObjectManager::Remove(int32 objectid)
 ----------------------------------------------------------------------------------------------*/
 Player* ObjectManager::Find(int32 objectid)
 {
-	if (ObjectUtils::GetObjectType(objectid) == Protocol::ObjectType::PLAYER)
-	{
-		WRITELOCK;
+	if (ObjectUtils::GetObjectType(objectid) != Protocol::ObjectType::PLAYER)
+		return nullptr;
 
-		if (_Players.contains(objectid) == false)
-			return nullptr;
+	WRITELOCK;
 
-		return _Players[objectid];
-	}
+	if (_Players.contains(objectid) == false)
+		return nullptr;
 
-	return nullptr;
+	return _Players[objectid];
+
 }
 
 /*---------------------------------------------------------------------------------------------

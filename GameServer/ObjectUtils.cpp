@@ -110,12 +110,14 @@ Protocol::ObjectInfo* ObjectUtils::SetSpawnPacket(Protocol::SERVER_SPAWN& spawnp
 이름     : ObjectUtils::SetMovePacket
 용도     : MovePacket을 Object의 값으로 세팅해주는 함수
 수정자   : 이민규
-수정날짜 : 2022.09.22
+수정날짜 : 2022.09.28
 ----------------------------------------------------------------------------------------------*/
 void ObjectUtils::SetMovePacket(Protocol::SERVER_MOVE& movepacket, GameObject* object)
 {
 	movepacket.set_objectid(object->GetId());
+
 	auto vector = movepacket.mutable_vector();
+
 	SetVectorByObejct(vector, object);
 }
 
@@ -138,8 +140,6 @@ void ObjectUtils::SetSkillPacket(Protocol::SERVER_SKILL& skillpacket, GameObject
 	SetVectorByVector(vector, objectpkt.skillinfo().skillvector());
 	SetRotatorByRotator(rotaor, objectpkt.skillinfo().skillrotator());
 }
-
-
 
 
 
