@@ -15,9 +15,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PacketProtocol", "PacketPro
 	ProjectSection(SolutionItems) = preProject
 		Common\Protobuf\bin\Templates\AutoPacket.h = Common\Protobuf\bin\Templates\AutoPacket.h
 		Common\Protobuf\bin\Enum.proto = Common\Protobuf\bin\Enum.proto
-		Common\Protobuf\bin\GenPackets.bat = Common\Protobuf\bin\GenPackets.bat
+		Common\Protobuf\bin\ProtobufCreate.bat = Common\Protobuf\bin\ProtobufCreate.bat
 		Common\Protobuf\bin\Protocol.proto = Common\Protobuf\bin\Protocol.proto
 		Common\Protobuf\bin\Struct.proto = Common\Protobuf\bin\Struct.proto
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{EACE307D-50F5-4500-8564-F9CB9215C720}"
+	ProjectSection(SolutionItems) = preProject
+		Binary\Debug\config.json = Binary\Debug\config.json
+		Resource\Data\SkillData.json = Resource\Data\SkillData.json
+		Resource\Data\StatData.json = Resource\Data\StatData.json
 	EndProjectSection
 EndProject
 Global

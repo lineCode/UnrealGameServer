@@ -1,0 +1,18 @@
+{
+  "skills": [
+    {
+      "id": 1,
+      "name": "평타",
+      "cooldown": 0.2,
+      "damage": 100,
+      "skillType": 1
+    },
+    {
+      "id": 2,
+      "name": "다크오라",
+      "cooldown": 1.0,
+      "damage": 500,
+      "skillType": 2
+    }
+  ]
+}

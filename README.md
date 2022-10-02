@@ -103,3 +103,8 @@ Gideon 캐릭터 추가
 몬스터 Sevarog 추가  
 AI 기본 상태 머신 함수 추가  
 AI 타겟 추적 기능 추가
+
+- 2022.10.02   
+RapidJson 추가  
+DataManager 추가  
+ConfigManager 추가  

@@ -16,6 +16,9 @@
     <Filter Include="Room">
       <UniqueIdentifier>{8d5ebe35-7051-456d-8449-2013451d94dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{37addb9b-bb1a-47ad-9e13-7d03b33fdafb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -61,6 +64,15 @@
     <ClCompile Include="ObjectUtils.cpp">
       <Filter>Object</Filter>
     </ClCompile>
+    <ClCompile Include="DataManager.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="ContentsData.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigManager.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -104,6 +116,15 @@
     </ClInclude>
     <ClInclude Include="ObjectUtils.h">
       <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="DataManager.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="ContentsData.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigManager.h">
+      <Filter>Data</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

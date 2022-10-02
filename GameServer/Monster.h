@@ -21,14 +21,17 @@ protected:
 	virtual void UpdateSkill();
 	virtual void UpdateDead();
 
+	void BroadCastMove();
 protected:
 	class Player* _Target = nullptr;
 
 	int64 _NextSearchTick = 0;
 	int64 _NextMoveTick = 0;
+	int64 _CoolTimeTick = 0;
 
 	int32 _SearchDistance = 3000;
 	int32 _ChaseDistance = 7000;
+	int32 _SkillRange = 300;
 	
 };
 

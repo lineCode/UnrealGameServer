@@ -36,6 +36,9 @@ public:
 	int32 GetId() { return _Info.objectid(); }
 	void SetId(int32 id) { return _Info.set_objectid(id); }
 
+	int32 GetHp() { return _Hp; }
+	void SetHp(int32 hp) { _Hp = std::clamp(hp , 0 , _MaxHp); }
+
 	virtual void Update();
 
 protected:
@@ -43,11 +46,13 @@ protected:
 
 	int32 _Type = 0;
 
-	Protocol::ObjectState _ObjectState = Protocol::ObjectState::IDLE;
+	Protocol::ObjectState _State = Protocol::ObjectState::IDLE;
 
 	Protocol::ObjectInfo _Info;
 	GameRoom* _Room = nullptr;
 
+	int32 _Hp = 10;
+	int32 _MaxHp = 10;
 	
 };
 

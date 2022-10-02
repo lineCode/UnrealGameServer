@@ -26,7 +26,7 @@ public:
 
 	static int32 sqrMagnitude(Protocol::Vector vector) { return (vector.x() * vector.x()) + (vector.y() * vector.y()) + (vector.z() * vector.z()); }
 	static float Magnitude(Protocol::Vector vector) { return static_cast<float>(sqrt(sqrMagnitude(vector))); }
-	static int VectorDistance(Protocol::Vector  vector) {return abs( vector.x()) + abs(vector.y()) + abs(vector.z());}
+	static int VectorDistanceZero(Protocol::Vector  vector) {return abs( vector.x()) + abs(vector.y()) + abs(vector.z());}
 };
 
 /*----------------------------------------------------------------------------------------------------

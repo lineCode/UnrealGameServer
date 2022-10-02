@@ -19,7 +19,7 @@ Monster::Monster()
 ----------------------------------------------------------------------------------------------*/
 void Monster::Update()
 {
-	switch (_ObjectState)
+	switch (_State)
 	{
 
 	case Protocol::ObjectState::IDLE:
@@ -67,7 +67,7 @@ void Monster::UpdateIdle()
 	Player * target = _Room->FindPlayer([&](Player * player)
 		{
 			Protocol::Vector dir = player->GetVector() - GetVector();
-			if(ObjectUtils::VectorDistance(dir) < _SearchDistance)
+			if(ObjectUtils::VectorDistanceZero(dir) < _SearchDistance)
 				return true;
 
 			return false;
@@ -78,7 +78,7 @@ void Monster::UpdateIdle()
 
 	_Target = target;
 
-	_ObjectState = Protocol::ObjectState::MOVE;
+	_State = Protocol::ObjectState::MOVE;
 }
 
 /*---------------------------------------------------------------------------------------------
@@ -99,31 +99,81 @@ void Monster::UpdateMove()
 	if(_Target == nullptr || _Target->GetRoom() != _Room)
 	{
 		_Target = nullptr;
-		_ObjectState = Protocol::ObjectState::IDLE;
+		_State = Protocol::ObjectState::IDLE;
+		BroadCastMove();
 		return;
 	}
 
-	int32 dist = ObjectUtils::VectorDistance((_Target->GetVector() - GetVector()));
+	Protocol::Vector dir = _Target->GetVector() - GetVector();
+	int32 dist = ObjectUtils::VectorDistanceZero(dir);
+
 	if(dist == 0 || dist > _ChaseDistance)
 	{
 		_Target = nullptr;
-		_ObjectState = Protocol::ObjectState::IDLE;
+		_State = Protocol::ObjectState::IDLE;
+		BroadCastMove();
 		return;
 	}
 
+	// TODO : 스킬 사용 여부 체크
+	if(dist <= _SkillRange)
+	{
+		_CoolTimeTick = 0;
+		_State = Protocol::ObjectState::SKILL;
+		return;
+	}
+
+
 	// TODO : 이동
 	SetVector(_Target->GetVector());
-
-	// TODO : 다른 플레이어한테도 알려준다
-	Protocol::SERVER_MOVE movepacket;
-	ObjectUtils::SetMovePacket(movepacket, this);
-	_Room->BroadCast(ServerPacketManager::MakeSendBuffer(movepacket));
 }
 
 void Monster::UpdateSkill()
 {
+	if(_CoolTimeTick == 0)
+	{
+		// TODO : 유효한 타겟인지
+		if(_Target == nullptr || _Target->GetRoom() != _Room || _Target->GetHp() == 0)
+		{
+			_Target = nullptr;
+			_State = Protocol::ObjectState::MOVE;
+			BroadCastMove();
+			return;
+		}
+
+		// TODO : 스킬이 아직 사용 가능한지
+		Protocol::Vector dir = _Target->GetVector() - GetVector();
+		int32 dist = ObjectUtils::VectorDistanceZero(dir);
+		if (dist <= _SkillRange)
+		{
+			_State = Protocol::ObjectState::MOVE;
+			BroadCastMove();
+			return;
+		}
+
+		// 타겟팅 방향 주시
+
+		// 데미지 판정
+
+		// 스킬 사용 BroadCast
+
+		// 스킬 쿨타임 적용
+	}
 }
 
 void Monster::UpdateDead()
 {
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : Monster::BroadCastMove
+용도     : 몬스터의 Move 상태를 보내주는 함수
+수정자   : 이민규
+수정날짜 : 2022.09.30
+----------------------------------------------------------------------------------------------*/
+void Monster::BroadCastMove()
+{
+	Protocol::SERVER_MOVE movepacket;
+	ObjectUtils::SetMovePacket(movepacket, this);
+	_Room->BroadCast(ServerPacketManager::MakeSendBuffer(movepacket));
 }

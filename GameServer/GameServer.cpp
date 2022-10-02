@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 
+#include "DataManager.h"
 #include "GameRoom.h"
 #include "IocpManager.h"
 #include "RoomManager.h"
@@ -31,6 +32,8 @@ int main(void)
 {
 	ServerPacketManager::Init();
 	RoomManager::GetInstance().Add();
+	ConfigManager::GetInstacnce()->LoadConfig();
+	DataManager::GetInstacnce()->LodaData();
 
 	shared_ptr<ServerManager> server = GMakeShared<ServerManager>(
 		NetAddress(L"127.0.0.1", 7777),
@@ -48,9 +51,8 @@ int main(void)
 		});
 	}
 
-
 	while(true)
 		RoomManager::GetInstance().Find(1)->update();
-	
+
 	GThreadManager->Join();
 }
