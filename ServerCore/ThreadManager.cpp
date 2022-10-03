@@ -1,16 +1,10 @@
 #include "pch.h"
 #include "ThreadManager.h"
-
 #include "JobQueue_Queue.h"
 
 ThreadManager::ThreadManager()
 {
 	InitTLS();
-}
-
-ThreadManager::~ThreadManager()
-{
-	Join();
 }
 
 /*---------------------------------------------------------------------------------------------
@@ -23,29 +17,12 @@ void ThreadManager::Launch(function<void()> callback)
 {
 	WRITELOCK
 
-	_threads.push_back(thread([=]()
+	_JThreads.push_back(jthread([=]()
 		{
 			InitTLS();
 			callback();
 			DestroyTLS();
 		}));
-}
-
-/*---------------------------------------------------------------------------------------------
-이름     : ThreadManager::Join
-용도     : ThreadManager에서 관리하는 모든 쓰레드에 Join을 거는 함수
-수정자   : 이민규
-수정날짜 : 2022.08.13
-----------------------------------------------------------------------------------------------*/
-void ThreadManager::Join()
-{
-	for(auto& th : _threads)
-	{
-		if (th.joinable())
-			th.join();
-	}
-
-	_threads.clear();
 }
 
 /*---------------------------------------------------------------------------------------------

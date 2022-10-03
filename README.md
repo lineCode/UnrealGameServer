@@ -108,3 +108,6 @@ AI 타겟 추적 기능 추가
 RapidJson 추가  
 DataManager 추가  
 ConfigManager 추가  
+
+- 2022.10.03  
+안전성 향상을 위해 Thread -> JThread로 변경

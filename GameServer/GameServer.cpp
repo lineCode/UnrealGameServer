@@ -53,6 +53,4 @@ int main(void)
 
 	while(true)
 		RoomManager::GetInstance().Find(1)->update();
-
-	GThreadManager->Join();
 }

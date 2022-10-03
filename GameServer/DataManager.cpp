@@ -44,9 +44,6 @@
 
      // TODO : SkillStat 데이터 불러오는 부분
      _SkillStatDatas = LoadJson<SkillStatData, int32, SkillStat>("SkillData").MakeGHashMap(); \
-
-         cout << _SkillStatDatas[2].name << endl;
-
  }
 
 

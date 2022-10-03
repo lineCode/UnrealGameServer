@@ -7,18 +7,16 @@
 
 /*---------------------------------------------------------------------------------------------
 이름     : ThreadManager
-용도     : 서버내의 모든 Thread를 관리하는 객체
+용도     : 서버내의 모든 Jthread를 관리하는 객체
 수정자   : 이민규
-수정날짜 : 2022.08.13
+수정날짜 : 2022.10.03
 ----------------------------------------------------------------------------------------------*/
 class ThreadManager
 {
 public:
 	ThreadManager();
-	~ThreadManager();
 
 	void Launch(function<void(void)> callback);
-	void Join();
 
 	ReadWriteLock& GetLock() { return _locks[0]; }
 
@@ -29,6 +27,6 @@ public:
 
 private:
 	RWLOCK_USE
-	vector<thread> _threads;
+	vector<jthread> _JThreads;
 };
 
