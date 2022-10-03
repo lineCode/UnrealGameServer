@@ -14,6 +14,7 @@ class ObjectUtils
 public:
 	static Protocol::ObjectType GetObjectType(int32 id);
 
+	static void SetStatByObject(Protocol::StatInfo* stat, GameObject* object);
 	static void SetVectorByObejct(Protocol::Vector* vector, GameObject* object);
 	static void SetVectorByVector(Protocol::Vector* desvector, const  Protocol::Vector& srcvector);
 	static void SetRotatorByObject(Protocol::Rotator* rotator, GameObject* object);

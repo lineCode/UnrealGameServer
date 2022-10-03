@@ -19,7 +19,7 @@
  	static void DestroyInstance();
  	void LodaData();
 
- 	playerStat GetPlayerStatData(int32 level) { return _PlayerStatDatas[level]; }
+    Protocol::StatInfo GetPlayerStatData(int32 level) { return _PlayerStatDatas[level]; }
  	SkillStat GetSkillStatData(int32 id) { return _SkillStatDatas[id]; }
 
 private:
@@ -31,7 +31,7 @@ private:
  	static DataManager * _Instance;
     rapidjson::Document _document;
 
- 	GhashMap<int32, playerStat> _PlayerStatDatas;
+ 	GhashMap<int32, Protocol::StatInfo> _PlayerStatDatas;
  	GhashMap<int32, SkillStat> _SkillStatDatas;
  };
 

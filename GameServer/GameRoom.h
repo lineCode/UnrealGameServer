@@ -25,6 +25,7 @@ public:
 
 	void PlayerMove(Player* player, Protocol::CLIENT_MOVE& pkt);
 	void PlayerSkill(Player* player, Protocol::CLIENT_SKILL& pkt);
+	void OnDamage(Protocol::CLIENT_DAMAGE& pkt);
 	void BroadCast(shared_ptr<class SendBuffer> sendbuffer);
 
 	void update();

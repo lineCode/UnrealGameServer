@@ -3,17 +3,23 @@
     {
       "level" : 1,
       "hp" : 100,
-      "attack" : 10
+      "damage" : 10,
+      "speed" : 500.0,
+      "exp" : 100
     },
     {
-      "level" : 2,
-      "hp" : 150,
-      "attack" : 15
-    },  
+      "level": 2,
+      "hp": 200,
+      "damage": 20,
+      "speed": 550.0,
+      "exp": 300
+    },
     {
-      "level" : 3,
-      "hp" : 200,
-      "attack" : 20
+      "level": 3,
+      "hp": 300,
+      "damage": 30,
+      "speed": 600.0,
+      "exp": 500
     }
   ]
 }

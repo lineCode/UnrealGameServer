@@ -24,9 +24,11 @@ enum : uint16
 	PACKET_SERVER_DESTROY = 1004,
 	PACKET_SERVER_MOVE = 1005,
 	PACKET_SERVER_SKILL = 1006,
-	PACKET_CLIENT_ENTERGAME = 1007,
-	PACKET_CLIENT_MOVE = 1008,
-	PACKET_CLIENT_SKILL = 1009,
+	PACKET_SERVER_CHANGEHP = 1007,
+	PACKET_CLIENT_ENTERGAME = 1008,
+	PACKET_CLIENT_MOVE = 1009,
+	PACKET_CLIENT_SKILL = 1010,
+	PACKET_CLIENT_DAMAGE = 1011,
 };
 
 /*---------------------------------------------------------------------------------------------
@@ -36,6 +38,7 @@ bool PACKET_INVALID(shared_ptr<ServerSession>& session, BYTE* byte, int32 len);
 bool CLIENT_ENTERGAME_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_ENTERGAME& pkt);
 bool CLIENT_MOVE_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_MOVE& pkt);
 bool CLIENT_SKILL_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_SKILL& pkt);
+bool CLIENT_DAMAGE_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_DAMAGE& pkt);
 
 /*---------------------------------------------------------------------------------------------
 							 GAMESERVER PACKET MANAGER CLASS
@@ -53,6 +56,7 @@ public:
 		GPacketFuncArray[PACKET_CLIENT_ENTERGAME] = [](std::shared_ptr<ServerSession>& session, BYTE* buffer, int32 len) { return PacketUpdate<Protocol::CLIENT_ENTERGAME>(CLIENT_ENTERGAME_FUNC, session, buffer, len); };
 		GPacketFuncArray[PACKET_CLIENT_MOVE] = [](std::shared_ptr<ServerSession>& session, BYTE* buffer, int32 len) { return PacketUpdate<Protocol::CLIENT_MOVE>(CLIENT_MOVE_FUNC, session, buffer, len); };
 		GPacketFuncArray[PACKET_CLIENT_SKILL] = [](std::shared_ptr<ServerSession>& session, BYTE* buffer, int32 len) { return PacketUpdate<Protocol::CLIENT_SKILL>(CLIENT_SKILL_FUNC, session, buffer, len); };
+		GPacketFuncArray[PACKET_CLIENT_DAMAGE] = [](std::shared_ptr<ServerSession>& session, BYTE* buffer, int32 len) { return PacketUpdate<Protocol::CLIENT_DAMAGE>(CLIENT_DAMAGE_FUNC, session, buffer, len); };
 	}
 
 	/*---------------------------------------------------------------------------------------------
@@ -74,6 +78,7 @@ public:
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_DESTROY& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_DESTROY); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_MOVE& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_MOVE); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_SKILL& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_SKILL); }
+	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_CHANGEHP& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_CHANGEHP); }
 
 private:
 	/*---------------------------------------------------------------------------------------------

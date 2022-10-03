@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "ServerPacketManager.h"
+#include "DataManager.h"
 #include "GameRoom.h"
 #include "ObjectManager.h"
+#include "ObjectUtils.h"
 #include "Player.h"
 #include "RoomManager.h"
 
@@ -30,8 +32,9 @@ bool CLIENT_ENTERGAME_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_
 
 	Player* player = ObjectManager::GetInstance().Add<Player>(pkt.objecttype());
 
-	player->GetInfo().set_name(pkt.playerinfo().GetTypeName());
 	session->SetMyPlayer(player);
+	player->GetInfo().set_name(pkt.playerinfo().GetTypeName());
+	player->SetStat(DataManager::GetInstacnce()->GetPlayerStatData(1));
 	player->SetVector(pkt.playerinfo().vector());
 	player->SetRotator(pkt.playerinfo().rotator());
 	player->SetSession(session->GetServerSession());
@@ -78,8 +81,7 @@ bool CLIENT_SKILL_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_SKIL
 		return false;
 
 	auto player = clientsession->GetMyPlayer();
-	if (player == nullptr)
-		return false;
+
 
 	auto room = player->GetRoom();
 	if (room == nullptr)
@@ -88,4 +90,26 @@ bool CLIENT_SKILL_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_SKIL
 	room->PlayerSkill(player, pkt);
 
 	return true;
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : CLIENT_DAMAGE_FUNC
+용도     : 크리쳐의 데미지 패킷을 받아서 다른 플레이어에게 갱신 시켜주는 함수
+수정자   : 이민규
+수정날짜 : 2022.10.03
+----------------------------------------------------------------------------------------------*/
+bool CLIENT_DAMAGE_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_DAMAGE& pkt)
+{
+	auto clientsession = reinterpret_pointer_cast<ServerSession>(session);
+	if (clientsession == nullptr)
+		return false;
+
+	auto player = clientsession->GetMyPlayer();
+
+	auto room = player->GetRoom();
+	if (room == nullptr)
+		return false;
+
+	room->OnDamage(pkt);
+
 }

@@ -30,10 +30,10 @@ void WorkProcess(shared_ptr<ServerManager> & server)
 
 int main(void)
 {
-	ServerPacketManager::Init();
-	RoomManager::GetInstance().Add();
 	ConfigManager::GetInstacnce()->LoadConfig();
 	DataManager::GetInstacnce()->LodaData();
+	ServerPacketManager::Init();
+	RoomManager::GetInstance().Add();
 
 	shared_ptr<ServerManager> server = GMakeShared<ServerManager>(
 		NetAddress(L"127.0.0.1", 7777),

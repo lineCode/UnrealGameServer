@@ -17,27 +17,14 @@
  };
 
 #pragma region PlayerStat
-/*---------------------------------------------------------------------------------------------
-이름     : playerStat
-용도     : Json파일에 있는 PlayerStat을 저장하기 위한 구조체
-수정자   : 이민규
-수정날짜 : 2022.10.2
-----------------------------------------------------------------------------------------------*/
-struct playerStat
-{
-public:
-	int32 level;
-	int32 hp;
-	int32 attack;
-};
 
  /*---------------------------------------------------------------------------------------------
  이름     : playerStatData
  용도     : Json 오브젝트를 PlayerStat에 맞게 데이터 직렬화 후 GHashMap을 만들어 반환하기 위한 객체
  수정자   : 이민규
- 수정날짜 : 2022.10.2
+ 수정날짜 : 2022.10.3
  ----------------------------------------------------------------------------------------------*/
- class playerStatData : public ILoaderData<int32, playerStat>
+ class playerStatData : public ILoaderData<int32, Protocol::StatInfo>
  {
  public:
  	playerStatData(rapidjson::Document & document) : _Document(document) {}
@@ -46,21 +33,25 @@ public:
  	이름     : playerStatData::MakeTMap
  	용도     : Json 오브젝트를 PlayerStat에 맞게 데이터 직렬화 후 GHashMap을 만들어 반환하는 함수
  	수정자   : 이민규
- 	수정날짜 : 2022.10.2
+ 	수정날짜 : 2022.10.3
  	----------------------------------------------------------------------------------------------*/
- 	GhashMap<int32, playerStat> MakeGHashMap() override
+ 	GhashMap<int32, Protocol::StatInfo> MakeGHashMap() override
  	{
- 		GhashMap<int32, playerStat> hashmap;
+ 		GhashMap<int32, Protocol::StatInfo> hashmap;
 
         const rapidjson::Value& JsonValues = _Document["playerstats"];
 
  		for (auto & JsonValue : JsonValues.GetArray())
  		{
- 			playerStat statdata{};
- 			statdata.level = JsonValue["level"].GetInt();
- 			statdata.hp = JsonValue["hp"].GetInt();
- 			statdata.attack = JsonValue["attack"].GetInt();
- 			hashmap.insert({statdata.level , statdata});
+            Protocol::StatInfo statdata{};
+            statdata.set_level(JsonValue["level"].GetInt());
+            statdata.set_maxhp(JsonValue["hp"].GetInt());
+            statdata.set_hp(JsonValue["hp"].GetInt());
+            statdata.set_damage(JsonValue["damage"].GetInt());
+            statdata.set_speed(JsonValue["speed"].GetFloat());
+            statdata.set_totalexp(JsonValue["exp"].GetInt());
+
+ 			hashmap.insert({statdata.level() , statdata});
  		}
 
  		return hashmap;

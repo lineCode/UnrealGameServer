@@ -16,6 +16,19 @@ Protocol::ObjectType ObjectUtils::GetObjectType(int32 id)
 }
 
 /*---------------------------------------------------------------------------------------------
+이름     : ObjectUtils::SetStatByObject
+용도     : object의 stat로 받은 stat 값을 세팅하는 함수
+수정자   : 이민규
+수정날짜 : 2022.10.03
+----------------------------------------------------------------------------------------------*/
+void ObjectUtils::SetStatByObject(Protocol::StatInfo * stat, GameObject* object)
+{
+	stat->set_hp(object->GetStat().hp());
+	stat->set_maxhp(object->GetStat().maxhp());
+	stat->set_speed(object->GetStat().speed());
+}
+
+/*---------------------------------------------------------------------------------------------
 이름     : ObjectUtils::SetVectorByObejct
 용도     : object의 Vector로 받은 Vector 값을 세팅하는 함수
 수정자   : 이민규
@@ -71,12 +84,15 @@ void ObjectUtils::SetRotatorByRotator(Protocol::Rotator* desrotator, const Proto
 이름     : ObjectUtils::SetEnterPacket
 용도     : EnterPacket을 Object의 값으로 세팅해주는 함수
 수정자   : 이민규
-수정날짜 : 2022.09.25
+수정날짜 : 2022.10.03
 ----------------------------------------------------------------------------------------------*/
 void ObjectUtils::SetEnterPacket(Protocol::SERVER_ENTERGAME& enterpacket, GameObject* object)
 {
 	enterpacket.mutable_player()->set_objectid(object->GetInfo().objectid());
 	enterpacket.mutable_player()->set_name(object->GetInfo().name());
+
+	auto stat = enterpacket.mutable_player()->mutable_statinfo();
+	SetStatByObject(stat, object);
 
 	auto vector = enterpacket.mutable_player()->mutable_vector();
 	SetVectorByObejct(vector, object);
@@ -89,13 +105,16 @@ void ObjectUtils::SetEnterPacket(Protocol::SERVER_ENTERGAME& enterpacket, GameOb
 이름     : ObjectUtils::SetSpawnPacket
 용도     : SpawnPacket을 Object의 값으로 세팅해주는 함수
 수정자   : 이민규
-수정날짜 : 2022.09.25
+수정날짜 : 2022.10.03
 ----------------------------------------------------------------------------------------------*/
 Protocol::ObjectInfo* ObjectUtils::SetSpawnPacket(Protocol::SERVER_SPAWN& spawnpacket, GameObject* object)
 {
 	Protocol::ObjectInfo* objeectinfo = spawnpacket.add_objects();
 	objeectinfo->set_objectid(object->GetInfo().objectid());
 	objeectinfo->set_name(object->GetInfo().name());
+
+	auto stat = objeectinfo->mutable_statinfo();
+	SetStatByObject(stat, object);
 
 	auto vector = objeectinfo->mutable_vector();
 	SetVectorByObejct(vector, object);

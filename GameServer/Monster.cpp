@@ -123,7 +123,6 @@ void Monster::UpdateMove()
 		return;
 	}
 
-
 	// TODO : ÀÌµ¿
 	SetVector(_Target->GetVector());
 }

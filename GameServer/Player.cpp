@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "Player.h"
 
-
 Player::Player()
 {
 	SetObjectType(Protocol::ObjectType::PLAYER);

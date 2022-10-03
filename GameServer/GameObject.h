@@ -13,6 +13,7 @@ class GameRoom;
 class GameObject
 {
 public:
+	GameObject();
 	virtual ~GameObject();
 
 	Protocol::ObjectType GetObjectType() { return _ObjectType; }
@@ -27,6 +28,9 @@ public:
 	Protocol::ObjectInfo& GetInfo() { return _Info; }
 	void SetInfo(Protocol::ObjectInfo info) { _Info = info; }
 
+	Protocol::StatInfo GetStat() { return _Info.statinfo(); }
+	void SetStat(Protocol::StatInfo  newstat);
+
 	Protocol::Vector GetVector() { return _Info.vector(); }
 	void SetVector(Protocol::Vector newvector);
 
@@ -36,23 +40,26 @@ public:
 	int32 GetId() { return _Info.objectid(); }
 	void SetId(int32 id) { return _Info.set_objectid(id); }
 
-	int32 GetHp() { return _Hp; }
-	void SetHp(int32 hp) { _Hp = std::clamp(hp , 0 , _MaxHp); }
+	int32 GetHp() { return _Info.statinfo().hp(); }
+	void SetHp(int32 hp) { std::clamp(hp, 0, GetStat().maxhp()); }
+
+	float GetSpeed() { return _Info.statinfo().speed(); }
+	void SetSpeed(float speed) { return _Info.mutable_statinfo()->set_speed(speed); }
+
 
 	virtual void Update();
+	virtual void OnDamaged(GameObject * attacker , int damage);
+	virtual void OnDead(GameObject * attacker);
 
 protected:
 	Protocol::ObjectType _ObjectType = Protocol::ObjectType::OBJECT_NONE;
 
-	int32 _Type = 0;
-
 	Protocol::ObjectState _State = Protocol::ObjectState::IDLE;
 
 	Protocol::ObjectInfo _Info;
+
 	GameRoom* _Room = nullptr;
 
-	int32 _Hp = 10;
-	int32 _MaxHp = 10;
-	
+	int32 _Type = 0;
 };
 

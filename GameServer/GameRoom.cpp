@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "GameRoom.h"
+
+#include "DataManager.h"
 #include "Player.h"
 #include "Monster.h"
 #include "Projectile.h"
@@ -18,11 +20,13 @@ void GameRoom::Init(int32 mapid)
 {
 	Monster * monster = ObjectManager::GetInstance().Add<Monster>(Protocol::MonsterType::SAVAROG);
 	Protocol::Vector vector;
+	monster->SetStat(DataManager::GetInstacnce()->GetPlayerStatData(3));
 	vector.set_x(-2200.f);
 	vector.set_y(-150.f);
 	vector.set_z(97.6f);
 	monster->SetVector(vector);
 	monster->SetRoom(this);
+
 	EnterGame(monster);
 }
 
@@ -120,7 +124,6 @@ void GameRoom::EnterGame(GameObject* gameobject)
 				int32 ownerId = _Projectiles[gameobject->GetId()]->GetOwner()->GetId();
 
 				auto ownerpacket = ObjectUtils::SetSpawnPacket(spawnpacket, gameobject);
-				ownerpacket->set_ownerid(ownerId);
 
 				for (const auto [id, roomplayer] : _Players)
 					roomplayer->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(spawnpacket));
@@ -271,6 +274,54 @@ void GameRoom::PlayerSkill(Player* player, Protocol::CLIENT_SKILL& pkt)
 }
 
 /*---------------------------------------------------------------------------------------------
+이름     : GameRoom::OnDamage
+용도     : 방에 있는 크리쳐에게 데미지지를 주는 함수
+수정자   : 이민규
+수정날짜 : 2022.10.03
+----------------------------------------------------------------------------------------------*/
+void GameRoom::OnDamage(Protocol::CLIENT_DAMAGE& pkt)
+{
+	WRITELOCK;
+
+	Protocol::ObjectType type = ObjectUtils::GetObjectType(pkt.victimeid());
+
+	switch (type)
+	{
+	case Protocol::PLAYER:
+	{
+		if (_Players.contains(pkt.victimeid()) == false)
+			return;
+
+		if (_Monsters.contains(pkt.attackerid()) == false)
+			return;
+
+		_Players[pkt.victimeid()]->OnDamaged(_Monsters[pkt.attackerid()], pkt.damage());
+		break;
+	}
+
+	case Protocol::MONSTER:
+	{
+		if (_Monsters.contains(pkt.victimeid()) == false)
+			return;
+
+		if (_Players.contains(pkt.attackerid()) == false)
+			return;
+
+		_Monsters[pkt.victimeid()]->OnDamaged(_Players[pkt.attackerid()], pkt.damage());
+		break;
+	}
+
+	default:
+		{
+		cout << format("[GameRoom] : OnDamage Error") << endl;
+		};
+	}
+
+	cout << format("Damage : {} {} {}", pkt.attackerid(), pkt.victimeid(), pkt.damage()) << endl;
+}
+
+
+/*---------------------------------------------------------------------------------------------
 이름     : GameRoom::BroadCast
 용도     : 방에 있는 모든 플레이어게 패킷을 전송해주는 함수
 수정자   : 이민규
@@ -284,6 +335,12 @@ void GameRoom::BroadCast(shared_ptr<SendBuffer> sendbuffer)
 		player->GetSession()->SendCheck(sendbuffer);
 }
 
+/*---------------------------------------------------------------------------------------------
+이름     : GameRoom::update
+용도     : 방에 있는 크리쳐들의 상태를 업데이트 해주는 함수
+수정자   : 이민규
+수정날짜 : 2022.10.03
+----------------------------------------------------------------------------------------------*/
 void GameRoom::update()
 {
 	for(const auto & [ID, monster] : _Monsters)

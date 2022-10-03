@@ -110,4 +110,5 @@ DataManager 추가
 ConfigManager 추가  
 
 - 2022.10.03  
-안전성 향상을 위해 Thread -> JThread로 변경
+안전성 향상을 위해 Thread -> JThread로 변경  
+데미지 체크 추가
