@@ -25,10 +25,11 @@ enum : uint16
 	PACKET_SERVER_MOVE = 1005,
 	PACKET_SERVER_SKILL = 1006,
 	PACKET_SERVER_CHANGEHP = 1007,
-	PACKET_CLIENT_ENTERGAME = 1008,
-	PACKET_CLIENT_MOVE = 1009,
-	PACKET_CLIENT_SKILL = 1010,
-	PACKET_CLIENT_DAMAGE = 1011,
+	PACKET_SERVER_DIE = 1008,
+	PACKET_CLIENT_ENTERGAME = 1009,
+	PACKET_CLIENT_MOVE = 1010,
+	PACKET_CLIENT_SKILL = 1011,
+	PACKET_CLIENT_DAMAGE = 1012,
 };
 
 /*---------------------------------------------------------------------------------------------
@@ -79,6 +80,7 @@ public:
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_MOVE& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_MOVE); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_SKILL& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_SKILL); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_CHANGEHP& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_CHANGEHP); }
+	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_DIE& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_DIE); }
 
 private:
 	/*---------------------------------------------------------------------------------------------

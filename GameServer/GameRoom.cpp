@@ -190,8 +190,8 @@ void GameRoom::LeaveGame(int32 objectid)
 			if (_Monsters.contains(objectid) == false)
 				return;
 
-			Gdelete(_Monsters[objectid]);
-			_Monsters.erase(objectid);
+			//Gdelete(_Monsters[objectid]);
+			//_Monsters.erase(objectid);
 			break;
 		}
 
@@ -275,7 +275,7 @@ void GameRoom::PlayerSkill(Player* player, Protocol::CLIENT_SKILL& pkt)
 
 /*---------------------------------------------------------------------------------------------
 이름     : GameRoom::OnDamage
-용도     : 방에 있는 크리쳐에게 데미지지를 주는 함수
+용도     : 방에 있는 크리쳐에게 데미지를 주는 함수
 수정자   : 이민규
 수정날짜 : 2022.10.03
 ----------------------------------------------------------------------------------------------*/
@@ -289,10 +289,7 @@ void GameRoom::OnDamage(Protocol::CLIENT_DAMAGE& pkt)
 	{
 	case Protocol::PLAYER:
 	{
-		if (_Players.contains(pkt.victimeid()) == false)
-			return;
-
-		if (_Monsters.contains(pkt.attackerid()) == false)
+		if (_Players.contains(pkt.victimeid()) == false || _Monsters.contains(pkt.attackerid()) == false)
 			return;
 
 		_Players[pkt.victimeid()]->OnDamaged(_Monsters[pkt.attackerid()], pkt.damage());
@@ -301,10 +298,7 @@ void GameRoom::OnDamage(Protocol::CLIENT_DAMAGE& pkt)
 
 	case Protocol::MONSTER:
 	{
-		if (_Monsters.contains(pkt.victimeid()) == false)
-			return;
-
-		if (_Players.contains(pkt.attackerid()) == false)
+		if (_Monsters.contains(pkt.victimeid()) == false || _Players.contains(pkt.attackerid()) == false)
 			return;
 
 		_Monsters[pkt.victimeid()]->OnDamaged(_Players[pkt.attackerid()], pkt.damage());
@@ -317,7 +311,7 @@ void GameRoom::OnDamage(Protocol::CLIENT_DAMAGE& pkt)
 		};
 	}
 
-	cout << format("Damage : {} {} {}", pkt.attackerid(), pkt.victimeid(), pkt.damage()) << endl;
+	cout << format("Damage : Attacker : {} vicitim : {} Damage : {}", pkt.attackerid(), pkt.victimeid(), pkt.damage()) << endl;
 }
 
 
@@ -343,8 +337,12 @@ void GameRoom::BroadCast(shared_ptr<SendBuffer> sendbuffer)
 ----------------------------------------------------------------------------------------------*/
 void GameRoom::update()
 {
-	for(const auto & [ID, monster] : _Monsters)
+	for (const auto& [ID, monster] : _Monsters)
+	{
+		if (monster == nullptr)
+			break;
 		monster->Update();
+	}
 }
 
 /*---------------------------------------------------------------------------------------------

@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "GameObject.h"
+
 #include <format>
+#include <random>
+
 #include "GameRoom.h"
 #include "ServerPacketManager.h"
 
@@ -41,10 +44,33 @@ void GameObject::OnDamaged(GameObject* attacker, int damage)
 이름     : GameObject::OnDead
 용도     : 오브젝트가 죽었을 때 호출 되는 함수
 수정자   : 이민규
-수정날짜 : 2022.10.03
+수정날짜 : 2022.10.04
 ----------------------------------------------------------------------------------------------*/
 void GameObject::OnDead(GameObject* attacker)
 {
+	Protocol::SERVER_DIE pktdie;
+	pktdie.set_objectid(GetId());
+	pktdie.set_attackerid(attacker->GetId());
+	_Room->BroadCast(ServerPacketManager::MakeSendBuffer(pktdie));
+
+	GameRoom* room = _Room;
+
+	_Room->LeaveGame(GetId());
+
+	std::random_device rd;
+
+	std::mt19937_64 gen(rd());
+
+	std::uniform_int_distribution dis(-1000, 0);
+
+	SetHp(GetStat().maxhp());
+	Protocol::Vector vector;
+	vector.set_x(dis(gen));
+	vector.set_y(dis(gen));
+	vector.set_z(97.f);
+	SetVector(vector);
+
+	room->EnterGame(this);
 }
 
 /*---------------------------------------------------------------------------------------------

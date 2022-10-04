@@ -82,7 +82,6 @@ bool CLIENT_SKILL_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_SKIL
 
 	auto player = clientsession->GetMyPlayer();
 
-
 	auto room = player->GetRoom();
 	if (room == nullptr)
 		return false;

@@ -41,7 +41,7 @@ public:
 	void SetId(int32 id) { return _Info.set_objectid(id); }
 
 	int32 GetHp() { return _Info.statinfo().hp(); }
-	void SetHp(int32 hp) { std::clamp(hp, 0, GetStat().maxhp()); }
+	void SetHp(int32 hp) { _Info.mutable_statinfo()->set_hp( std::clamp(hp, 0, GetStat().maxhp())); }
 
 	float GetSpeed() { return _Info.statinfo().speed(); }
 	void SetSpeed(float speed) { return _Info.mutable_statinfo()->set_speed(speed); }
