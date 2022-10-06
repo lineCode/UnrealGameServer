@@ -4,6 +4,7 @@
 
 RoomManager* RoomManager::_Instance;
 
+
 /*---------------------------------------------------------------------------------------------
 이름     : RoomManager::GetInstance
 용도     : RoomManager를 받아오는 싱글톤 함수
@@ -22,18 +23,18 @@ RoomManager& RoomManager::GetInstance()
 이름     : RoomManager::Add
 용도     : GameRoom을 Map에 추가하는 함수
 수정자   : 이민규
-수정날짜 : 2022.09.12
+수정날짜 : 2022.10.05
 ----------------------------------------------------------------------------------------------*/
-GameRoom* RoomManager::Add()
+shared_ptr<GameRoom> RoomManager::Add(int32 mapid)
 {
-	GameRoom* gameroom = Gnew<GameRoom>();
+	shared_ptr<GameRoom> gameroom = GMakeShared<GameRoom>();
 
-	{
-		WRITELOCK;
-		gameroom->SetRoomId(_Roomid);
-		_Rooms[_Roomid] = gameroom;
-		_Roomid++;
-	}
+	gameroom->PushAsync(&GameRoom::Init , mapid);
+
+	WRITELOCK;
+	gameroom->SetRoomId(_Roomid);
+	_Rooms[_Roomid] = gameroom;
+	_Roomid++;
 
 	return gameroom;
 }
@@ -63,7 +64,7 @@ bool RoomManager::Remove(int32 roomid)
 수정자   : 이민규
 수정날짜 : 2022.09.12
 ----------------------------------------------------------------------------------------------*/
-GameRoom* RoomManager::Find(int32 roomid)
+shared_ptr<GameRoom> RoomManager::Find(int32 roomid)
 {
 	WRITELOCK;
 
@@ -72,4 +73,6 @@ GameRoom* RoomManager::Find(int32 roomid)
 
 	return _Rooms[roomid];
 }
+
+
 

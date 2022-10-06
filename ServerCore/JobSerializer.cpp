@@ -1,24 +1,24 @@
 #include "pch.h"
-#include "JobQueue_Queue.h"
+#include "JobSerializer.h"
 
 /*---------------------------------------------------------------------------------------------
-이름     : JobQueue::Push
+이름     : JobSerializer::Push
 용도     : JobQueues에 데이터를 넣는  함수
 수정자   : 이민규
-수정날짜 : 2022.09.01
+수정날짜 : 2022.10.05
 ----------------------------------------------------------------------------------------------*/
-void JobQueue_Queue::Push(shared_ptr<JobQueue> jobqueue)
+void JobSerializer::Push(shared_ptr<JobQueue> jobqueue)
 {
 	_jobQueues.Push(jobqueue);
 }
 
 /*---------------------------------------------------------------------------------------------
-이름     : JobQueue_Queue::Pop
+이름     : JobSerializer::Pop
 용도     : JobQueues에서 데이터를 반환하는 함수
 수정자   : 이민규
-수정날짜 : 2022.09.01
+수정날짜 : 2022.10.05
 ----------------------------------------------------------------------------------------------*/
-shared_ptr<JobQueue> JobQueue_Queue::Pop()
+shared_ptr<JobQueue> JobSerializer::Pop()
 {
 	return _jobQueues.Pop();
 }

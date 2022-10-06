@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "ThreadManager.h"
-#include "JobQueue_Queue.h"
+#include "JobSerializer.h"
 
 ThreadManager::ThreadManager()
 {
@@ -48,12 +48,12 @@ void ThreadManager::DestroyTLS()
 }
 
 /*---------------------------------------------------------------------------------------------
-이름     : ThreadManager::GlobalJobQueueProcess
-용도     : GJobQueueManager에 JobQueue를 반환 받아 일정 시간 동안 실행시켜주는 함수
+이름     : ThreadManager::GlobalJobSerializerProcess
+용도     : GJobSerializerManager에 JobQueue를 반환 받아 일정 시간 동안 실행시켜주는 함수
 수정자   : 이민규
 수정날짜 : 2022.09.02
 ----------------------------------------------------------------------------------------------*/
-void ThreadManager::GlobalJobQueueProcess()
+void ThreadManager::GlobalJobSerializerProcess()
 {
 	while(true)
 	{
@@ -62,7 +62,7 @@ void ThreadManager::GlobalJobQueueProcess()
 		if (nowtime > LJobEndTime)
 			break;
 
-		shared_ptr<JobQueue> jobqueue = GJobQueueManager->Pop();
+		shared_ptr<JobQueue> jobqueue = GJobSerializerManager->Pop();
 		if (jobqueue == nullptr)
 			break;
 

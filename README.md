@@ -73,6 +73,11 @@ JobTimer 추가
 - 2022.09.05  
 GJobQueueManager 접근 문제 수정
 
+- 2022.10.05    
+Room RWLOCK 모두 제거하고 Jobqueue 방식으로 변경
+
+- 2022.10.06  
+DBConnection , DBConnectionPool 추가
 ## 언리얼 서버 패치노트
 - 2022.09.11   
 InGame 로직들 추가  
@@ -116,3 +121,5 @@ ConfigManager 추가
 
 - 2022.10.04  
 Dead 연동 추가
+
+

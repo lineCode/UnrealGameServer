@@ -9,34 +9,35 @@
 수정자   : 이민규
 수정날짜 : 2022.09.01
 ----------------------------------------------------------------------------------------------*/
-class JobQueue : enable_shared_from_this<JobQueue>
+class JobQueue : public enable_shared_from_this<JobQueue>
 {
 	friend JobTimer;
+
 public:
 	void Process();
 
 	/*---------------------------------------------------------------------------------------------
-	이름     : JobQueue::Push
-	용도     : Jobqueue에 Job을 람다로 바로 넣는 방식
+	이름     : JobQueue::PushAsync
+	용도     : Jobqueue에 람다를 Job으로 변환시켜 넣는 방식
 	수정자   : 이민규
 	수정날짜 : 2022.09.01
 	----------------------------------------------------------------------------------------------*/
-	void Push(CallBackFunc && callbackfunc)
+	void PushAsync(CallBackFunc && callbackfunc)
 	{
-		InPush(ObjectPool<Job>::MakeShared(std::move(callbackfunc)));
+		Push(ObjectPool<Job>::MakeShared(std::move(callbackfunc)));
 	}
 
 	/*---------------------------------------------------------------------------------------------
-	이름     : JobQueue::Push
-	용도     : Jobqueue에 Job을 맴버함수로 넣는 방식
+	이름     : JobQueue::PushAsync
+	용도     : Jobqueue에 맴버함수를 Job으로 변환시켜 넣는 함수
 	수정자   : 이민규
 	수정날짜 : 2022.09.01
 	----------------------------------------------------------------------------------------------*/
 	template<typename T , typename Ret , typename... Args>
-	void Push(Ret(T::*memfunc)(Args...) , Args... args)
+	void PushAsync(Ret(T::*memfunc)(Args...) , Args... args)
 	{
 		shared_ptr<T> owner = static_pointer_cast<T>(shared_from_this());
-		InPush(ObjectPool<Job>::MakeShared(owner, memfunc, std::forward<Args>(args)...));
+		Push(ObjectPool<Job>::MakeShared(owner, memfunc, std::forward<Args>(args)...));
 	}
 
 	/*---------------------------------------------------------------------------------------------
@@ -65,12 +66,13 @@ public:
 		GJobTimerManager->Reserve(processtime, shared_from_this(), job);
 	}
 
+	void ClearJobs() { _Jobs.Clear(); }
 
 private:
-	void InPush(shared_ptr<Job> job , bool pushonly = false);
+	void Push(const shared_ptr<Job> job , bool pushonly = false);
 
 protected:
-	LockQueue<shared_ptr<Job>> _Jobqueue;
+	LockQueue<shared_ptr<Job>> _Jobs;
 	::atomic<int32> _Jobcount;
 };
 

@@ -22,8 +22,8 @@ public:
 	int32 GetType() { return _Type; }
 	void SetType(int32 type) { _Type = type; }
 
-	GameRoom* GetRoom() { return _Room; }
-	void SetRoom(GameRoom* room) { _Room = room; }
+	shared_ptr<GameRoom> GetRoom() { return _Room; }
+	void SetRoom(shared_ptr<GameRoom> room) { _Room = room; }
 
 	Protocol::ObjectInfo& GetInfo() { return _Info; }
 	void SetInfo(Protocol::ObjectInfo info) { _Info = info; }
@@ -58,7 +58,7 @@ protected:
 
 	Protocol::ObjectInfo _Info;
 
-	GameRoom* _Room = nullptr;
+	shared_ptr<GameRoom> _Room = nullptr;
 
 	int32 _Type = 0;
 };

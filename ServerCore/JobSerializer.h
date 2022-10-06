@@ -1,12 +1,12 @@
 #pragma once
 
 /*---------------------------------------------------------------------------------------------
-이름     : JobQueue_Queue
+이름     : JobSerializer
 용도     : JobQueue들을 Queue형태로 관리하는 객체
 수정자   : 이민규
-수정날짜 : 2022.09.01
+수정날짜 : 2022.10.05
 ----------------------------------------------------------------------------------------------*/
-class JobQueue_Queue
+class JobSerializer
 {
 public:
 	void Push(shared_ptr<JobQueue> jobqueue);

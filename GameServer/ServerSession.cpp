@@ -31,7 +31,8 @@ void ServerSession::ContentsConnect()
 ----------------------------------------------------------------------------------------------*/
 void ServerSession::ContentsDisConnect()
 {
-	RoomManager::GetInstance().Find(1)->LeaveGame(_MyPlayer->GetInfo().objectid());
+	auto room = RoomManager::GetInstance().Find(1);
+	room->PushAsync(&GameRoom::LeaveGame, _MyPlayer->GetInfo().objectid());
 }
 
 void ServerSession::ContentsSend()
@@ -51,5 +52,6 @@ void ServerSession::ContentsRecv(BYTE* buffer, int32 datasize)
 	shared_ptr<ServerSession> session = GetServerSession();
 	PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
 
+	
 	ServerPacketManager::PacketUpdate(session, buffer, datasize);
 }

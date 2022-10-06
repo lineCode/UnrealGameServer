@@ -156,8 +156,6 @@ bool Session::ProcessConnect()
 	_ConnectEventStorage._Object = nullptr;
 	_Connected.store(true);
 
-	/// <summary>
-
 	GetServiceManager()->AddSession(GetSession());
 
 	ContentsConnect();
@@ -271,7 +269,6 @@ bool Session::ProcessRecv(int32 numofbyte)
 		DisConnect(L"PackCheckRedv Error");
 		return false;
 	}
-
 
 	_RecvBuffer.Clear();
 	RegisterRecv();

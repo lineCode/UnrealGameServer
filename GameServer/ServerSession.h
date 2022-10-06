@@ -22,12 +22,10 @@ public:
 	Player* GetMyPlayer() const { return _MyPlayer; }
 
 protected:
-
 	virtual void ContentsConnect() override;
 	virtual void ContentsDisConnect() override;
 	virtual void ContentsSend() override;
 	virtual void ContentsRecv(BYTE* buffer, int32 datasize) override;
-
 
 private:
 	Player* _MyPlayer = nullptr;

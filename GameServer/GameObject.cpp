@@ -4,7 +4,10 @@
 #include <format>
 #include <random>
 
+#include "DataManager.h"
 #include "GameRoom.h"
+#include "Monster.h"
+#include "ObjectManager.h"
 #include "ServerPacketManager.h"
 
 GameObject::GameObject()
@@ -48,29 +51,34 @@ void GameObject::OnDamaged(GameObject* attacker, int damage)
 ----------------------------------------------------------------------------------------------*/
 void GameObject::OnDead(GameObject* attacker)
 {
+	if (_Room == nullptr)
+		return;
+
 	Protocol::SERVER_DIE pktdie;
 	pktdie.set_objectid(GetId());
 	pktdie.set_attackerid(attacker->GetId());
 	_Room->BroadCast(ServerPacketManager::MakeSendBuffer(pktdie));
 
-	GameRoom* room = _Room;
+	auto room = _Room;
 
-	_Room->LeaveGame(GetId());
+	room->PushAsync(&GameRoom::LeaveGame, GetId());
 
+	// TODO : 추후 몬스터 리스폰 전부 변경
 	std::random_device rd;
 
 	std::mt19937_64 gen(rd());
 
 	std::uniform_int_distribution dis(-1000, 0);
 
-	SetHp(GetStat().maxhp());
+	Monster* monster = ObjectManager::GetInstance().Add<Monster>(Protocol::MonsterType::SAVAROG);
 	Protocol::Vector vector;
-	vector.set_x(dis(gen));
-	vector.set_y(dis(gen));
-	vector.set_z(97.f);
-	SetVector(vector);
+	monster->SetStat(DataManager::GetInstacnce()->GetPlayerStatData(3));
+	vector.set_x(dis(rd));
+	vector.set_y(dis(rd));
+	vector.set_z(97.6f);
+	monster->SetVector(vector);
 
-	room->EnterGame(this);
+	room->PushAsync(&GameRoom::EnterGame, static_cast<GameObject*>(monster));
 }
 
 /*---------------------------------------------------------------------------------------------

@@ -3,7 +3,6 @@
 #include "DataManager.h"
 #include "GameRoom.h"
 #include "ObjectManager.h"
-#include "ObjectUtils.h"
 #include "Player.h"
 #include "RoomManager.h"
 
@@ -39,7 +38,9 @@ bool CLIENT_ENTERGAME_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_
 	player->SetRotator(pkt.playerinfo().rotator());
 	player->SetSession(session->GetServerSession());
 
-	RoomManager::GetInstance().Find(1)->EnterGame(player);
+	const auto room = RoomManager::GetInstance().Find(1);
+	room->PushAsync(&GameRoom::EnterGame, static_cast<GameObject*>(player));
+
 	return true;
 }
 
@@ -63,7 +64,7 @@ bool CLIENT_MOVE_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_MOVE&
 	if (room == nullptr)
 		return false;
 
-	room->PlayerMove(player, pkt);
+	room->PushAsync(&GameRoom::PlayerMove, player, pkt);
 
 	return true;
 }
@@ -86,7 +87,7 @@ bool CLIENT_SKILL_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_SKIL
 	if (room == nullptr)
 		return false;
 
-	room->PlayerSkill(player, pkt);
+	room->PushAsync(&GameRoom::PlayerSkill, player, pkt);
 
 	return true;
 }
@@ -109,6 +110,5 @@ bool CLIENT_DAMAGE_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_DAM
 	if (room == nullptr)
 		return false;
 
-	room->OnDamage(pkt);
-
+	room->PushAsync(&GameRoom::OnDamage, pkt);
 }

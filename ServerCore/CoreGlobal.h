@@ -3,5 +3,6 @@
 extern class ThreadManager* GThreadManager;
 extern class MemoryManager* GMemoryManager;
 extern class SendBufferManager* GSendBufferManager;
-extern class JobQueue_Queue* GJobQueueManager;
+extern class JobSerializer* GJobSerializerManager;
 extern class JobTimer * GJobTimerManager;
+extern class DBConnectionPool* GDBConnectionPool;

@@ -11,6 +11,7 @@ ServiceManager::ServiceManager(ServiceType type, NetAddress address, shared_ptr<
 
 ServiceManager::~ServiceManager()
 {
+	
 }
 
 void ServiceManager::Stop()
@@ -66,6 +67,8 @@ ServerManager::ServerManager(NetAddress address, shared_ptr<IocpManager> iocpman
 	:ServiceManager(ServiceType::Server , address , iocpmanager ,func ,listenkeepcount)
 {
 }
+
+
 /*---------------------------------------------------------------------------------------------
 이름     : ServerManager::Start
 용도     : 서버를 시작하는 함수

@@ -68,7 +68,7 @@ class ServerManager : public ServiceManager
 {
 public:
 	ServerManager(NetAddress address, shared_ptr<IocpManager> iocpmanager, SessionMakeFunction func, int32 listenkeepcount);
-	virtual ~ServerManager() {};
+	virtual ~ServerManager() {  };
 
 	virtual bool Start();
 	virtual void Stop();

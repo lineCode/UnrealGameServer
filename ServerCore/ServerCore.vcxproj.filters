@@ -19,6 +19,9 @@
     <Filter Include="Job">
       <UniqueIdentifier>{9acbb60c-bf12-43ad-88ef-7b04988f5f7f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DB">
+      <UniqueIdentifier>{73ed832b-5f23-4121-ba8d-1cd0235f3660}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -105,11 +108,20 @@
     <ClInclude Include="JobQueue.h">
       <Filter>Job</Filter>
     </ClInclude>
-    <ClInclude Include="JobQueue_Queue.h">
+    <ClInclude Include="JobSerializer.h">
       <Filter>Job</Filter>
     </ClInclude>
     <ClInclude Include="JobTimer.h">
       <Filter>Job</Filter>
+    </ClInclude>
+    <ClInclude Include="DBConnection.h">
+      <Filter>DB</Filter>
+    </ClInclude>
+    <ClInclude Include="DBConnectionPool.h">
+      <Filter>DB</Filter>
+    </ClInclude>
+    <ClInclude Include="DBBind.h">
+      <Filter>DB</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -185,11 +197,20 @@
     <ClCompile Include="JobQueue.cpp">
       <Filter>Job</Filter>
     </ClCompile>
-    <ClCompile Include="JobQueue_Queue.cpp">
+    <ClCompile Include="JobSerializer.cpp">
       <Filter>Job</Filter>
     </ClCompile>
     <ClCompile Include="JobTimer.cpp">
       <Filter>Job</Filter>
+    </ClCompile>
+    <ClCompile Include="DBConnection.cpp">
+      <Filter>DB</Filter>
+    </ClCompile>
+    <ClCompile Include="DBConnectionPool.cpp">
+      <Filter>DB</Filter>
+    </ClCompile>
+    <ClCompile Include="DBBind.cpp">
+      <Filter>DB</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

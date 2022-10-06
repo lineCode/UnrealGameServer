@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "GameRoom.h"
-
 #include "DataManager.h"
 #include "Player.h"
 #include "Monster.h"
@@ -13,7 +12,7 @@
 
 GameRoom::GameRoom()
 {
-	Init(1);
+	
 }
 
 void GameRoom::Init(int32 mapid)
@@ -25,9 +24,9 @@ void GameRoom::Init(int32 mapid)
 	vector.set_y(-150.f);
 	vector.set_z(97.6f);
 	monster->SetVector(vector);
-	monster->SetRoom(this);
+	monster->SetRoom(GetGameRoom());
 
-	EnterGame(monster);
+	PushAsync(&GameRoom::EnterGame, static_cast<GameObject*>(monster));
 }
 
 /*---------------------------------------------------------------------------------------------
@@ -43,110 +42,106 @@ void GameRoom::EnterGame(GameObject* gameobject)
 
 	Protocol::ObjectType type = ObjectUtils::GetObjectType(gameobject->GetId());
 
+	// TODO : 본인한테 정보 전송
 	{
-		WRITELOCK;
-
-		// TODO : 본인한테 정보 전송
+		switch (type)
 		{
-			switch (type)
-			{
-			case Protocol::ObjectType::PLAYER:
-			{
-				// TODO : 내 자신에게 들어왔음을 알려줌
-				Player* player = reinterpret_cast<Player*>(gameobject);
-				if (player == nullptr)
-					return;
-
-				Protocol::SERVER_ENTERGAME enterpacket;
-				ObjectUtils::SetEnterPacket(enterpacket, gameobject);
-				_Players.insert({ player->GetId() , player });
-				player->SetRoom(this);
-				player->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(enterpacket));
-
-				// TODO : 같은 방에 있는 플레이어들을 생성하기 위한 정보를 나에게 보냄
-				if (!_Players.empty())
-				{
-					Protocol::SERVER_SPAWN spawnpacket;
-					for (const auto [id, roomplayer] : _Players)
-					{
-						if (id != gameobject->GetId())
-							ObjectUtils::SetSpawnPacket(spawnpacket, roomplayer);
-					}
-
-					for (const auto [id, roommonster] : _Monsters)
-						ObjectUtils::SetSpawnPacket(spawnpacket, roommonster);
-
-					player->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(spawnpacket));
-				}
-				break;
-			}
-
-			case Protocol::ObjectType::MONSTER:
-			{
-				// TODO : 몬스터를 _Monsters에 등록하는 부분
-				Monster* monster = reinterpret_cast<Monster*>(gameobject);
-				_Monsters.insert({ monster->GetId() , monster });
-				monster->SetRoom(this);
-				break;
-			}
-
-			case Protocol::ObjectType::PROJECTILE:
-			{
-				// TODO : 발사체를 _Projectiles에 등록하는 부분
-				Projectile* projectile = reinterpret_cast<Projectile*>(gameobject);
-				_Projectiles.insert({ projectile->GetId() , projectile });
-				projectile->SetRoom(this);
-				break;
-			}
-
-			default:
-			{
-				// TODO : 에러 부분
-				cout << "[GameRoom] : ObjectType Missing Error" << endl;
-				break;
-			}
-			}
-
-		}
-
-		// TODO : 같은방에 있는 다른 플레이어에게도 생성할 나의 정보를 전송
+		case Protocol::ObjectType::PLAYER:
 		{
-			Protocol::SERVER_SPAWN spawnpacket;
+			// TODO : 내 자신에게 들어왔음을 알려줌
+			Player* player = reinterpret_cast<Player*>(gameobject);
+			if (player == nullptr)
+				return;
 
-			switch (type)
+			Protocol::SERVER_ENTERGAME enterpacket;
+			ObjectUtils::SetEnterPacket(enterpacket, gameobject);
+			_Players.insert({ player->GetId() , player });
+			player->SetRoom(GetGameRoom());
+			player->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(enterpacket));
+
+			// TODO : 같은 방에 있는 플레이어들을 생성하기 위한 정보를 나에게 보냄
+			if (!_Players.empty())
 			{
-			case Protocol::ObjectType::PROJECTILE:
-			{
-				// TODO : 발사체일 경우
-				if (_Projectiles.contains(gameobject->GetId()) == false)
-					return;
-
-				int32 ownerId = _Projectiles[gameobject->GetId()]->GetOwner()->GetId();
-
-				auto ownerpacket = ObjectUtils::SetSpawnPacket(spawnpacket, gameobject);
-
-				for (const auto [id, roomplayer] : _Players)
-					roomplayer->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(spawnpacket));
-
-				break;
-			}
-
-			default:
-			{
-				// TODO : 그 외 모든 경우
-				ObjectUtils::SetSpawnPacket(spawnpacket, gameobject);
-
+				Protocol::SERVER_SPAWN spawnpacket;
 				for (const auto [id, roomplayer] : _Players)
 				{
 					if (id != gameobject->GetId())
-						roomplayer->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(spawnpacket));
+						ObjectUtils::SetSpawnPacket(spawnpacket, roomplayer);
 				}
-				break;
-			}
 
+				for (const auto [id, roommonster] : _Monsters)
+					ObjectUtils::SetSpawnPacket(spawnpacket, roommonster);
+
+				player->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(spawnpacket));
 			}
+			break;
+		}
+
+		case Protocol::ObjectType::MONSTER:
+		{
+			// TODO : 몬스터를 _Monsters에 등록하는 부분
+			Monster* monster = reinterpret_cast<Monster*>(gameobject);
+			_Monsters.insert({ monster->GetId() , monster });
+			monster->SetRoom(GetGameRoom());
+			break;
+		}
+
+		case Protocol::ObjectType::PROJECTILE:
+		{
+			// TODO : 발사체를 _Projectiles에 등록하는 부분
+			Projectile* projectile = reinterpret_cast<Projectile*>(gameobject);
+			_Projectiles.insert({ projectile->GetId() , projectile });
+			projectile->SetRoom(GetGameRoom());
+			break;
+		}
+
+		default:
+		{
+			// TODO : 에러 부분
+			cout << "[GameRoom] : ObjectType Missing Error" << endl;
+			break;
+		}
+		}
+
+	}
+
+	// TODO : 같은방에 있는 다른 플레이어에게도 생성할 나의 정보를 전송
+	{
+		Protocol::SERVER_SPAWN spawnpacket;
+
+		switch (type)
+		{
+		case Protocol::ObjectType::PROJECTILE:
+		{
+			// TODO : 발사체일 경우
+			if (_Projectiles.contains(gameobject->GetId()) == false)
+				return;
+
+			int32 ownerId = _Projectiles[gameobject->GetId()]->GetOwner()->GetId();
+
+			auto ownerpacket = ObjectUtils::SetSpawnPacket(spawnpacket, gameobject);
+
+			for (const auto [id, roomplayer] : _Players)
+				roomplayer->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(spawnpacket));
+
+			break;
+		}
+
+		default:
+		{
+			// TODO : 그 외 모든 경우
+			ObjectUtils::SetSpawnPacket(spawnpacket, gameobject);
+
+			for (const auto [id, roomplayer] : _Players)
+			{
+				if (id != gameobject->GetId())
+					roomplayer->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(spawnpacket));
+			}
+			break;
+		}
 
 		}
+
 	}
 }
 
@@ -158,8 +153,6 @@ void GameRoom::EnterGame(GameObject* gameobject)
 ----------------------------------------------------------------------------------------------*/
 void GameRoom::LeaveGame(int32 objectid)
 {
-	WRITELOCK;
-
 	Protocol::ObjectType type = ObjectUtils::GetObjectType(objectid);
 
 	switch (type)
@@ -190,8 +183,8 @@ void GameRoom::LeaveGame(int32 objectid)
 			if (_Monsters.contains(objectid) == false)
 				return;
 
-			//Gdelete(_Monsters[objectid]);
-			//_Monsters.erase(objectid);
+			Gdelete(_Monsters[objectid]);
+			_Monsters.erase(objectid);
 			break;
 		}
 
@@ -228,12 +221,11 @@ void GameRoom::LeaveGame(int32 objectid)
 수정자   : 이민규
 수정날짜 : 2022.09.28
 ----------------------------------------------------------------------------------------------*/
-void GameRoom::PlayerMove(Player* player, Protocol::CLIENT_MOVE& pkt)
+void GameRoom::PlayerMove(Player* player, Protocol::CLIENT_MOVE pkt)
 {
 	if (player == nullptr)
 		return;
 
-	WRITELOCK;
 	// TODO : 서버에서 검증 필요 추가 예정
 	printf("[CLIENT_MOVE_FUNC_ID[%d]] : %.1lf %.1lf %.1lf\n", player->GetInfo().objectid(), pkt.vector().x(), pkt.vector().y(), pkt.vector().z());
 
@@ -253,12 +245,10 @@ void GameRoom::PlayerMove(Player* player, Protocol::CLIENT_MOVE& pkt)
 수정자   : 이민규
 수정날짜 : 2022.09.25
 ----------------------------------------------------------------------------------------------*/
-void GameRoom::PlayerSkill(Player* player, Protocol::CLIENT_SKILL& pkt)
+void GameRoom::PlayerSkill(Player* player, Protocol::CLIENT_SKILL pkt)
 {
 	if (player == nullptr)
 		return;
-
-	WRITELOCK;
 
 	// TODO : 플레이어 스킬 사용을 보냄
 
@@ -279,10 +269,8 @@ void GameRoom::PlayerSkill(Player* player, Protocol::CLIENT_SKILL& pkt)
 수정자   : 이민규
 수정날짜 : 2022.10.03
 ----------------------------------------------------------------------------------------------*/
-void GameRoom::OnDamage(Protocol::CLIENT_DAMAGE& pkt)
+void GameRoom::OnDamage(Protocol::CLIENT_DAMAGE pkt)
 {
-	WRITELOCK;
-
 	Protocol::ObjectType type = ObjectUtils::GetObjectType(pkt.victimeid());
 
 	switch (type)
@@ -314,7 +302,6 @@ void GameRoom::OnDamage(Protocol::CLIENT_DAMAGE& pkt)
 	cout << format("Damage : Attacker : {} vicitim : {} Damage : {}", pkt.attackerid(), pkt.victimeid(), pkt.damage()) << endl;
 }
 
-
 /*---------------------------------------------------------------------------------------------
 이름     : GameRoom::BroadCast
 용도     : 방에 있는 모든 플레이어게 패킷을 전송해주는 함수
@@ -323,8 +310,6 @@ void GameRoom::OnDamage(Protocol::CLIENT_DAMAGE& pkt)
 ----------------------------------------------------------------------------------------------*/
 void GameRoom::BroadCast(shared_ptr<SendBuffer> sendbuffer)
 {
-	WRITELOCK;
-
 	for (const auto [id, player] : _Players)
 		player->GetSession()->SendCheck(sendbuffer);
 }
@@ -338,11 +323,7 @@ void GameRoom::BroadCast(shared_ptr<SendBuffer> sendbuffer)
 void GameRoom::update()
 {
 	for (const auto& [ID, monster] : _Monsters)
-	{
-		if (monster == nullptr)
-			break;
 		monster->Update();
-	}
 }
 
 /*---------------------------------------------------------------------------------------------

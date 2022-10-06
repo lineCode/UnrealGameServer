@@ -38,7 +38,7 @@ void JobTimer::Process(uint64 nowtime)
 			break;
 
 		if (shared_ptr<JobQueue> owner = jobtimerdata._JobData->_owner.lock())
-			owner->InPush(jobtimerdata._JobData->_Job, true);
+			owner->Push(jobtimerdata._JobData->_Job, true);
 
 		ObjectPool<JobData>::Push(jobtimerdata._JobData);
 		_JobTimerQueue.pop();

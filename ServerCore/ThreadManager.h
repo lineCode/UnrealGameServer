@@ -22,7 +22,7 @@ public:
 
 	static void InitTLS();
 	static void DestroyTLS();
-	static void GlobalJobQueueProcess();
+	static void GlobalJobSerializerProcess();
 	static void GlobalJobTImerProcess();
 
 private:
