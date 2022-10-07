@@ -78,6 +78,10 @@ Room RWLOCK 모두 제거하고 Jobqueue 방식으로 변경
 
 - 2022.10.06  
 DBConnection , DBConnectionPool 추가
+
+- 2022.10.07  
+DBbind 추가
+
 ## 언리얼 서버 패치노트
 - 2022.09.11   
 InGame 로직들 추가  

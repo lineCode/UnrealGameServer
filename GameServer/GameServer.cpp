@@ -58,11 +58,11 @@ int main(void)
 		DBBind<3, 0> dbBind(*dbcon, L"INSERT INTO [dbo].[Gold]([gold] , [name] , [createDate]) VALUES(? , ? , ?)");
 
 		int32 gold = 100;
-		dbBind.BindParam(0, gold);
 		WCHAR name[100] = L"테스트";
-		dbBind.BindParam(1, name);
-		TIMESTAMP_STRUCT ts = {2022 , 10 , 8};
-		dbBind.BindParam(2, ts);
+		TIMESTAMP_STRUCT ts = { 2022 , 10 , 8 };
+		dbBind.BindParam( gold);
+		dbBind.BindParam(name);
+		dbBind.BindParam( ts);
 
 		CRASH_IF(dbBind.Execute() == false);
 
@@ -101,17 +101,17 @@ int main(void)
 
 		DBBind<1, 4> DbBind(*dbcon , L"SELECT id , gold , name , createDate FROM [dbo].[Gold] WHERE gold = (?)");
 		int32 gold = 100;
-		DbBind.BindParam(0, gold);
+		DbBind.BindParam( gold);
 
 		int32 outid = 0;
 		int32 outgold = 0;
 		WCHAR outName[100];
 		TIMESTAMP_STRUCT outdate = {};
 
-		DbBind.BindCol(0, outid);
-		DbBind.BindCol(1, outgold);
-		DbBind.BindCol(2, outName);
-		DbBind.BindCol(3, outdate);
+		DbBind.BindCol( outid);
+		DbBind.BindCol( outgold);
+		DbBind.BindCol( outName);
+		DbBind.BindCol(outdate);
 
 		CRASH_IF(DbBind.Execute() == false);
 		//// 기존에 바인딩 된 정보 날림
