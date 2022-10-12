@@ -1,0 +1,62 @@
+{
+  "Table": [
+    {
+      "name": "Gold",
+      "Column": [
+        {
+          "name": "id",
+          "type": "int",
+          "notnull": true,
+          "identity": "1,1"
+        },
+        {
+          "name": "gold",
+          "type": "int",
+          "notnull": false
+        },
+        {
+          "name": "name",
+          "type": "nvarchar(50)",
+          "notnull": false
+        },
+        {
+          "name": "createDate",
+          "type": "datetime",
+          "notnull": false
+        }
+      ],
+      "indextype": "clustered",
+      "Indexname ": "id"
+    }
+  ],
+  "Procedure": [
+    {
+      "name": "spInsertGold",
+      "Param": [
+        {
+          "Paramname": "@gold",
+          "type": "int"
+        },
+        {
+          "Paramname": "@name",
+          "type": "nvarchar(50)"
+        },
+        {
+          "Paramname": "@createDate",
+          "type": "datetime"
+        }
+      ],
+      "Body": "INSERT INTO [dbo].[Gold]([gold], [name], [createDate]) VALUES(@gold, @name, @createDate);"
+    },
+    {
+      "name": "spGetGold",
+      "Param": [
+        {
+          "Paramname": "@gold",
+          "type": "int"
+        }
+      ],
+      "Body": "SELECT id, gold, name, createDate FROM [dbo].[Gold] WHERE gold = (@gold)"
+    }
+  ]
+}

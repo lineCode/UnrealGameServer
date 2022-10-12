@@ -124,7 +124,7 @@ protected:
 	DBConnection& _dbConnection;
 	const WCHAR* _query;
 	SQLLEN _paramlens[ParamCount > 0 ? ParamCount : 1] = {};
-	SQLLEN _columlens[ParamCount > 0 ? ParamCount : 1] = {};
+	SQLLEN _columlens[ColumnCount > 0 ? ColumnCount : 1] = {};
 	int32 _paramindex = 0;
 	int32 _columindex = 0;
 	uint64 _paramFlag = 0;

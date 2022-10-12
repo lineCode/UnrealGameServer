@@ -4,6 +4,8 @@ struct ServerConfig
 {
 public:
 	string _DataPath;
+	GWString _DBLogin;
+	GWString _DBPath;
 };
 
 /*---------------------------------------------------------------------------------------------

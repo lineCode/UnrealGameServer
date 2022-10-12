@@ -1,11 +1,11 @@
 {
-  "playerstats" : [
+  "playerstats": [
     {
-      "level" : 1,
-      "hp" : 100,
-      "damage" : 10,
-      "speed" : 500.0,
-      "exp" : 100
+      "level": 1,
+      "hp": 100,
+      "damage": 10,
+      "speed": 500.0,
+      "exp": 100
     },
     {
       "level": 2,

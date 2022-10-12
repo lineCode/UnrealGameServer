@@ -26,6 +26,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{EACE307D-5
 		Resource\Data\SkillData.json = Resource\Data\SkillData.json
 		Resource\Data\StatData.json = Resource\Data\StatData.json
 	EndProjectSection
+	ProjectSection(FolderGlobals) = preProject
+		C_5_4Code_4GameServer_4Server_4Binary_4Debug_4config_1json__JsonSchema = 
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{BB4ABB21-042A-4C18-8692-349C38DD0D66}"
+	ProjectSection(SolutionItems) = preProject
+		Resource\DB\GameDB.json = Resource\DB\GameDB.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

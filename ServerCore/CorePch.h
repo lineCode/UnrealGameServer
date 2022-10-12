@@ -24,4 +24,4 @@ using namespace std;
 #include "ReadWriteLock.h"
 #include "ObjectPool.h"
 #include "JobQueue.h"
-
+#include "ConsoleLog.h"

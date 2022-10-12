@@ -82,6 +82,14 @@ DBConnection , DBConnectionPool 추가
 - 2022.10.07  
 DBbind 추가
 
+- 2022.10.12  
+XMLParser 추가  
+JsonParer 추가  
+DBModel 추가  
+XmlDBSynchronizer(XMLORM) 추가  
+JsonDBSynchronizer(JsonORM) 추가  
+Xml 과 Json 둘중 Json으로 DB작업 관리
+
 ## 언리얼 서버 패치노트
 - 2022.09.11   
 InGame 로직들 추가  

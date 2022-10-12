@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "CoreGlobal.h"
+#include "ConsoleLog.h"
 #include "DBConnectionPool.h"
 #include "JobSerializer.h"
 #include "MemoryManager.h"
@@ -13,6 +14,7 @@ SendBufferManager* GSendBufferManager = nullptr;
 JobSerializer* GJobSerializerManager;
 JobTimer* GJobTimerManager = nullptr;
 DBConnectionPool* GDBConnectionPool = nullptr;
+ConsoleLog* GConsoleLogger;
 
 /*---------------------------------------------------------------------------------------------
 ¿Ã∏ß     : CoreGlobal
@@ -31,6 +33,7 @@ public:
 		GJobSerializerManager = new JobSerializer();
 		GJobTimerManager = new JobTimer();
 		GDBConnectionPool = new DBConnectionPool();
+		GConsoleLogger = new ConsoleLog;
 		SocketUtils::Init();
 	}
 
@@ -42,6 +45,7 @@ public:
 		delete GJobSerializerManager;
 		delete GJobTimerManager;
 		delete GDBConnectionPool;
+		delete GConsoleLogger;
 		SocketUtils::Clear();
 	}
 

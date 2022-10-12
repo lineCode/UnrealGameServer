@@ -1,7 +1,7 @@
 #pragma once
+
 #include <fstream>
 #include <format>
-
 #include "ConfigManager.h"
 #include "ContentsData.h"
 #include "rapidjson/istreamwrapper.h"

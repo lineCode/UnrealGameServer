@@ -1,8 +1,9 @@
 #include "pch.h"
 #include "ConfigManager.h"
-#include <fstream>
+#include "JsonParser.h"
 #include "rapidjson/document.h"
 #include "rapidjson/istreamwrapper.h"
+#include <fstream>
 
 ConfigManager* ConfigManager::_Instance = nullptr;
 
@@ -38,19 +39,16 @@ void ConfigManager::DestroyInstance()
 이름     : ConfigManager::LoadConfig
 용도     : Config들의 경로를 저장하는 함수
 수정자   : 이민규
-수정날짜 : 2022.10.2
+수정날짜 : 2022.10.12
 ----------------------------------------------------------------------------------------------*/
 void ConfigManager::LoadConfig()
 {
-	ifstream ifs("../Binary/Debug/config.json");
-
-	if (ifs.is_open() == false)
-		cout << "[LoadConfig] : json open Error" << endl;
-
-	rapidjson::IStreamWrapper jsonreader(ifs);
+	JsonParser parser;
 	rapidjson::Document document;
 
-	document.ParseStream(jsonreader);
+	parser.ParseJson(L"../Binary/Debug/config.json", document);
 
-	_config._DataPath = document["datapath"].GetString();
+	_config._DataPath =  document["datapath"].GetString();
+	_config._DBLogin = parser.ConverWString(document["DBLogin"].GetString());
+	_config._DBPath = parser.ConverWString(document["DBPath"].GetString());
 }

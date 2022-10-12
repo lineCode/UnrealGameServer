@@ -43,7 +43,7 @@
      _PlayerStatDatas = LoadJson<playerStatData, int32, Protocol::StatInfo>("StatData").MakeGHashMap();
 
      // TODO : SkillStat 데이터 불러오는 부분
-     _SkillStatDatas = LoadJson<SkillStatData, int32, SkillStat>("SkillData").MakeGHashMap(); \
+     _SkillStatDatas = LoadJson<SkillStatData, int32, SkillStat>("SkillData").MakeGHashMap(); 
  }
 
 
