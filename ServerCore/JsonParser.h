@@ -28,6 +28,6 @@ class JsonParser
 {
 public :
 	void ParseJson(const WCHAR* path , rapidjson::Document & document);
-	const WCHAR* ConverWString(const char* str);
+	const WCHAR* ConvertWString(const char* str);
 };
 

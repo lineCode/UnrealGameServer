@@ -49,6 +49,6 @@ void ConfigManager::LoadConfig()
 	parser.ParseJson(L"../Binary/Debug/config.json", document);
 
 	_config._DataPath =  document["datapath"].GetString();
-	_config._DBLogin = parser.ConverWString(document["DBLogin"].GetString());
-	_config._DBPath = parser.ConverWString(document["DBPath"].GetString());
+	_config._DBLogin = parser.ConvertWString(document["DBLogin"].GetString());
+	_config._DBPath = parser.ConvertWString(document["DBPath"].GetString());
 }

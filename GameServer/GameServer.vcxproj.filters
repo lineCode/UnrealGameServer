@@ -19,6 +19,9 @@
     <Filter Include="Data">
       <UniqueIdentifier>{37addb9b-bb1a-47ad-9e13-7d03b33fdafb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DB">
+      <UniqueIdentifier>{99eb83ad-00e8-4c13-ace4-f182f409f85e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -125,6 +128,9 @@
     </ClInclude>
     <ClInclude Include="ConfigManager.h">
       <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcedureManager.h">
+      <Filter>DB</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

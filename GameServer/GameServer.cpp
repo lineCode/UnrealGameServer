@@ -9,6 +9,7 @@
 #include "ServerPacketManager.h"
 #include "DBConnectionPool.h"
 #include "JsonDBSynchronizer.h"
+#include "ProcedureManager.h"
 
 enum
 {

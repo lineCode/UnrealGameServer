@@ -23,11 +23,6 @@
           "name": "createDate",
           "type": "datetime",
           "notnull": true
-        },
-        {
-          "name": "hello",
-          "type": "int",
-          "notnull": true
         }
       ],
       "Index": [
@@ -45,9 +40,10 @@
       ]
     }
   ],
+
   "Procedure": [
     {
-      "name": "spInsertGold",
+      "name": "ProcInsertGold",
       "Param": [
         {
           "name": "@gold",
@@ -65,7 +61,7 @@
       "Body": "INSERT INTO [dbo].[Gold]([gold], [name], [createDate]) VALUES(@gold, @name, @createDate);"
     },
     {
-      "name": "spGetGold",
+      "name": "ProcGetGold",
       "Param": [
         {
           "name": "@gold",

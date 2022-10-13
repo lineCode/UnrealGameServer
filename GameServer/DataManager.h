@@ -4,6 +4,7 @@
 #include <format>
 #include "ConfigManager.h"
 #include "ContentsData.h"
+#include "JsonParser.h"
 #include "rapidjson/istreamwrapper.h"
 
 /*---------------------------------------------------------------------------------------------
@@ -39,21 +40,18 @@ private:
  이름     : DataManager::LoadJson
  용도     : Json파일을 읽어와 데이터를 로드하고 StatData를 반환하는 함수
  수정자   : 이민규
- 수정날짜 : 2022.10.2
+ 수정날짜 : 2022.10.12
  ----------------------------------------------------------------------------------------------*/
  template<typename T , typename Key , typename Value>
  requires std::derived_from<T , ILoaderData<Key , Value>>
 T DataManager::LoadJson(const string jsonname)
  {
-     ifstream ifs(ConfigManager::GetInstacnce()->GetServerConfig()._DataPath + jsonname + ".json");
+    JsonParser parser;
+    string str = ConfigManager::GetInstacnce()->GetServerConfig()._DataPath + jsonname + ".json";
+    parser.ParseJson(parser.ConvertWString(str.c_str()) , _document);
 
-     if (ifs.is_open() == false)
-         cout << "[DATAMANAGER] : json open Error" << endl;
+    assert(_document.IsObject());
 
-     rapidjson::IStreamWrapper jsonreader(ifs);
-     _document.ParseStream(jsonreader);
-     assert(_document.IsObject());
-
-     T data(_document);
-     return data;
+    T data(_document);
+    return data;
  }

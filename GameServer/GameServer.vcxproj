@@ -230,6 +230,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="ObjectManager.h" />
+    <ClInclude Include="ProcedureManager.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Protocol.pb.h" />
     <ClInclude Include="GameRoom.h" />

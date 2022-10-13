@@ -56,7 +56,6 @@ void JsonParser::ParseJson(const WCHAR* path , rapidjson::Document& document)
     if (ifs.is_open() == false)
         cout << "[JSONPARSER] : Json Not Open" << endl;
 
-
     rapidjson::IStreamWrapper jsonreader(ifs);
     document.ParseStream(jsonreader);
 
@@ -64,12 +63,12 @@ void JsonParser::ParseJson(const WCHAR* path , rapidjson::Document& document)
 }
 
 /*-----------------------------------------------------------------------------
-이름     : JsonParser::ConverWString
+이름     : JsonParser::ConvertWString
 용도     : char형태를 Wstring으로 변환해주는 함수
 수정자   : 이민규
 수정날짜 : 2022.10.12
 ------------------------------------------------------------------------------*/
-const WCHAR* JsonParser::ConverWString(const char * str)
+const WCHAR* JsonParser::ConvertWString(const char * str)
 {
     wchar_t* pStr;
 
