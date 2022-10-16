@@ -35,10 +35,11 @@ int main(void)
 	ConfigManager::GetInstacnce()->LoadConfig();
 	DataManager::GetInstacnce()->LodaData();
 
-	CRASH_IF(GDBConnectionPool->Connect(1, ConfigManager::GetInstacnce()->GetServerConfig()._DBLogin.c_str()) == false);
+	CRASH_IF(GDBConnectionPool->Connect(5, ConfigManager::GetInstacnce()->GetServerConfig()._DBLogin.c_str()) == false);
 
 	DBConnection* dbConn = GDBConnectionPool->Pop();
 	JsonDBSynchronizer jsonsync(*dbConn);
+	GDBConnectionPool->Push(dbConn);
 
 	jsonsync.Synchronize(ConfigManager::GetInstacnce()->GetServerConfig()._DBPath.c_str());
 

@@ -1,28 +1,18 @@
 {
   "Table": [
     {
-      "name": "Gold",
+      "name": "Account",
       "Column": [
         {
-          "name": "id",
+          "name": "Accountid",
           "type": "int",
           "notnull": false,
           "identity": "1,1"
         },
         {
-          "name": "gold",
-          "type": "int",
-          "notnull": true
-        },
-        {
-          "name": "name",
-          "type": "nvarchar(50)",
-          "notnull": true
-        },
-        {
-          "name": "createDate",
-          "type": "datetime",
-          "notnull": true
+          "name": "AccountName",
+          "type": "nvarchar(30)",
+          "notnull": false
         }
       ],
       "Index": [
@@ -32,43 +22,184 @@
           "UniqueKey": false,
           "Column": [
             {
-              "name": "id"
+              "name": "Accountid"
+            }
+          ]
+        },
+        {
+          "type": "nonclustered",
+          "PrimaryKey": false,
+          "UniqueKey": true,
+          "Column": [
+            {
+              "name": "AccountName"
             }
           ]
         }
-
+      ]
+    },
+    {
+      "name": "Player",
+      "Column": [
+        {
+          "name": "playerid",
+          "type": "int",
+          "notnull": false,
+          "identity": "1,1"
+        },
+        {
+          "name": "playername",
+          "type": "nvarchar(10)",
+          "notnull": false
+        },
+        {
+          "name": "AccountId",
+          "type": "int",
+          "notnull": false
+        },
+        {
+          "name": "objectid",
+          "type": "int",
+          "notnull": false
+        },
+        {
+          "name": "Level",
+          "type": "int",
+          "notnull": false
+        },
+        {
+          "name": "MaxHp",
+          "type": "int",
+          "notnull": false
+        },
+        {
+          "name": "Hp",
+          "type": "int",
+          "notnull": false
+        },
+        {
+          "name": "Attack",
+          "type": "int",
+          "notnull": false
+        },
+        {
+          "name": "Speed",
+          "type": "int",
+          "notnull": false
+        },
+        {
+          "name": "TotalExp",
+          "type": "int",
+          "notnull": false
+        }
+      ],
+      "Index": [
+        {
+          "type": "clustered",
+          "PrimaryKey": true,
+          "UniqueKey": false,
+          "Column": [
+            {
+              "name": "playerid"
+            }
+          ]
+        },
+        {
+          "type": "nonclustered",
+          "PrimaryKey": false,
+          "UniqueKey": true,
+          "Column": [
+            {
+              "name": "playername"
+            }
+          ]
+        }
       ]
     }
   ],
 
   "Procedure": [
     {
-      "name": "ProcInsertGold",
+      "name": "ProcCreateAccount",
       "Param": [
         {
-          "name": "@gold",
-          "type": "int"
-        },
-        {
-          "name": "@name",
-          "type": "nvarchar(50)"
-        },
-        {
-          "name": "@createDate",
-          "type": "datetime"
+          "name": "@name1",
+          "type": "nvarchar(30)"
         }
       ],
-      "Body": "INSERT INTO [dbo].[Gold]([gold], [name], [createDate]) VALUES(@gold, @name, @createDate);"
+      "Body": "INSERT INTO [dbo].[Account]([AccountName]) VALUES((@name1))"
     },
     {
-      "name": "ProcGetGold",
+      "name": "ProcFindAccountid",
       "Param": [
         {
-          "name": "@gold",
+          "name": "@name1",
+          "type": "nvarchar(30)"
+        }
+      ],
+      "Body": "SELECT Accountid FROM [dbo].[Account] WHERE AccountName = (@name1)"
+    },
+    {
+      "name": "ProcFindAccountPlayer",
+      "Param": [
+        {
+          "name": "@name1",
+          "type": "nvarchar(30)"
+        }
+      ],
+      "Body": "SET NOCOUNT ON; SELECT playerid , AccountId , playername , objectid , Attack , Hp , Level , MaxHp , Speed , TotalExp FROM [dbo].[Player] WHERE AccountId = (SELECT Accountid FROM [dbo].[Account] WHERE AccountName = (@name1))"
+    },
+    {
+      "name": "ProcPlayerCreate",
+      "Param": [
+        {
+          "name": "@name1",
+          "type": "nvarchar(10)"
+        },
+        {
+          "name": "@accountid2",
+          "type": "int"
+        },
+        {
+          "name": "@attack3",
+          "type": "int"
+        },
+        {
+          "name": "@hp4",
+          "type": "int"
+        },
+        {
+          "name": "@level5",
+          "type": "int"
+        },
+        {
+          "name": "@maxhp6",
+          "type": "int"
+        },
+        {
+          "name": "@speed7",
+          "type": "float"
+        },
+        {
+          "name": "@totalexp8",
+          "type": "int"
+        },
+        {
+          "name": "@objectid9",
           "type": "int"
         }
       ],
-      "Body": "SELECT id, gold, name, createDate FROM [dbo].[Gold] WHERE gold = (@gold)"
+      "Body": "INSERT INTO [dbo].[Player]([playername] , [AccountId] , [Attack] , [Hp] , [Level] , [MaxHp] , [Speed] , [TotalExp] , [objectid]) VALUES((@name1) , (@accountid2) , (@attack3) , (@hp4) , (@level5) , (@maxhp6) , (@speed7) ,(@totalexp8) , (@objectid9))"
+    },
+    {
+      "name": "ProcFindPlayer",
+      "Param": [
+        {
+          "name": "@name1",
+          "type": "nvarchar(30)"
+        }
+      ],
+      "Body": "SELECT playername FROM [dbo].[Player] WHERE playername = (@name1)"
     }
   ]
 }

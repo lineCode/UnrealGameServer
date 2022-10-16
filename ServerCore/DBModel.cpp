@@ -13,13 +13,6 @@ using namespace DBModel;
 ----------------------------------------------------------------------------------------------*/
 GWString Column::CreateText()
 {
-	//return format(L"[{}] {} {} {}",
-	//              _name,
-	//              _typeText,
-	//              _nullable ? L"NULL" : L"NOT NULL",
-	//              _identity ? format(L"IDENTITY({}, {})", _seedValue, _incrementValue) : L""
-	//).data();
-
 	return DBModel::Helpers::Format(
 			L"[%s] %s %s %s",
 			_name.c_str(),
@@ -29,12 +22,12 @@ GWString Column::CreateText()
 }
 
 /*---------------------------------------------------------------------------------------------
-이름     : Index::GetUniqueName
-용도     : Index의 UniqueName을 가져오는 함수
+이름     : Index::GetConstraintName
+용도     : Index의 Constraint이름을 가져오는 함수
 수정자   : 이민규
 수정날짜 : 2022.10.08
 ----------------------------------------------------------------------------------------------*/
-GWString Index::GetUniqueName()
+GWString Index::GetConstraintName()
 {
 	GWString ret;
 
@@ -72,12 +65,12 @@ GWString Index::CreateName(const GWString & tableName)
 }
 
 /*---------------------------------------------------------------------------------------------
-이름     : Index::GetTypeText
-용도     : Index의 IndexType을 가져오는 함수
+이름     : Index::GetClusteredText
+용도     : Index의 Clustred을 가져오는 함수
 수정자   : 이민규
 수정날짜 : 2022.10.08
 ----------------------------------------------------------------------------------------------*/
-GWString Index::GetTypeText()
+GWString Index::GetClusteredText()
 {
 	return (_type == IndexType::Clustered ? L"CLUSTERED" : L"NONCLUSTERED");
 }
@@ -168,7 +161,7 @@ GWString Procedure::GenerateCreateQuery()
 
 /*---------------------------------------------------------------------------------------------
 이름     : Procedure::GenerateAlterQuery
-용도     : Procedure의 ALTER 쿼리를 만드는 함수
+용도     : Procedure의 쿼리를 수정하는 함수
 수정자   : 이민규
 수정날짜 : 2022.10.08
 ----------------------------------------------------------------------------------------------*/
@@ -182,8 +175,7 @@ GWString Procedure::GenerateAlterQuery()
 
 /*---------------------------------------------------------------------------------------------
 이름     : Procedure::GenerateParamString
-용도     : MS SQL의 Procedure을 C++ 타입으로 만든 객체
-		   DB라고 주석되어 있는건 DB에서만 사용하는 변수
+용도     : Param의 이름과 Type을 반환해주는 함수
 수정자   : 이민규
 수정날짜 : 2022.10.08
 ----------------------------------------------------------------------------------------------*/

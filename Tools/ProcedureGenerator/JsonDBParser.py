@@ -48,8 +48,8 @@ class Column:
 def ParseColumns(object, tables):
     columns = []
     query = object
-    select_idx = max(query.rfind('SELECT'), query.rfind('select'))
-    from_idx = max(query.rfind('FROM'), query.rfind('from'))
+    select_idx = max(query.find('SELECT'), query.find('select'))
+    from_idx = max(query.find('FROM'), query.find('from'))
     if select_idx >= 0 and from_idx > 0 and from_idx > select_idx:
         table_name = query[from_idx+len('FROM') : -1].strip().split()[0]
         table_name = table_name.replace('[', '').replace(']', '').replace('dbo.', '')

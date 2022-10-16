@@ -450,16 +450,16 @@ void JsonDBSynchronizer::CompareDBModel()
 	for (Gvector<GWString>& queries : _updateQueries)
 		queries.clear();
 
-	// TODO : XML에 있는 테이블 목록을 우선 갖고 온다.
+	// TODO : JSON에 있는 테이블 목록을 우선 갖고 온다.
 	Gmap<GWString, shared_ptr<DBModel::Table>> xmlTableMap;
 	for (shared_ptr<DBModel::Table>& xmlTable : _jsonTables)
 		xmlTableMap[xmlTable->_name] = xmlTable;
 
-	// TODO : DB에 실존하는 테이블들을 돌면서 XML에 정의된 테이블들과 이름을 비교한다.
+	// TODO : DB에 실존하는 테이블들을 돌면서 JSON에 정의된 테이블들과 이름을 비교한다.
 	for (shared_ptr<DBModel::Table>& dbTable : _dbTables)
 	{
 		auto findTable = xmlTableMap.find(dbTable->_name);
-		// TODO : XML이랑 DB 모두에 존재할 경우 테이블 정보를 확인
+		// TODO : JSON이랑 DB 모두에 존재할 경우 테이블 정보를 확인
 		if (findTable != xmlTableMap.end())
 		{
 			shared_ptr<DBModel::Table> xmlTable = findTable->second;
@@ -471,14 +471,14 @@ void JsonDBSynchronizer::CompareDBModel()
 			// TODO : 제거될 테이블에 예약되어 있는지 확인
 			if (_jsonRemovedTables.find(dbTable->_name) != _jsonRemovedTables.end())
 			{
-				// TODO : DB에는 존재하지만 XML에는 없는 경우라서 테이블 삭제
+				// TODO : DB에는 존재하지만 JSON에는 없는 경우라서 테이블 삭제
 				GConsoleLogger->WriteStdOut(Color::YELLOW, L"Removing Table : [dbo].[%s]\n", dbTable->_name.c_str());
-				_updateQueries[UpdateStep::DropTable].push_back(DBModel::Helpers::Format(L"DROP TABLE [dbo].[%s]", dbTable->_name.c_str()));
+				_updateQueries[QueryStep::DropTable].push_back(DBModel::Helpers::Format(L"DROP TABLE [dbo].[%s]", dbTable->_name.c_str()));
 			}
 		}
 	}
 
-	//TODO : XML에는 존재히지만 DB에는 없는 테이블
+	//TODO : JSON에는 존재히지만 DB에는 없는 테이블
 	for (auto& mapIt : xmlTableMap)
 	{
 		shared_ptr<DBModel::Table>& xmlTable = mapIt.second;
@@ -494,42 +494,42 @@ void JsonDBSynchronizer::CompareDBModel()
 			columnsStr += xmlTable->_columns[i]->CreateText();
 		}
 
-		//TODO : XML에 테이블을 DB에 생성
+		//TODO : JSON에 테이블을 DB에 생성
 		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Table : [dbo].[%s]\n", xmlTable->_name.c_str());
-		_updateQueries[UpdateStep::CreateTable].push_back(DBModel::Helpers::Format(L"CREATE TABLE [dbo].[%s] (%s)", xmlTable->_name.c_str(), columnsStr.c_str()));
+		_updateQueries[QueryStep::CreateTable].push_back(DBModel::Helpers::Format(L"CREATE TABLE [dbo].[%s] (%s)", xmlTable->_name.c_str(), columnsStr.c_str()));
 
-		//TODO : DB에 생성된 XML 테이블 컬럼을 수정
+		//TODO : DB에 생성된 JSON 테이블 컬럼을 수정
 		for (shared_ptr<DBModel::Column>& xmlColumn : xmlTable->_columns)
 		{
 			if (xmlColumn->_default.empty())
 				continue;
 
-			_updateQueries[UpdateStep::DefaultConstraint].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] DEFAULT (%s) FOR [%s]",
+			_updateQueries[QueryStep::DefaultConstraint].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] DEFAULT (%s) FOR [%s]",
 				xmlTable->_name.c_str(),
 				DBModel::Helpers::Format(L"DF_%s_%s", xmlTable->_name.c_str(), xmlColumn->_name.c_str()).c_str(),
 				xmlColumn->_default.c_str(),
 				xmlColumn->_name.c_str()));
 		}
 
-		//TODO : DB에 생성된 XML 테이블 인덱스를 수정
+		//TODO : DB에 생성된 JSON 테이블 인덱스를 수정
 		for (shared_ptr<DBModel::Index>& xmlIndex : xmlTable->_indexes)
 		{
-			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", xmlTable->_name.c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetTypeText().c_str(), xmlIndex->GetUniqueName().c_str());
+			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", xmlTable->_name.c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetClusteredText().c_str(), xmlIndex->GetConstraintName().c_str());
 			if (xmlIndex->_primaryKey || xmlIndex->_uniqueConstraint)
 			{
-				_updateQueries[UpdateStep::CreateIndex].push_back(DBModel::Helpers::Format(
+				_updateQueries[QueryStep::CreateIndex].push_back(DBModel::Helpers::Format(
 					L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] %s %s (%s)",
 					xmlTable->_name.c_str(),
 					xmlIndex->CreateName(xmlTable->_name).c_str(),
 					xmlIndex->GetKeyText().c_str(),
-					xmlIndex->GetTypeText().c_str(),
+					xmlIndex->GetClusteredText().c_str(),
 					xmlIndex->CreateColumnsText().c_str()));
 			}
 			else
 			{
-				_updateQueries[UpdateStep::CreateIndex].push_back(DBModel::Helpers::Format(
+				_updateQueries[QueryStep::CreateIndex].push_back(DBModel::Helpers::Format(
 					L"CREATE %s INDEX [%s] ON [dbo].[%s] (%s)",
-					xmlIndex->GetTypeText().c_str(),
+					xmlIndex->GetClusteredText().c_str(),
 					xmlIndex->CreateName(xmlTable->_name).c_str(),
 					xmlTable->_name.c_str(),
 					xmlIndex->CreateColumnsText().c_str()));
@@ -548,7 +548,7 @@ void JsonDBSynchronizer::CompareDBModel()
 ----------------------------------------------------------------------------------------------*/
 void JsonDBSynchronizer::CompareTables(shared_ptr<DBModel::Table> dbTable, shared_ptr<DBModel::Table> xmlTable)
 {
-	// TODO : XML에 있는 컬럼 목록을 갖고 온다.
+	// TODO : JSON에 있는 컬럼 목록을 갖고 온다.
 	Gmap<GWString, shared_ptr<DBModel::Column>> xmlColumnMap;
 	for (shared_ptr<DBModel::Column>& xmlColumn : xmlTable->_columns)
 		xmlColumnMap[xmlColumn->_name] = xmlColumn;
@@ -557,7 +557,7 @@ void JsonDBSynchronizer::CompareTables(shared_ptr<DBModel::Table> dbTable, share
 	for (shared_ptr<DBModel::Column>& dbColumn : dbTable->_columns)
 	{
 		auto findColumn = xmlColumnMap.find(dbColumn->_name);
-		// TODO : XML이랑 DB 모두에 이름이 존재할 경우 테이블 컬럼 정보를 확인
+		// TODO : JSON이랑 DB 모두에 이름이 존재할 경우 테이블 컬럼 정보를 확인
 		if (findColumn != xmlColumnMap.end())
 		{
 			shared_ptr<DBModel::Column>& xmlColumn = findColumn->second;
@@ -567,60 +567,59 @@ void JsonDBSynchronizer::CompareTables(shared_ptr<DBModel::Table> dbTable, share
 		// TODO : DB에는 존재하는데 XML에는 없는 경우
 		else
 		{
-
 			// TODO : Constrain이 있을 시 CONSTRAIN을 삭제한다
 			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Dropping Column : [%s].[%s]\n", dbTable->_name.c_str(), dbColumn->_name.c_str());
 			if (dbColumn->_defaultConstraintName.empty() == false)
-				_updateQueries[UpdateStep::DropColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] DROP CONSTRAINT [%s]", dbTable->_name.c_str(), dbColumn->_defaultConstraintName.c_str()));
+				_updateQueries[QueryStep::DropColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] DROP CONSTRAINT [%s]", dbTable->_name.c_str(), dbColumn->_defaultConstraintName.c_str()));
 
 			// TODO : 해당 칼럼을 삭제한다
-			_updateQueries[UpdateStep::DropColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] DROP COLUMN [%s]", dbTable->_name.c_str(), dbColumn->_name.c_str()));
+			_updateQueries[QueryStep::DropColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] DROP COLUMN [%s]", dbTable->_name.c_str(), dbColumn->_name.c_str()));
 		}
 	}
 
-	// TODO : XML에는 있는데 DB에는 없는 경우 
+	// TODO : JSON에는 있는데 DB에는 없는 경우 
 	for (auto& mapIt : xmlColumnMap)
 	{
 		shared_ptr<DBModel::Column>& xmlColumn = mapIt.second;
 		DBModel::Column newColumn = *xmlColumn;
 		newColumn._nullable = true;
 
-		// TODO : xml 칼럼을 추가한다
+		// TODO : JSON 컬럼을 추가한다
 		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Adding Column : [%s].[%s]\n", dbTable->_name.c_str(), xmlColumn->_name.c_str());
-		_updateQueries[UpdateStep::AddColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD %s %s",
+		_updateQueries[QueryStep::AddColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD %s %s",
 			dbTable->_name.c_str(), xmlColumn->_name.c_str(), xmlColumn->_typeText.c_str()));
 
-		// TODO : xml설정에 맞게 추가한 칼럼을 업데이트 한다
+		// TODO : JSON설정에 맞게 추가한 칼럼을 업데이트 한다
 		if (xmlColumn->_nullable == false && xmlColumn->_default.empty() == false)
 		{
-			_updateQueries[UpdateStep::AddColumn].push_back(DBModel::Helpers::Format(L"SET NOCOUNT ON; UPDATE [dbo].[%s] SET [%s] = %s WHERE [%s] IS NULL",
+			_updateQueries[QueryStep::AddColumn].push_back(DBModel::Helpers::Format(L"SET NOCOUNT ON; UPDATE [dbo].[%s] SET [%s] = %s WHERE [%s] IS NULL",
 				dbTable->_name.c_str(), xmlColumn->_name.c_str(), xmlColumn->_default.c_str(), xmlColumn->_name.c_str()));
 		}
 
 		if (xmlColumn->_nullable == false)
 		{
-			_updateQueries[UpdateStep::AddColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ALTER COLUMN %s",
+			_updateQueries[QueryStep::AddColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ALTER COLUMN %s",
 				dbTable->_name.c_str(), xmlColumn->CreateText().c_str()));
 		}
 
 		if (xmlColumn->_default.empty() == false)
 		{
-			_updateQueries[UpdateStep::AddColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [DF_%s_%s] DEFAULT (%s) FOR [%s]",
+			_updateQueries[QueryStep::AddColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [DF_%s_%s] DEFAULT (%s) FOR [%s]",
 				dbTable->_name.c_str(), dbTable->_name.c_str(), xmlColumn->_name.c_str(), xmlColumn->_default.c_str(), xmlColumn->_name.c_str()));
 		}
 	}
 
-	// TODO : XML에 있는 인덱스 목록을 갖고 온다.
+	// TODO : JSON에 있는 인덱스 목록을 갖고 온다.
 	Gmap<GWString, shared_ptr<DBModel::Index>> xmlIndexMap;
 	for (shared_ptr<DBModel::Index>& xmlIndex : xmlTable->_indexes)
-		xmlIndexMap[xmlIndex->GetUniqueName()] = xmlIndex;
+		xmlIndexMap[xmlIndex->GetConstraintName()] = xmlIndex;
 
 	// TODO : DB에 실존하는 테이블 인덱스들을 돌면서 XML에 정의된 인덱스들과 비교한다.
 	for (shared_ptr<DBModel::Index>& dbIndex : dbTable->_indexes)
 	{
-		auto findIndex = xmlIndexMap.find(dbIndex->GetUniqueName());
-		// TODO : XML에 DB 인덱스가 있고 값이 다른 인덱스가 DB에 없는 경우
-		if (findIndex != xmlIndexMap.end() && _dependentIndexes.find(dbIndex->GetUniqueName()) == _dependentIndexes.end())
+		auto findIndex = xmlIndexMap.find(dbIndex->GetConstraintName());
+		// TODO : JSON에 DB 인덱스가 있고 값이 다른 인덱스가 DB에 없는 경우
+		if (findIndex != xmlIndexMap.end() && _dependentIndexes.find(dbIndex->GetConstraintName()) == _dependentIndexes.end())
 		{
 			shared_ptr<DBModel::Index> xmlIndex = findIndex->second;
 			xmlIndexMap.erase(findIndex);
@@ -628,28 +627,28 @@ void JsonDBSynchronizer::CompareTables(shared_ptr<DBModel::Table> dbTable, share
 		else
 		{
 			// TODO : 인덱스에 값이 다르거나 XML에는 없고 DB에 있는 경우 제거한다
-			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Dropping Index : [%s] [%s] %s %s\n", dbTable->_name.c_str(), dbIndex->_name.c_str(), dbIndex->GetKeyText().c_str(), dbIndex->GetTypeText().c_str());
+			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Dropping Index : [%s] [%s] %s %s\n", dbTable->_name.c_str(), dbIndex->_name.c_str(), dbIndex->GetKeyText().c_str(), dbIndex->GetClusteredText().c_str());
 			if (dbIndex->_primaryKey || dbIndex->_uniqueConstraint)
-				_updateQueries[UpdateStep::DropIndex].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] DROP CONSTRAINT [%s]", dbTable->_name.c_str(), dbIndex->_name.c_str()));
+				_updateQueries[QueryStep::DropIndex].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] DROP CONSTRAINT [%s]", dbTable->_name.c_str(), dbIndex->_name.c_str()));
 			else
-				_updateQueries[UpdateStep::DropIndex].push_back(DBModel::Helpers::Format(L"DROP INDEX [%s] ON [dbo].[%s]", dbIndex->_name.c_str(), dbTable->_name.c_str()));
+				_updateQueries[QueryStep::DropIndex].push_back(DBModel::Helpers::Format(L"DROP INDEX [%s] ON [dbo].[%s]", dbIndex->_name.c_str(), dbTable->_name.c_str()));
 		}
 	}
 
-	// TODO : XML에는 있고 DB에는 없는 경우 인덱스 추가
+	// TODO : JSON에는 있고 DB에는 없는 경우 인덱스 추가
 	for (auto& mapIt : xmlIndexMap)
 	{
 		shared_ptr<DBModel::Index> xmlIndex = mapIt.second;
-		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", dbTable->_name.c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetTypeText().c_str(), xmlIndex->GetUniqueName().c_str());
+		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", dbTable->_name.c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetClusteredText().c_str(), xmlIndex->GetConstraintName().c_str());
 		if (xmlIndex->_primaryKey || xmlIndex->_uniqueConstraint)
 		{
-			_updateQueries[UpdateStep::CreateIndex].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] %s %s (%s)",
-				dbTable->_name.c_str(), xmlIndex->CreateName(dbTable->_name).c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetTypeText().c_str(), xmlIndex->CreateColumnsText().c_str()));
+			_updateQueries[QueryStep::CreateIndex].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] %s %s (%s)",
+				dbTable->_name.c_str(), xmlIndex->CreateName(dbTable->_name).c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetClusteredText().c_str(), xmlIndex->CreateColumnsText().c_str()));
 		}
 		else
 		{
-			_updateQueries[UpdateStep::CreateIndex].push_back(DBModel::Helpers::Format(L"CREATE %s INDEX [%s] ON [dbo].[%s] (%s)",
-				xmlIndex->GetTypeText(), xmlIndex->CreateName(dbTable->_name).c_str(), dbTable->_name.c_str(), xmlIndex->CreateColumnsText().c_str()));
+			_updateQueries[QueryStep::CreateIndex].push_back(DBModel::Helpers::Format(L"CREATE %s INDEX [%s] ON [dbo].[%s] (%s)",
+				xmlIndex->GetClusteredText(), xmlIndex->CreateName(dbTable->_name).c_str(), dbTable->_name.c_str(), xmlIndex->CreateColumnsText().c_str()));
 		}
 	}
 }
@@ -664,7 +663,7 @@ void JsonDBSynchronizer::CompareColumns(shared_ptr<DBModel::Table> dbTable, shar
 {
 	uint8 flag = 0;
 
-	// TODO : DB 와 XML의 컬럼의 모든 인자를 비교 후 다른것은 Flag에 기록
+	// TODO : DB 와 JSON의 컬럼의 모든 인자를 비교 후 다른것은 Flag에 기록
 	if (dbColumn->_type != xmlColumn->_type)
 		flag |= ColumnFlag::Type;
 	if (dbColumn->_maxLength != xmlColumn->_maxLength && xmlColumn->_maxLength > 0)
@@ -676,7 +675,7 @@ void JsonDBSynchronizer::CompareColumns(shared_ptr<DBModel::Table> dbTable, shar
 	if (dbColumn->_default != xmlColumn->_default)
 		flag |= ColumnFlag::Default;
 
-	// TODO : XML 과 DB 컬럼의 다른 점이 있을 경우 출력
+	// TODO : JSON 과 DB 컬럼의 다른 점이 있을 경우 출력
 	if (flag)
 	{
 		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Updating Column [%s] : (%s) -> (%s)\n", dbTable->_name.c_str(), dbColumn->CreateText().c_str(), xmlColumn->CreateText().c_str());
@@ -687,7 +686,7 @@ void JsonDBSynchronizer::CompareColumns(shared_ptr<DBModel::Table> dbTable, shar
 	{
 		for (shared_ptr<DBModel::Index>& dbIndex : dbTable->_indexes)
 			if (dbIndex->DependsOn(dbColumn->_name))
-				_dependentIndexes.insert(dbIndex->GetUniqueName());
+				_dependentIndexes.insert(dbIndex->GetConstraintName());
 
 		flag |= ColumnFlag::Default;
 	}
@@ -698,8 +697,8 @@ void JsonDBSynchronizer::CompareColumns(shared_ptr<DBModel::Table> dbTable, shar
 		// TODO : DB에 해당 Default가 있을 경우
 		if (dbColumn->_defaultConstraintName.empty() == false)
 		{
-			// TODO : DB에 Defalut관한 내용을 수정하기 위해 _updateQueries[UpdateStep::AlterColumn]에 CONSTRAIN에 DROP을 추가한다
-			_updateQueries[UpdateStep::AlterColumn].push_back(DBModel::Helpers::Format(
+			// TODO : DB에 Defalut관한 내용을 수정하기 위해 _updateQueries[QueryStep::AlterColumn]에 CONSTRAIN에 DROP을 추가한다
+			_updateQueries[QueryStep::AlterColumn].push_back(DBModel::Helpers::Format(
 				L"ALTER TABLE [dbo].[%s] DROP CONSTRAINT [%s]",
 				dbTable->_name.c_str(),
 				dbColumn->_defaultConstraintName.c_str()));
@@ -717,8 +716,8 @@ void JsonDBSynchronizer::CompareColumns(shared_ptr<DBModel::Table> dbTable, shar
 	// TODO :TYPE OR LENGTH OR IDENTITY 값이 다를 경우
 	if (flag & (ColumnFlag::Type | ColumnFlag::Length | ColumnFlag::Identity))
 	{
-		// TODO : XML의 TYPE , LENGTH , IDENTITY 기준으로 컬럼을 새로 만들어서 기존 컬럼에 변경으로 추가한다
-		_updateQueries[UpdateStep::AlterColumn].push_back(DBModel::Helpers::Format(
+		// TODO : JSON의 TYPE , LENGTH , IDENTITY 기준으로 컬럼을 새로 만들어서 기존 컬럼에 변경으로 추가한다
+		_updateQueries[QueryStep::AlterColumn].push_back(DBModel::Helpers::Format(
 			L"ALTER TABLE [dbo].[%s] ALTER COLUMN %s",
 			dbTable->_name.c_str(),
 			newColumn.CreateText().c_str()));
@@ -733,7 +732,7 @@ void JsonDBSynchronizer::CompareColumns(shared_ptr<DBModel::Table> dbTable, shar
 		// TODO : default가 있는 경우
 		if (xmlColumn->_default.empty() == false)
 		{
-			_updateQueries[UpdateStep::AlterColumn].push_back(DBModel::Helpers::Format(
+			_updateQueries[QueryStep::AlterColumn].push_back(DBModel::Helpers::Format(
 				L"SET NOCOUNT ON; UPDATE [dbo].[%s] SET [%s] = %s WHERE [%s] IS NULL",
 				dbTable->_name.c_str(),
 				xmlColumn->_name.c_str(),
@@ -741,8 +740,8 @@ void JsonDBSynchronizer::CompareColumns(shared_ptr<DBModel::Table> dbTable, shar
 				xmlColumn->_name.c_str()));
 		}
 
-		// TODO : XML의 Nullable을 기준으로 기존 컬럼 변경에 추가 
-		_updateQueries[UpdateStep::AlterColumn].push_back(DBModel::Helpers::Format(
+		// TODO : JSON의 Nullable을 기준으로 기존 컬럼 변경에 추가 
+		_updateQueries[QueryStep::AlterColumn].push_back(DBModel::Helpers::Format(
 			L"ALTER TABLE [dbo].[%s] ALTER COLUMN %s",
 			dbTable->_name.c_str(),
 			newColumn.CreateText().c_str()));
@@ -755,7 +754,7 @@ void JsonDBSynchronizer::CompareColumns(shared_ptr<DBModel::Table> dbTable, shar
 		if (dbColumn->_defaultConstraintName.empty() == false)
 		{
 			// TODO : XML의 Default을 기준으로 기존 컬럼 변경에 추가 
-			_updateQueries[UpdateStep::AlterColumn].push_back(DBModel::Helpers::Format(
+			_updateQueries[QueryStep::AlterColumn].push_back(DBModel::Helpers::Format(
 				L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] DEFAULT (%s) FOR [%s]",
 				dbTable->_name.c_str(),
 				DBModel::Helpers::Format(L"DF_%s_%s", dbTable->_name.c_str(), dbColumn->_name.c_str()).c_str(),
@@ -777,7 +776,7 @@ void JsonDBSynchronizer::CompareStoredProcedures()
 	for (shared_ptr<DBModel::Procedure>& xmlProcedure : _jsonProcedures)
 		xmlProceduresMap[xmlProcedure->_name] = xmlProcedure;
 
-	//TODO : DB에 와 XML에 프로시저가 존재하는지 확인.
+	//TODO : DB에 와 JSON에 프로시저가 존재하는지 확인.
 	for (shared_ptr<DBModel::Procedure>& dbProcedure : _dbProcedures)
 	{
 		auto findProcedure = xmlProceduresMap.find(dbProcedure->_name);
@@ -789,31 +788,31 @@ void JsonDBSynchronizer::CompareStoredProcedures()
 			if (DBModel::Helpers::RemoveWhiteSpace(dbProcedure->_fullBody) != DBModel::Helpers::RemoveWhiteSpace(xmlBody))
 			{
 				GConsoleLogger->WriteStdOut(Color::YELLOW, L"Updating Procedure : %s\n", dbProcedure->_name.c_str());
-				_updateQueries[UpdateStep::StoredProcecure].push_back(xmlProcedure->GenerateAlterQuery());
+				_updateQueries[QueryStep::StoredProcecure].push_back(xmlProcedure->GenerateAlterQuery());
 			}
 			xmlProceduresMap.erase(findProcedure);
 		}
 	}
 
-	// TODO : XML에는 존재하는데 DB에는 없는 경우 
+	// TODO : JSON에는 존재하는데 DB에는 없는 경우 
 	for (auto& mapIt : xmlProceduresMap)
 	{
-		//TODO : XML의 프로시저를 추가
+		//TODO : JSON의 프로시저를 추가
 		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Updating Procedure : %s\n", mapIt.first.c_str());
-		_updateQueries[UpdateStep::StoredProcecure].push_back(mapIt.second->GenerateCreateQuery());
+		_updateQueries[QueryStep::StoredProcecure].push_back(mapIt.second->GenerateCreateQuery());
 	}
 }
 
 /*---------------------------------------------------------------------------------------------
 이름     : JsonDBSynchronizer::ExecuteUpdateQueries
 용도     : Json과 DB의 다른 정보들을 수정하는 쿼리를 모은 _updateQueries를
-		   UpdateStep 순서에 맞게 DB에 쿼리를 보내는 부분
+		   QueryStep 순서에 맞게 DB에 쿼리를 보내는 부분
 수정자   : 이민규
 수정날짜 : 2022.10.12
 ----------------------------------------------------------------------------------------------*/
 void JsonDBSynchronizer::ExecuteUpdateQueries()
 {
-	for (int32 step = 0; step < UpdateStep::Max; step++)
+	for (int32 step = 0; step < QueryStep::Max; step++)
 	{
 		for (GWString& query : _updateQueries[step])
 		{

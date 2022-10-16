@@ -93,6 +93,9 @@ Xml 과 Json 둘중 Json으로 DB작업 관리
 - 2022.10.13  
 Json 파일 파싱 후 Procedure 자동화 추가
 
+- 2022.10.16  
+ConverString 추가
+
 ## 언리얼 서버 패치노트
 - 2022.09.11   
 InGame 로직들 추가  
@@ -137,4 +140,5 @@ ConfigManager 추가
 - 2022.10.04  
 Dead 연동 추가
 
-
+- 2022.10.16  
+DB Player 연동 추가

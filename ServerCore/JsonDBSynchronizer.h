@@ -16,7 +16,7 @@ class JsonDBSynchronizer
 		PROCEDURE_MAX_LEN = 10000
 	};
 
-	enum UpdateStep : uint8
+	enum QueryStep : uint8
 	{
 		DropIndex,
 		AlterColumn,
@@ -72,6 +72,6 @@ private:
 
 private:
 	Gset<GWString> _dependentIndexes;
-	Gvector<GWString> _updateQueries[UpdateStep::Max];
+	Gvector<GWString> _updateQueries[QueryStep::Max];
 };
 

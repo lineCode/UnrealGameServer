@@ -243,7 +243,7 @@ Gvector<XmlNode> XmlNode::FindChildren(const WCHAR* key)
 bool XmlParser::ParseFromFile(const WCHAR* path, OUT XmlNode& root)
 {
 	Gvector<BYTE> bytes = FileUtils::ReadFile(path);
-	_data = FileUtils::Convert(string(bytes.begin(), bytes.end()));
+	_data = FileUtils::ConvertUTF16(string(bytes.begin(), bytes.end()));
 
 	if (_data.empty())
 		return false;

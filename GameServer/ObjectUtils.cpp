@@ -81,6 +81,22 @@ void ObjectUtils::SetRotatorByRotator(Protocol::Rotator* desrotator, const Proto
 }
 
 /*---------------------------------------------------------------------------------------------
+이름     : ObjectUtils::SetStat
+용도     : src 에 받은 값으로 des 스텟을 세팅하는 함수
+수정자   : 이민규
+수정날짜 : 2022.10.17
+----------------------------------------------------------------------------------------------*/
+void ObjectUtils::SetStat(Protocol::StatInfo * src, Protocol::StatInfo * des)
+{
+	des->set_level(src->level());
+	des->set_maxhp(src->maxhp());
+	des->set_hp(src->hp());
+	des->set_hp(src->hp());
+	des->set_speed(src->speed());
+	des->set_totalexp(src->totalexp());
+}
+
+/*---------------------------------------------------------------------------------------------
 이름     : ObjectUtils::SetEnterPacket
 용도     : EnterPacket을 Object의 값으로 세팅해주는 함수
 수정자   : 이민규

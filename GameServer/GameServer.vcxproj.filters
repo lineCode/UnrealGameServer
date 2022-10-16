@@ -7,9 +7,6 @@
     <Filter Include="Protocol">
       <UniqueIdentifier>{4209d17f-5b17-4aa0-a091-ee07ce545d4e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PakcetManager">
-      <UniqueIdentifier>{2a2d4bcc-84c0-462e-9d95-96d1d81558a0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object">
       <UniqueIdentifier>{5b188c67-fd35-400f-a739-54647f6b2856}</UniqueIdentifier>
     </Filter>
@@ -21,6 +18,9 @@
     </Filter>
     <Filter Include="DB">
       <UniqueIdentifier>{99eb83ad-00e8-4c13-ace4-f182f409f85e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server">
+      <UniqueIdentifier>{2a2d4bcc-84c0-462e-9d95-96d1d81558a0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -38,10 +38,10 @@
       <Filter>Protocol</Filter>
     </ClCompile>
     <ClCompile Include="ServerPacketManager.cpp">
-      <Filter>PakcetManager</Filter>
+      <Filter>Server</Filter>
     </ClCompile>
     <ClCompile Include="ServerSession.cpp">
-      <Filter>PakcetManager</Filter>
+      <Filter>Server</Filter>
     </ClCompile>
     <ClCompile Include="GameRoom.cpp">
       <Filter>Room</Filter>
@@ -91,10 +91,10 @@
       <Filter>Protocol</Filter>
     </ClInclude>
     <ClInclude Include="ServerPacketManager.h">
-      <Filter>PakcetManager</Filter>
+      <Filter>Server</Filter>
     </ClInclude>
     <ClInclude Include="ServerSession.h">
-      <Filter>PakcetManager</Filter>
+      <Filter>Server</Filter>
     </ClInclude>
     <ClInclude Include="GameRoom.h">
       <Filter>Room</Filter>

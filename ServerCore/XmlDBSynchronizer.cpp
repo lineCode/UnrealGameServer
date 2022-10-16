@@ -514,7 +514,7 @@ void XmlDBSynchronizer::CompareDBModel()
 		//TODO : DB에 생성된 XML 테이블 인덱스를 수정
 		for (shared_ptr<DBModel::Index>& xmlIndex : xmlTable->_indexes)
 		{
-			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", xmlTable->_name.c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetTypeText().c_str(), xmlIndex->GetUniqueName().c_str());
+			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", xmlTable->_name.c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetClusteredText().c_str(), xmlIndex->GetConstraintName().c_str());
 			if (xmlIndex->_primaryKey || xmlIndex->_uniqueConstraint)
 			{
 				_updateQueries[UpdateStep::CreateIndex].push_back(DBModel::Helpers::Format(
@@ -522,14 +522,14 @@ void XmlDBSynchronizer::CompareDBModel()
 					xmlTable->_name.c_str(),
 					xmlIndex->CreateName(xmlTable->_name).c_str(),
 					xmlIndex->GetKeyText().c_str(),
-					xmlIndex->GetTypeText().c_str(),
+					xmlIndex->GetClusteredText().c_str(),
 					xmlIndex->CreateColumnsText().c_str()));
 			}
 			else
 			{
 				_updateQueries[UpdateStep::CreateIndex].push_back(DBModel::Helpers::Format(
 					L"CREATE %s INDEX [%s] ON [dbo].[%s] (%s)",
-					xmlIndex->GetTypeText().c_str(),
+					xmlIndex->GetClusteredText().c_str(),
 					xmlIndex->CreateName(xmlTable->_name).c_str(),
 					xmlTable->_name.c_str(),
 					xmlIndex->CreateColumnsText().c_str()));
@@ -543,7 +543,7 @@ void XmlDBSynchronizer::CompareDBModel()
 /*---------------------------------------------------------------------------------------------
 이름     : XmlDBSynchronizer::ExecuteUpdateQueries
 용도     : XML과 DB의 다른 정보들을 수정하는 쿼리를 모은 _updateQueries를
-           UpdateStep 순서에 맞게 DB에 쿼리를 보내는 부분
+           QueryStep 순서에 맞게 DB에 쿼리를 보내는 부분
 수정자   : 이민규
 수정날짜 : 2022.10.08
 ----------------------------------------------------------------------------------------------*/
@@ -632,14 +632,14 @@ void XmlDBSynchronizer::CompareTables(shared_ptr<DBModel::Table> dbTable, shared
 	// TODO : XML에 있는 인덱스 목록을 갖고 온다.
 	Gmap<GWString, shared_ptr<DBModel::Index>> xmlIndexMap;
 	for (shared_ptr<DBModel::Index>& xmlIndex : xmlTable->_indexes)
-		xmlIndexMap[xmlIndex->GetUniqueName()] = xmlIndex;
+		xmlIndexMap[xmlIndex->GetConstraintName()] = xmlIndex;
 
 	// TODO : DB에 실존하는 테이블 인덱스들을 돌면서 XML에 정의된 인덱스들과 비교한다.
 	for (shared_ptr<DBModel::Index>& dbIndex : dbTable->_indexes)
 	{
-		auto findIndex = xmlIndexMap.find(dbIndex->GetUniqueName());
+		auto findIndex = xmlIndexMap.find(dbIndex->GetConstraintName());
 		// TODO : XML에 DB 인덱스가 있고 값이 다른 인덱스가 DB에 없는 경우
-		if (findIndex != xmlIndexMap.end() && _dependentIndexes.find(dbIndex->GetUniqueName()) == _dependentIndexes.end())
+		if (findIndex != xmlIndexMap.end() && _dependentIndexes.find(dbIndex->GetConstraintName()) == _dependentIndexes.end())
 		{
 			shared_ptr<DBModel::Index> xmlIndex = findIndex->second;
 			xmlIndexMap.erase(findIndex);
@@ -647,7 +647,7 @@ void XmlDBSynchronizer::CompareTables(shared_ptr<DBModel::Table> dbTable, shared
 		else
 		{
 			// TODO : 인덱스에 값이 다르거나 XML에는 없고 DB에 있는 경우 제거한다
-			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Dropping Index : [%s] [%s] %s %s\n", dbTable->_name.c_str(), dbIndex->_name.c_str(), dbIndex->GetKeyText().c_str(), dbIndex->GetTypeText().c_str());
+			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Dropping Index : [%s] [%s] %s %s\n", dbTable->_name.c_str(), dbIndex->_name.c_str(), dbIndex->GetKeyText().c_str(), dbIndex->GetClusteredText().c_str());
 			if (dbIndex->_primaryKey || dbIndex->_uniqueConstraint)
 				_updateQueries[UpdateStep::DropIndex].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] DROP CONSTRAINT [%s]", dbTable->_name.c_str(), dbIndex->_name.c_str()));
 			else
@@ -659,16 +659,16 @@ void XmlDBSynchronizer::CompareTables(shared_ptr<DBModel::Table> dbTable, shared
 	for (auto& mapIt : xmlIndexMap)
 	{
 		shared_ptr<DBModel::Index> xmlIndex = mapIt.second;
-		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", dbTable->_name.c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetTypeText().c_str(), xmlIndex->GetUniqueName().c_str());
+		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", dbTable->_name.c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetClusteredText().c_str(), xmlIndex->GetConstraintName().c_str());
 		if (xmlIndex->_primaryKey || xmlIndex->_uniqueConstraint)
 		{
 			_updateQueries[UpdateStep::CreateIndex].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] %s %s (%s)",
-				dbTable->_name.c_str(), xmlIndex->CreateName(dbTable->_name).c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetTypeText().c_str(), xmlIndex->CreateColumnsText().c_str()));
+				dbTable->_name.c_str(), xmlIndex->CreateName(dbTable->_name).c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetClusteredText().c_str(), xmlIndex->CreateColumnsText().c_str()));
 		}
 		else
 		{
 			_updateQueries[UpdateStep::CreateIndex].push_back(DBModel::Helpers::Format(L"CREATE %s INDEX [%s] ON [dbo].[%s] (%s)",
-				xmlIndex->GetTypeText(), xmlIndex->CreateName(dbTable->_name).c_str(), dbTable->_name.c_str(), xmlIndex->CreateColumnsText().c_str()));
+				xmlIndex->GetClusteredText(), xmlIndex->CreateName(dbTable->_name).c_str(), dbTable->_name.c_str(), xmlIndex->CreateColumnsText().c_str()));
 		}
 	}
 }
@@ -706,7 +706,7 @@ void XmlDBSynchronizer::CompareColumns(shared_ptr<DBModel::Table> dbTable, share
 	{
 		for (shared_ptr<DBModel::Index>& dbIndex : dbTable->_indexes)
 			if (dbIndex->DependsOn(dbColumn->_name))
-				_dependentIndexes.insert(dbIndex->GetUniqueName());
+				_dependentIndexes.insert(dbIndex->GetConstraintName());
 
 		flag |= ColumnFlag::Default;
 	}
@@ -717,7 +717,7 @@ void XmlDBSynchronizer::CompareColumns(shared_ptr<DBModel::Table> dbTable, share
 		// TODO : DB에 해당 Default가 있을 경우
 		if (dbColumn->_defaultConstraintName.empty() == false)
 		{
-			// TODO : DB에 Defalut관한 내용을 수정하기 위해 _updateQueries[UpdateStep::AlterColumn]에 CONSTRAIN에 DROP을 추가한다
+			// TODO : DB에 Defalut관한 내용을 수정하기 위해 _updateQueries[QueryStep::AlterColumn]에 CONSTRAIN에 DROP을 추가한다
 			_updateQueries[UpdateStep::AlterColumn].push_back(DBModel::Helpers::Format(
 				L"ALTER TABLE [dbo].[%s] DROP CONSTRAINT [%s]",
 				dbTable->_name.c_str(),

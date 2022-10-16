@@ -29,8 +29,6 @@ void ConsoleLog::WriteStdOut(Color color, const WCHAR* format, ...)
 	::vwprintf(format, ap);
 	va_end(ap);
 
-	fflush(stdout);
-
 	SetColor(true, Color::WHITE);
 }
 

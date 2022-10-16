@@ -5,7 +5,7 @@ NAMESPACE_BEGIN(DBModel)
 /*---------------------------------------------------------------------------------------------
 이름     : SQLDataType
 용도     : MS SQL 기준의 오브젝트 번호
-수정자   : 이민규
+수정자   : 이민규스시노칸도 송도점
 수정날짜 : 2022.10.08
 ----------------------------------------------------------------------------------------------*/
 enum class SQLDataType
@@ -54,7 +54,7 @@ public:
 
 /*---------------------------------------------------------------------------------------------
 이름     : IndexType
-용도     : Index의 Cluster NonCluster을 구분하기 위한 Enum 
+용도     : Index의 Clustered NonCluster을 구분하기 위한 Enum 
 수정자   : 이민규
 수정날짜 : 2022.10.08
 ----------------------------------------------------------------------------------------------*/
@@ -74,9 +74,9 @@ enum class IndexType
 class Index
 {
 public:
-	GWString				GetUniqueName();
+	GWString				GetConstraintName();
 	GWString				CreateName(const GWString& tableName);
-	GWString				GetTypeText();
+	GWString				GetClusteredText();
 	GWString				GetKeyText();
 	GWString				CreateColumnsText();
 	bool				DependsOn(const GWString& columnName);
@@ -112,7 +112,6 @@ public:
 /*---------------------------------------------------------------------------------------------
 이름     : Param
 용도     : Procedure의 이름과 타입을 저장하는 구조체
-
 수정자   : 이민규
 수정날짜 : 2022.10.08
 ----------------------------------------------------------------------------------------------*/
@@ -126,7 +125,7 @@ struct Param
 이름     : Procedure
 용도     : MS SQL의 Procedure을 C++ 타입으로 만든 객체
 		   DB라고 주석되어 있는건 DB에서만 사용하는 변수
-		   XML라고 주석되어 있는건 XML에서만 사용하는 변수
+		   JSON라고 주석되어 있는건 JSON에서만 사용하는 변수
 수정자   : 이민규
 수정날짜 : 2022.10.08
 ----------------------------------------------------------------------------------------------*/
@@ -140,8 +139,8 @@ public:
 public:
 	GWString				_name;
 	GWString				_fullBody; // DB
-	GWString				_body; // XML
-	Gvector<Param>		_parameters;  // XML
+	GWString				_body; // JSON
+	Gvector<Param>		_parameters;  // JSON
 };
 
 /*---------------------------------------------------------------------------------------------

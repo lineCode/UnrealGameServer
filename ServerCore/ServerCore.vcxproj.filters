@@ -285,6 +285,9 @@
     <ClInclude Include="JsonParser.h">
       <Filter>Json</Filter>
     </ClInclude>
+    <ClInclude Include="ConverString.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -394,6 +397,9 @@
     </ClCompile>
     <ClCompile Include="JsonParser.cpp">
       <Filter>Json</Filter>
+    </ClCompile>
+    <ClCompile Include="ConverString.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

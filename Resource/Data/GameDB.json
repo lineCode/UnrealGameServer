@@ -1,58 +1,92 @@
 {
   "Table": [
     {
-      "name": "Gold",
+      "name": "Account",
+      "Column": [
+        {
+          "name": "Accountid",
+          "type": "int",
+          "notnull": false,
+          "identity": "1,1"
+        },
+        {
+          "name": "name"
+        }
+      ],
+      "Index": [
+        {
+          "type": "clustered",
+          "PrimaryKey": true,
+          "UniqueKey": false,
+          "Column": [
+            {
+              "name": "id"
+            }
+          ]
+        }
+
+      ]
+    },
+    {
+      "name": "Player",
       "Column": [
         {
           "name": "id",
           "type": "int",
-          "notnull": true,
+          "notnull": false,
           "identity": "1,1"
         },
         {
-          "name": "gold",
+          "name": "playername",
+          "type": "nvarchar(10)",
+          "notnull": false
+        },
+        {
+          "name": "account",
           "type": "int",
-          "notnull": false
-        },
-        {
-          "name": "name",
-          "type": "nvarchar(50)",
-          "notnull": false
-        },
-        {
-          "name": "createDate",
-          "type": "datetime",
           "notnull": false
         }
       ],
-      "indextype": "clustered",
-      "Indexname ": "id"
+      "Index": [
+        {
+          "type": "clustered",
+          "PrimaryKey": true,
+          "UniqueKey": false,
+          "Column": [
+            {
+              "name": "id"
+            }
+          ]
+        }
+
+      ]
     }
   ],
+
   "Procedure": [
     {
-      "name": "spInsertGold",
+      "name": "ProcInsertGold",
       "Param": [
         {
-          "Paramname": "@gold",
+          "name": "@gold",
           "type": "int"
         },
         {
-          "Paramname": "@name",
+          "name": "@name",
           "type": "nvarchar(50)"
         },
         {
-          "Paramname": "@createDate",
+          "name": "@createDate",
           "type": "datetime"
         }
       ],
       "Body": "INSERT INTO [dbo].[Gold]([gold], [name], [createDate]) VALUES(@gold, @name, @createDate);"
     },
     {
-      "name": "spGetGold",
+      "name": "ProcGetGold",
       "Param": [
         {
-          "Paramname": "@gold",
+          "name": "@gold",
           "type": "int"
         }
       ],

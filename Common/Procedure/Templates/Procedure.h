@@ -2,7 +2,7 @@
 
 {%- for proc in procs %}
 /*---------------------------------------------------------------------------------------------
-                                    {{proc.name}}(Param : {{proc.params|length}} , Column : {{proc.columns|length}})
+			     	          {{proc.name}}({{proc.params|length}},{{proc.columns|length}})
 ----------------------------------------------------------------------------------------------*/
 class {{proc.name}} : public DBBind<{{proc.params|length}},{{proc.columns|length}}>
 {
@@ -36,7 +36,7 @@ public:
 
 private:
 {%- for param in proc.params %}
-  {%- if param.type == 'int32' or param.type == 'TIMESTAMP_STRUCT' %}
+  {%- if param.type == 'int32' or param.type == 'TIMESTAMP_STRUCT' or param.type == 'float' %}
 	{{param.type}} _{{lower_first(param.name)}} = {};
   {%- endif %}
 {%- endfor %}

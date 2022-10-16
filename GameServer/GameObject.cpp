@@ -89,12 +89,7 @@ void GameObject::OnDead(GameObject* attacker)
 ----------------------------------------------------------------------------------------------*/
 void GameObject::SetStat(Protocol::StatInfo newstat)
 {
-	auto stat = _Info.mutable_statinfo();
-	stat->set_level(newstat.level());
-	stat->set_maxhp(newstat.hp());
-	stat->set_hp(newstat.hp());
-	stat->set_speed(newstat.speed());
-	stat->set_totalexp(newstat.totalexp());
+	_Info.mutable_statinfo()->CopyFrom(newstat);
 }
 
 /*---------------------------------------------------------------------------------------------

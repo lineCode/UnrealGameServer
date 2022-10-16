@@ -19,6 +19,7 @@ public:
 	static void SetVectorByVector(Protocol::Vector* desvector, const  Protocol::Vector& srcvector);
 	static void SetRotatorByObject(Protocol::Rotator* rotator, GameObject* object);
 	static void SetRotatorByRotator(Protocol::Rotator* desrotator, const Protocol::Rotator& srcrotator);
+	static void SetStat(Protocol::StatInfo * src, Protocol::StatInfo * des);
 
 	static void SetEnterPacket(Protocol::SERVER_ENTERGAME& enterpacket, GameObject* object);
 	static Protocol::ObjectInfo* SetSpawnPacket(Protocol::SERVER_SPAWN& spawnpacket, GameObject* object);

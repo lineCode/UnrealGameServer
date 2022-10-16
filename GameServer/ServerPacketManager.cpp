@@ -1,10 +1,9 @@
 #include "pch.h"
 #include "ServerPacketManager.h"
-#include "DataManager.h"
+
 #include "GameRoom.h"
-#include "ObjectManager.h"
 #include "Player.h"
-#include "RoomManager.h"
+#include "ProcedureManager.h"
 
 PacketFunc GPacketFuncArray[UINT16_MAX];
 
@@ -20,28 +19,39 @@ bool PACKET_INVALID(shared_ptr<ServerSession>& session, BYTE* byte, int32 len)
 }
 
 /*---------------------------------------------------------------------------------------------
-이름     : CLIENT_ENTERGAME_FUNC
-용도     : 플레이어를 타입에 맞게 생성하고 방으로 입장시켜주는 함수
+이름     : CLIENT_LOGIN_FUNC
+용도     : 클라이언트의 아이디를 통해 로그인 요청을 받는 함수
+           성공할 경우 로그인 패킷을 보내주고 실패 할 경우 무시
 수정자   : 이민규
-수정날짜 : 2022.09.24
+수정날짜 : 2022.10.15
+----------------------------------------------------------------------------------------------*/
+bool CLIENT_LOGIN_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_LOGIN& pkt)
+{
+	return session->Login(&pkt);
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : CLIENT_CREATEPLAYER_FUNC
+용도     : 서버에 캐릭터를 생성하는 부분을 처리해주는 함수
+		   클라이언트가 요청하는 값으로 캐릭터를 생성해 줌
+수정자   : 이민규
+수정날짜 : 2022.10.16
+----------------------------------------------------------------------------------------------*/
+bool CLIENT_CREATEPLAYER_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_CREATEPLAYER& pkt)
+{
+	return session->CreatePlayer(&pkt);
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : CLIENT_ENTERGAME_FUNC
+용도     : 서버에서 클라이언트가 선택한 캐릭터를 입장시키는 함수
+		   클라이언트가 캐릭터의 이름을 보내주면 있을 경우 저장되어있는 값으로 캐릭터를 입장
+수정자   : 이민규
+수정날짜 : 2022.10.16
 ----------------------------------------------------------------------------------------------*/
 bool CLIENT_ENTERGAME_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_ENTERGAME& pkt)
 {
-	auto playerinfo = pkt.playerinfo();
-
-	Player* player = ObjectManager::GetInstance().Add<Player>(pkt.objecttype());
-
-	session->SetMyPlayer(player);
-	player->GetInfo().set_name(pkt.playerinfo().GetTypeName());
-	player->SetStat(DataManager::GetInstacnce()->GetPlayerStatData(1));
-	player->SetVector(pkt.playerinfo().vector());
-	player->SetRotator(pkt.playerinfo().rotator());
-	player->SetSession(session->GetServerSession());
-
-	const auto room = RoomManager::GetInstance().Find(1);
-	room->PushAsync(&GameRoom::EnterGame, static_cast<GameObject*>(player));
-
-	return true;
+	return session->EnterPlayer(&pkt);
 }
 
 /*---------------------------------------------------------------------------------------------
