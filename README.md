@@ -141,4 +141,8 @@ ConfigManager 추가
 Dead 연동 추가
 
 - 2022.10.16  
-DB Player 연동 추가
+Player DB 연동 추가
+
+- 2022.10.18  
+DBJobManager 추가  
+Player Stat DB 연동 추가

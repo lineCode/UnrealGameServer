@@ -8,6 +8,7 @@
 #include "ThreadManager.h"
 #include "ServerPacketManager.h"
 #include "DBConnectionPool.h"
+#include "DBJobManager.h"
 #include "JsonDBSynchronizer.h"
 #include "ProcedureManager.h"
 
@@ -30,7 +31,7 @@ void WorkProcess(shared_ptr<ServerManager> & server)
 	}
 }
 
-int main(void)
+int main()
 {
 	ConfigManager::GetInstacnce()->LoadConfig();
 	DataManager::GetInstacnce()->LodaData();

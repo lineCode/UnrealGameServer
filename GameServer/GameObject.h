@@ -29,13 +29,13 @@ public:
 	void SetInfo(Protocol::ObjectInfo info) { _Info = info; }
 
 	Protocol::StatInfo GetStat() { return _Info.statinfo(); }
-	void SetStat(Protocol::StatInfo  newstat);
+	void SetStat(Protocol::StatInfo  newstat) { _Info.mutable_statinfo()->CopyFrom(newstat); }
 
 	Protocol::Vector GetVector() { return _Info.vector(); }
-	void SetVector(Protocol::Vector newvector);
+	void SetVector(Protocol::Vector newvector) { _Info.mutable_vector()->CopyFrom(newvector); }
 
 	Protocol::Rotator GetRotator() { return _Info.rotator(); }
-	void SetRotator(Protocol::Rotator newrotator);
+	void SetRotator(Protocol::Rotator newrotator) { _Info.mutable_rotator()->CopyFrom(newrotator); }
 
 	int32 GetId() { return _Info.objectid(); }
 	void SetId(int32 id) { return _Info.set_objectid(id); }

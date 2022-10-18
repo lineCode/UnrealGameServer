@@ -37,19 +37,19 @@ namespace StoredProcedures
 	public:
 		GetDBTables(DBConnection& conn) : DBBind(conn, QTablesAndColumns) {}
 
-		void Out_ObjectId(OUT int32& value) { BindCol(value); }
-		template<int32 N> void Out_TableName(OUT WCHAR(&value)[N]) { BindCol(value); }
-		template<int32 N> void Out_ColumnName(OUT WCHAR(&value)[N]) { BindCol(value); }
-		void Out_ColumnId(OUT int32& value) { BindCol(value); }
-		void Out_UserType(OUT int32& value) { BindCol(value); }
-		void Out_MaxLength(OUT int32& value) { BindCol(value); }
-		void Out_IsNullable(OUT bool& value) { BindCol(value); }
-		void Out_IsIdentity(OUT bool& value) { BindCol(value); }
-		void Out_SeedValue(OUT int64& value) { BindCol(value); }
-		void Out_IncrementValue(OUT int64& value) { BindCol(value); }
-		void Out_DefaultObjectId(OUT int32& value) { BindCol(value); }
-		template<int32 N> void Out_DefaultDefinition(OUT WCHAR(&value)[N]) { BindCol(value); }
-		template<int32 N> void Out_DefaultConstraintName(OUT WCHAR(&value)[N]) { BindCol(value); }
+		void Out_ObjectId(OUT int32& value) { BindCol(0 ,value); }
+		template<int32 N> void Out_TableName(OUT WCHAR(&value)[N]) { BindCol(1,value); }
+		template<int32 N> void Out_ColumnName(OUT WCHAR(&value)[N]) { BindCol(2,value); }
+		void Out_ColumnId(OUT int32& value) { BindCol(3,value); }
+		void Out_UserType(OUT int32& value) { BindCol(4,value); }
+		void Out_MaxLength(OUT int32& value) { BindCol(5,value); }
+		void Out_IsNullable(OUT bool& value) { BindCol(6,value); }
+		void Out_IsIdentity(OUT bool& value) { BindCol(7,value); }
+		void Out_SeedValue(OUT int64& value) { BindCol(8,value); }
+		void Out_IncrementValue(OUT int64& value) { BindCol(9,value); }
+		void Out_DefaultObjectId(OUT int32& value) { BindCol(10,value); }
+		template<int32 N> void Out_DefaultDefinition(OUT WCHAR(&value)[N]) { BindCol(11,value); }
+		template<int32 N> void Out_DefaultConstraintName(OUT WCHAR(&value)[N]) { BindCol(12,value); }
 	};
 
 	/*---------------------------------------------------------------------------------------------
@@ -78,14 +78,14 @@ namespace StoredProcedures
 	public:
 		GetDBIndexes(DBConnection& conn) : DBBind(conn, QIndexes) {}
 
-		void Out_ObjectId(OUT int32& value) { BindCol(value); }
-		template<int32 N> void Out_IndexName(OUT WCHAR(&value)[N]) { BindCol(value); }
-		void Out_IndexId(OUT int32& value) { BindCol(value); }
-		void Out_IndexType(OUT int32& value) { BindCol(value); }
-		void Out_IsPrimaryKey(OUT bool& value) { BindCol(value); }
-		void Out_IsUniqueConstraint(OUT bool& value) { BindCol(value); }
-		void Out_ColumnId(OUT int32& value) { BindCol(value); }
-		template<int32 N> void Out_ColumnName(OUT WCHAR(&value)[N]) { BindCol(value); }
+		void Out_ObjectId(OUT int32& value) { BindCol(0 ,value); }
+		template<int32 N> void Out_IndexName(OUT WCHAR(&value)[N]) { BindCol(1 ,value); }
+		void Out_IndexId(OUT int32& value) { BindCol(2, value); }
+		void Out_IndexType(OUT int32& value) { BindCol(3,value); }
+		void Out_IsPrimaryKey(OUT bool& value) { BindCol(4,value); }
+		void Out_IsUniqueConstraint(OUT bool& value) { BindCol(5,value); }
+		void Out_ColumnId(OUT int32& value) { BindCol(6,value); }
+		template<int32 N> void Out_ColumnName(OUT WCHAR(&value)[N]) { BindCol(7,value); }
 	};
 
 	/*---------------------------------------------------------------------------------------------
@@ -108,8 +108,8 @@ namespace StoredProcedures
 	public:
 		GetDBStoredProcedures(DBConnection& conn) : DBBind(conn, QStoredProcedures) {}
 
-		template<int32 N> void Out_Name(OUT WCHAR(&value)[N]) { BindCol(value); }
-		void Out_Body(OUT WCHAR* value, int32 len) { BindCol(value, len); }
+		template<int32 N> void Out_Name(OUT WCHAR(&value)[N]) { BindCol(0,value); }
+		void Out_Body(OUT WCHAR* value, int32 len) { BindCol(1,value, len); }
 	};
 }
 

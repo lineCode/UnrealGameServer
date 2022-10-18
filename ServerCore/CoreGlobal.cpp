@@ -11,10 +11,10 @@
 ThreadManager* GThreadManager = nullptr;
 MemoryManager* GMemoryManager = nullptr;
 SendBufferManager* GSendBufferManager = nullptr;
-JobSerializer* GJobSerializerManager;
+JobSerializer* GJobSerializerManager = nullptr;
 JobTimer* GJobTimerManager = nullptr;
 DBConnectionPool* GDBConnectionPool = nullptr;
-ConsoleLog* GConsoleLogger;
+ConsoleLog* GConsoleLogger = nullptr;
 
 /*---------------------------------------------------------------------------------------------
 ¿Ã∏ß     : CoreGlobal

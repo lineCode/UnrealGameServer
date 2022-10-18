@@ -123,83 +123,97 @@
       "name": "ProcCreateAccount",
       "Param": [
         {
-          "name": "@name1",
+          "name": "@name",
           "type": "nvarchar(30)"
         }
       ],
-      "Body": "INSERT INTO [dbo].[Account]([AccountName]) VALUES((@name1))"
+      "Body": "SET NOCOUNT ON; INSERT INTO [dbo].[Account]([AccountName]) VALUES((@name))"
     },
     {
       "name": "ProcFindAccountid",
       "Param": [
         {
-          "name": "@name1",
+          "name": "@name",
           "type": "nvarchar(30)"
         }
       ],
-      "Body": "SELECT Accountid FROM [dbo].[Account] WHERE AccountName = (@name1)"
+      "Body": "SET NOCOUNT ON; SELECT Accountid FROM [dbo].[Account] WHERE AccountName = (@name)"
     },
     {
       "name": "ProcFindAccountPlayer",
       "Param": [
         {
-          "name": "@name1",
+          "name": "@name",
           "type": "nvarchar(30)"
         }
       ],
-      "Body": "SET NOCOUNT ON; SELECT playerid , AccountId , playername , objectid , Attack , Hp , Level , MaxHp , Speed , TotalExp FROM [dbo].[Player] WHERE AccountId = (SELECT Accountid FROM [dbo].[Account] WHERE AccountName = (@name1))"
+      "Body": "SET NOCOUNT ON; SELECT playerid , AccountId , playername , objectid , Attack , Hp , Level , MaxHp , Speed , TotalExp FROM [dbo].[Player] WHERE AccountId = (SELECT Accountid FROM [dbo].[Account] WHERE AccountName = (@name))"
     },
     {
       "name": "ProcPlayerCreate",
       "Param": [
         {
-          "name": "@name1",
+          "name": "@name",
           "type": "nvarchar(10)"
         },
         {
-          "name": "@accountid2",
+          "name": "@accountid",
           "type": "int"
         },
         {
-          "name": "@attack3",
+          "name": "@attack",
           "type": "int"
         },
         {
-          "name": "@hp4",
+          "name": "@hp",
           "type": "int"
         },
         {
-          "name": "@level5",
+          "name": "@level",
           "type": "int"
         },
         {
-          "name": "@maxhp6",
+          "name": "@maxhp",
           "type": "int"
         },
         {
-          "name": "@speed7",
-          "type": "float"
-        },
-        {
-          "name": "@totalexp8",
+          "name": "@speed",
           "type": "int"
         },
         {
-          "name": "@objectid9",
+          "name": "@totalexp",
+          "type": "int"
+        },
+        {
+          "name": "@objectid",
           "type": "int"
         }
       ],
-      "Body": "INSERT INTO [dbo].[Player]([playername] , [AccountId] , [Attack] , [Hp] , [Level] , [MaxHp] , [Speed] , [TotalExp] , [objectid]) VALUES((@name1) , (@accountid2) , (@attack3) , (@hp4) , (@level5) , (@maxhp6) , (@speed7) ,(@totalexp8) , (@objectid9))"
+      "Body": "SET NOCOUNT ON; INSERT INTO [dbo].[Player]([playername] , [AccountId] , [Attack] , [Hp] , [Level] , [MaxHp] , [Speed] , [TotalExp] , [objectid]) VALUES((@name) , (@accountid) , (@attack) , (@hp) , (@level) , (@maxhp) , (@speed) ,(@totalexp) , (@objectid))"
     },
     {
-      "name": "ProcFindPlayer",
+      "name": "ProcFindPlayerid",
       "Param": [
         {
-          "name": "@name1",
+          "name": "@name",
           "type": "nvarchar(30)"
         }
       ],
-      "Body": "SELECT playername FROM [dbo].[Player] WHERE playername = (@name1)"
+      "Body": "SET NOCOUNT ON; SELECT playerid FROM [dbo].[Player] WHERE playername = (@name)"
+    },
+    {
+      "name": "ProcPlayerChangeHp",
+      "Param": [
+        {
+          "name": "@hp",
+          "type": "int"
+        },
+        {
+          "name": "@playerid",
+          "type": "int"
+        }
+      ],
+      "Body": "SET NOCOUNT ON; UPDATE [dbo].[Player] SET [Hp] = (@hp) WHERE [playerid] = (@playerid)"
     }
   ]
 }

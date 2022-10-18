@@ -76,6 +76,9 @@
     <ClCompile Include="ConfigManager.cpp">
       <Filter>Data</Filter>
     </ClCompile>
+    <ClCompile Include="DBJobManager.cpp">
+      <Filter>DB</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -130,6 +133,9 @@
       <Filter>Data</Filter>
     </ClInclude>
     <ClInclude Include="ProcedureManager.h">
+      <Filter>DB</Filter>
+    </ClInclude>
+    <ClInclude Include="DBJobManager.h">
       <Filter>DB</Filter>
     </ClInclude>
   </ItemGroup>

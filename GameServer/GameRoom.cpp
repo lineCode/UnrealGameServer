@@ -15,6 +15,12 @@ GameRoom::GameRoom()
 	
 }
 
+/*---------------------------------------------------------------------------------------------
+이름     : GameRoom::Init
+용도     : 방을 초기화 하는 부분
+수정자   : 이민규
+수정날짜 : 2022.09.19
+----------------------------------------------------------------------------------------------*/
 void GameRoom::Init(int32 mapid)
 {
 	Monster * monster = ObjectManager::GetInstance().Add<Monster>(Protocol::MonsterType::SAVAROG);
@@ -168,6 +174,9 @@ void GameRoom::LeaveGame(int32 objectid)
 			// TODO : 자신에게 방에서 퇴장했다는 정보 전송
 			Protocol::SERVER_LEAVEGAME leavepacket;
 			player->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(leavepacket));
+
+			// TODO : 플레이어도 방에서 나가는 함수 호출
+			player->LeaveGame();
 
 			// TODO : 나의 방에서도 플레이어 제거
 			_Players.erase(objectid);

@@ -19,6 +19,13 @@ public:
 
 	void SetSession(shared_ptr<ServerSession> session) { _Session = session; }
 	shared_ptr<ServerSession> GetSession(){ return _Session; }
+
+	void SetPlayerDbId(int32 dbid) { _playerdbid = dbid; }
+	int32 GetPlayerDbId() { return _playerdbid; }
+
+	void LeaveGame();
+
 private:
 	shared_ptr<ServerSession> _Session = nullptr;
+	int32 _playerdbid = 0;
 };

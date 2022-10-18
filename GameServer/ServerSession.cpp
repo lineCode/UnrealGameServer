@@ -96,16 +96,17 @@ bool ServerSession::Login(Protocol::CLIENT_LOGIN* pkt)
 	pktlogin.set_loginsuccess(1);
 
 	ProcedureManager::FindAccountid findid(*dbConn);
-
 	int32 id;
-	findid.Param_Name1(accountname.GetWCHAR() , accountname.GetSize());
+
+	findid.Param_Name(accountname.GetWCHAR() , accountname.GetSize());
 	findid.Column_Accountid(id);
-	findid.Execute();
+	if (findid.Execute() == false)
+		return false;
 
 	while (findid.Fetch())
 	{
 		ProcedureManager::FindAccountPlayer accountplayer(*dbConn);
-		accountplayer.Param_Name1(accountname.GetWCHAR(), accountname.GetSize());
+		accountplayer.Param_Name(accountname.GetWCHAR(), accountname.GetSize());
 
 		accountplayer.Column_Playerid(playerid);
 		accountplayer.Column_AccountId(accountid);
@@ -118,13 +119,16 @@ bool ServerSession::Login(Protocol::CLIENT_LOGIN* pkt)
 		accountplayer.Column_Speed(speed);
 		accountplayer.Column_TotalExp(exp);
 
-		accountplayer.Execute();
+	
+		if (accountplayer.Execute() == false)
+			return false;
 
 		// TODO : 존재할 경우 캐릭터 정보를 보내줌
 
 		while (accountplayer.Fetch())
 		{
 			Protocol::LobbyPlayerInfo player;
+			player.set_playerdbid(playerid);
 			const auto stat = player.mutable_statinfo();
 			player.set_name(ConverString(username).GetCHAR());
 			player.set_objectid(objectid);
@@ -152,17 +156,19 @@ bool ServerSession::Login(Protocol::CLIENT_LOGIN* pkt)
 
 	// TODO : 존재하지 않을 경우 계정 생성
 	ProcedureManager::CreateAccount createaccount(*dbConn);
-	createaccount.Param_Name1(accountname.GetWCHAR(), accountname.GetSize());
-	createaccount.Execute();
+	createaccount.Param_Name(accountname.GetWCHAR(), accountname.GetSize());
+	if (createaccount.Execute() == false)
+		return false;
 
 	ProcedureManager::FindAccountid findaccountid(*dbConn);
-	findaccountid.Param_Name1(accountname.GetWCHAR(), accountname.GetSize());
+	findaccountid.Param_Name(accountname.GetWCHAR(), accountname.GetSize());
 	findaccountid.Column_Accountid(id);
-	findaccountid.Execute();
+	if (findaccountid.Execute() == false)
+		return false;
 
 	while (findaccountid.Fetch())
 	{
-		GConsoleLogger->WriteStdOut(Color::RED, L"[LOGIN_CREATE] : %s %d \n", accountname.GetWCHAR(), id);
+		GConsoleLogger->WriteStdOut(Color::GREEN, L"[ACCOUNT_CREATE] : %s %d \n", accountname.GetWCHAR(), id);
 		_Accountid = id;
 	}
 
@@ -194,19 +200,31 @@ bool ServerSession::CreatePlayer(Protocol::CLIENT_CREATEPLAYER* pkt)
 
 	ConverString playername(pkt->name());
 
-	playercreate.Param_Name1(playername.GetWCHAR(), playername.GetSize());
-	playercreate.Param_Accountid2(_Accountid);
-	playercreate.Param_Attack3(datastat.damage());
-	playercreate.Param_Hp4(datastat.hp());
-	playercreate.Param_Level5(datastat.level());
-	playercreate.Param_Maxhp6(datastat.maxhp());
-	playercreate.Param_Speed7(datastat.speed());
-	playercreate.Param_Totalexp8(0);
-	playercreate.Param_Objectid9(1);
+	playercreate.Param_Name(playername.GetWCHAR(), playername.GetSize());
+	playercreate.Param_Accountid(_Accountid);
+	playercreate.Param_Attack(datastat.damage());
+	playercreate.Param_Hp(datastat.hp());
+	playercreate.Param_Level(datastat.level());
+	playercreate.Param_Maxhp(datastat.maxhp());
+	playercreate.Param_Speed(datastat.speed());
+	playercreate.Param_Totalexp(0);
+	playercreate.Param_Objectid(1);
+	if (playercreate.Execute() == false)
+		return false;
 
-	playercreate.Execute();
+	ProcedureManager::FindAccountid findid(*dbConn);
+	int32 id;
+
+	findid.Param_Name(playername.GetWCHAR(), playername.GetSize());
+	findid.Column_Accountid(id);
+	if (findid.Execute() == false)
+		return false;
+
+	if (findid.Fetch() == -1)
+		return false;
 
 	Protocol::LobbyPlayerInfo player;
+	player.set_playerdbid(id);
 	player.mutable_statinfo()->CopyFrom(datastat);
 	player.set_name(pkt->name());
 	player.set_objectid(1);
@@ -219,7 +237,7 @@ bool ServerSession::CreatePlayer(Protocol::CLIENT_CREATEPLAYER* pkt)
 
 	SendCheck(ServerPacketManager::MakeSendBuffer(createpkt));
 
-	GConsoleLogger->WriteStdOut(Color::GREEN, L"[CREATE_PLAYER] : %s  \n", playername.GetWCHAR());
+	GConsoleLogger->WriteStdOut(Color::GREEN, L"[PLAYER_CREATE] : %s  \n", playername.GetWCHAR());
 	GDBConnectionPool->Push(dbConn);
 }
 
@@ -236,15 +254,16 @@ bool ServerSession::EnterPlayer(Protocol::CLIENT_ENTERGAME* pkt)
 		return false;
 
 	DBConnection* dbConn = GDBConnectionPool->Pop();
-	ProcedureManager::FindPlayer findplayer(*dbConn);
+	ProcedureManager::FindPlayerid findplayer(*dbConn);
 
-	WCHAR username[100];
+	int32 id;
 	ConverString playername(pkt->name());
 	
-	findplayer.Param_Name1(playername.GetWCHAR(), playername.GetSize());
-	findplayer.Column_Playername(username);
+	findplayer.Param_Name(playername.GetWCHAR(), playername.GetSize());
+	findplayer.Column_Playerid(id);
 
-	findplayer.Execute();
+	if (findplayer.Execute() == false)
+		return false;
 
 	while (findplayer.Fetch())
 	{
@@ -252,7 +271,7 @@ bool ServerSession::EnterPlayer(Protocol::CLIENT_ENTERGAME* pkt)
 
 		player->GetInfo().set_name(pkt->name());
 		player->SetStat(_LobbyPlayers[playername.GetWCHAR()].statinfo());
-
+		player->SetPlayerDbId(_LobbyPlayers[playername.GetWCHAR()].playerdbid());
 		Protocol::Vector vector;
 		vector.set_x(-250);
 		vector.set_y(-200);
