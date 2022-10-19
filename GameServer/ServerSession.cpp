@@ -9,6 +9,8 @@
 #include "RoomManager.h"
 #include "ServerPacketManager.h"
 #include "ConverString.h"
+#include "Inventory.h"
+#include "Item.h"
 
 #pragma region NetWork
 /*---------------------------------------------------------------------------------------------
@@ -269,6 +271,7 @@ bool ServerSession::EnterPlayer(Protocol::CLIENT_ENTERGAME* pkt)
 	{
 		Player * player = ObjectManager::GetInstance().Add<Player>(1);
 
+		// TODO  : 플레이어 정보를 가져옴
 		player->GetInfo().set_name(pkt->name());
 		player->SetStat(_LobbyPlayers[playername.GetWCHAR()].statinfo());
 		player->SetPlayerDbId(_LobbyPlayers[playername.GetWCHAR()].playerdbid());
@@ -280,11 +283,39 @@ bool ServerSession::EnterPlayer(Protocol::CLIENT_ENTERGAME* pkt)
 		rotator.set_roll(0);
 		rotator.set_pitch(0);
 		rotator.set_yaw(0);
-
 		player->SetVector(vector);
 		player->SetRotator(rotator);
 		SetMyPlayer(player);
 		player->SetSession(GetServerSession());
+
+		// TODO : 플레이어 아이템을 가져옴
+		ProcedureManager::FindPlayerItemList listitem(*dbConn);
+		Protocol::SERVER_ITEMLIST itempkt;
+		int32 dbid;
+		int32 gameid;
+		int32 count;
+		int32 slot;
+
+		listitem.Param_Playerid(id);
+		listitem.Column_DbId(dbid);
+		listitem.Column_Gameid(gameid);
+		listitem.Column_Count(count);
+		listitem.Column_Slot(slot);
+
+		listitem.Execute();
+		while(listitem.Fetch())
+		{
+			Item* item = Item::MakeItem(dbid, gameid ,count);
+			if (item == nullptr)
+				break;
+
+			player->GetInventory()->Add(item);
+			itempkt.add_items()->CopyFrom(item->Getinfo());
+		}
+	
+		SendCheck(ServerPacketManager::MakeSendBuffer(itempkt));
+
+		// TODO : 방에 입장
 		const auto room = RoomManager::GetInstance().Find(1);
 		room->PushAsync(&GameRoom::EnterGame , static_cast<GameObject*>(player));
 

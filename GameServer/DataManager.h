@@ -1,6 +1,5 @@
 #pragma once
 
-#include <fstream>
 #include <format>
 #include "ConfigManager.h"
 #include "ContentsData.h"
@@ -22,6 +21,7 @@
 
     Protocol::StatInfo GetPlayerStatData(int32 level) { return _PlayerStatDatas[level]; }
  	SkillStat GetSkillStatData(int32 id) { return _SkillStatDatas[id]; }
+ 	ItemData * GetItemData(int32 gameid) {if (_ItemDatas.contains(gameid) == false)return nullptr;return _ItemDatas[gameid];}
 
 private:
     template <class T, class Key, class Value>
@@ -34,6 +34,7 @@ private:
 
  	GhashMap<int32, Protocol::StatInfo> _PlayerStatDatas;
  	GhashMap<int32, SkillStat> _SkillStatDatas;
+ 	GhashMap<int32, ItemData*> _ItemDatas;
  };
 
  /*---------------------------------------------------------------------------------------------

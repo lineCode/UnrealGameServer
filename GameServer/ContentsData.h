@@ -19,18 +19,18 @@
 #pragma region PlayerStat
 
  /*---------------------------------------------------------------------------------------------
- 이름     : playerStatData
+ 이름     : playerStatLoader
  용도     : Json 오브젝트를 PlayerStat에 맞게 데이터 직렬화 후 GHashMap을 만들어 반환하기 위한 객체
  수정자   : 이민규
  수정날짜 : 2022.10.3
  ----------------------------------------------------------------------------------------------*/
- class playerStatData : public ILoaderData<int32, Protocol::StatInfo>
+ class playerStatLoader : public ILoaderData<int32, Protocol::StatInfo>
  {
  public:
- 	playerStatData(rapidjson::Document & document) : _Document(document) {}
+ 	playerStatLoader(rapidjson::Document & document) : _Document(document) {}
 
  	/*---------------------------------------------------------------------------------------------
- 	이름     : playerStatData::MakeTMap
+ 	이름     : playerStatLoader::MakeTMap
  	용도     : Json 오브젝트를 PlayerStat에 맞게 데이터 직렬화 후 GHashMap을 만들어 반환하는 함수
  	수정자   : 이민규
  	수정날짜 : 2022.10.3
@@ -92,18 +92,18 @@
  };
 
  /*---------------------------------------------------------------------------------------------
- 이름     : SkillStatData
+ 이름     : SkillStatLoader
  용도     : Json 오브젝트를 SkillStat에 맞게 데이터 직렬화 후 GHashMap을 만들어 반환하기 위한 객체
  수정자   : 이민규
  수정날짜 : 2022.10.2
  ----------------------------------------------------------------------------------------------*/
- class SkillStatData : public ILoaderData<int32, SkillStat>
+ class SkillStatLoader : public ILoaderData<int32, SkillStat>
  {
  public:
-     SkillStatData(rapidjson::Document& document) : _Document(document) {}
+     SkillStatLoader(rapidjson::Document& document) : _Document(document) {}
 
      /*---------------------------------------------------------------------------------------------
-     이름     : SkillStatData::MakeTMap
+     이름     : SkillStatLoader::MakeTMap
      용도     : Json 오브젝트를 SkillStat에 맞게 데이터 직렬화 후 GHashMap을 만들어 반환하는 함수
      수정자   : 이민규
      수정날짜 : 2022.10.2
@@ -131,4 +131,109 @@
  private:
      rapidjson::Document& _Document;
  };
-#pragma endregion 
+#pragma endregion
+
+#pragma region ItemData
+
+struct ItemData
+{
+	int32 GameID;
+    string name;
+	Protocol::ItemType itemType;
+};
+
+struct WeaponData : public ItemData
+{
+    Protocol::WeaponType weaponType;
+    int32 damage;
+};
+
+struct ArmorData : public ItemData
+{
+    Protocol::ArmorType ArmorType;
+    int32 defence;
+};
+ 
+struct ConsumableData : public ItemData
+{
+    Protocol::ConsumableType ConsumableType;
+    int32 maxcount;
+};
+
+/*---------------------------------------------------------------------------------------------
+이름     : ItemLoader
+용도     : Json 오브젝트를 Itemdata에 맞게 데이터 직렬화 후 GHashMap을 만들어 반환하기 위한 객체
+수정자   : 이민규
+수정날짜 : 2022.10.19
+----------------------------------------------------------------------------------------------*/
+ class ItemLoader : public ILoaderData<int32, ItemData*>
+ {
+ public:
+     ItemLoader(rapidjson::Document& document) : _Document(document) {}
+
+     Glist<WeaponData*> weapons;
+     Glist<ArmorData*> armors;
+     Glist<ConsumableData*> consumables;
+
+     /*---------------------------------------------------------------------------------------------
+     이름     : playerStatLoader::MakeTMap
+     용도     : Json 오브젝트를 ItemData에 맞게 데이터 직렬화 후 GHashMap을 만들어 반환하는 함수
+     수정자   : 이민규
+     수정날짜 : 2022.10.19
+     ----------------------------------------------------------------------------------------------*/
+     GhashMap<int32, ItemData*> MakeGHashMap() override
+     {
+         GhashMap<int32, ItemData*> hashmap;
+
+         const rapidjson::Value& JsonValues = _Document["weapons"];
+         for (auto& JsonValue : JsonValues.GetArray())
+         {
+             WeaponData * weapondata = Gnew<WeaponData>();
+             weapondata->GameID = JsonValue["gameid"].GetInt();
+             weapondata->name = JsonValue["name"].GetString();
+             weapondata->itemType = Protocol::ItemType::ITEM_TYPE_WEAPON;
+             weapondata->damage = JsonValue["damage"].GetInt();
+
+             weapons.push_back(weapondata);
+         }
+
+         const rapidjson::Value& JsonValues2 = _Document["armors"];
+         for (auto& JsonValue : JsonValues2.GetArray())
+         {
+             ArmorData * armordata = Gnew<ArmorData>();
+             armordata->GameID = JsonValue["gameid"].GetInt();
+             armordata->name = JsonValue["name"].GetString();
+             armordata->itemType = Protocol::ItemType::ITEM_TYPE_ARMOR;
+             armordata->defence = JsonValue["defence"].GetInt();
+
+             armors.push_back(armordata);
+         }
+
+         const rapidjson::Value& JsonValues3 = _Document["consumables"];
+         for (auto& JsonValue : JsonValues3.GetArray())
+         {
+             ConsumableData * consumabledata = Gnew<ConsumableData>();
+             consumabledata->GameID = JsonValue["gameid"].GetInt();
+             consumabledata->name = JsonValue["name"].GetString();
+             consumabledata->itemType = Protocol::ItemType::ITEM_TYPE_CONSUMABLE;
+             consumabledata->maxcount = JsonValue["maxcount"].GetInt();
+
+             consumables.push_back(consumabledata);
+         }
+
+        for(auto weapon : weapons)
+            hashmap.insert({ weapon->GameID,  weapon });
+
+        for (auto armor : armors)
+            hashmap.insert({ armor->GameID, armor });
+
+        for (auto consumable : consumables)
+            hashmap.insert({ consumable->GameID, consumable });
+        
+         return hashmap;
+     }
+
+ private:
+     rapidjson::Document& _Document;
+ };
+#pragma endregion

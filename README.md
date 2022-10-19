@@ -1,6 +1,6 @@
 # GameServer
 > Since 2022.08.11
-## 기본 서버 패치노트
+## 서버 코어 패치노트
 - 2022.08.11      
 MemoryPool 추가  
 MemoryManager 추가  
@@ -96,6 +96,10 @@ Json 파일 파싱 후 Procedure 자동화 추가
 - 2022.10.16  
 ConverString 추가
 
+- 2022.10.19  
+GetSetMaker 추가  
+ProtoGetSetMaker 추가
+
 ## 언리얼 서버 패치노트
 - 2022.09.11   
 InGame 로직들 추가  
@@ -146,3 +150,8 @@ Player DB 연동 추가
 - 2022.10.18  
 DBJobManager 추가  
 Player Stat DB 연동 추가
+
+- 2022.10.19  
+Inventory 추가  
+Item 추가  
+Player Item DB 연동 추가

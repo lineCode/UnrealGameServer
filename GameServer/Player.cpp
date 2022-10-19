@@ -1,15 +1,18 @@
 #include "pch.h"
 #include "Player.h"
+#include "Inventory.h"
 #include "DBJobManager.h"
 
 Player::Player()
 {
 	SetObjectType(Protocol::ObjectType::PLAYER);
+	_Inventory = Gnew<Inventory>();
 }
 
 Player::~Player()
 {
 	SetSession(nullptr);
+	Gdelete(_Inventory);
 }
 
 /*---------------------------------------------------------------------------------------------

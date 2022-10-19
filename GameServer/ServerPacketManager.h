@@ -21,19 +21,20 @@ enum : uint16
 	PACKET_SERVER_LOGIN = 1001,
 	PACKET_SERVER_CREATEPLAYER = 1002,
 	PACKET_SERVER_ENTERGAME = 1003,
-	PACKET_SERVER_LEAVEGAME = 1004,
-	PACKET_SERVER_SPAWN = 1005,
-	PACKET_SERVER_DESTROY = 1006,
-	PACKET_SERVER_MOVE = 1007,
-	PACKET_SERVER_SKILL = 1008,
-	PACKET_SERVER_CHANGEHP = 1009,
-	PACKET_SERVER_DIE = 1010,
-	PACKET_CLIENT_LOGIN = 1011,
-	PACKET_CLIENT_CREATEPLAYER = 1012,
-	PACKET_CLIENT_ENTERGAME = 1013,
-	PACKET_CLIENT_MOVE = 1014,
-	PACKET_CLIENT_SKILL = 1015,
-	PACKET_CLIENT_DAMAGE = 1016,
+	PACKET_SERVER_ITEMLIST = 1004,
+	PACKET_SERVER_LEAVEGAME = 1005,
+	PACKET_SERVER_SPAWN = 1006,
+	PACKET_SERVER_DESTROY = 1007,
+	PACKET_SERVER_MOVE = 1008,
+	PACKET_SERVER_SKILL = 1009,
+	PACKET_SERVER_CHANGEHP = 1010,
+	PACKET_SERVER_DIE = 1011,
+	PACKET_CLIENT_LOGIN = 1012,
+	PACKET_CLIENT_CREATEPLAYER = 1013,
+	PACKET_CLIENT_ENTERGAME = 1014,
+	PACKET_CLIENT_MOVE = 1015,
+	PACKET_CLIENT_SKILL = 1016,
+	PACKET_CLIENT_DAMAGE = 1017,
 };
 
 /*---------------------------------------------------------------------------------------------
@@ -84,6 +85,7 @@ public:
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_LOGIN& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_LOGIN); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_CREATEPLAYER& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_CREATEPLAYER); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_ENTERGAME& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_ENTERGAME); }
+	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_ITEMLIST& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_ITEMLIST); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_LEAVEGAME& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_LEAVEGAME); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_SPAWN& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_SPAWN); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_DESTROY& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_DESTROY); }

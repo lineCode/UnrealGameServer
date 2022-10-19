@@ -138,6 +138,24 @@ namespace ProcedureManager
     	int32 _playerid = {};
     };
 
+    /*---------------------------------------------------------------------------------------------
+    			  FindPlayerItemList (Param : 1 Column : 4)
+    ----------------------------------------------------------------------------------------------*/
+    class FindPlayerItemList : public DBBind<1,4>
+    {
+    public:
+    	FindPlayerItemList(DBConnection& conn) : DBBind(conn, L"{CALL dbo.ProcFindPlayerItemList(?)}") { }
+    	void Param_Playerid(int32& v) { BindParam(0, v); };
+    	void Param_Playerid(int32&& v) { _playerid = std::move(v); BindParam(0, _playerid); };
+    	void Column_DbId(OUT int32& v) { BindCol(0, v); };
+    	void Column_Gameid(OUT int32& v) { BindCol(1, v); };
+    	void Column_Count(OUT int32& v) { BindCol(2, v); };
+    	void Column_Slot(OUT int32& v) { BindCol(3, v); };
+
+    private:
+    	int32 _playerid = {};
+    };
+
 
      
 };

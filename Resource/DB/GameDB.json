@@ -115,6 +115,59 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Item",
+      "Column": [
+        {
+          "name": "dbId",
+          "type": "int",
+          "notnull": false,
+          "identity": "1,1"
+        },
+        {
+          "name": "gameid",
+          "type": "int",
+          "notnull": false
+        },
+        {
+          "name": "count",
+          "type": "int",
+          "notnull": false
+        },
+        {
+          "name": "slot",
+          "type": "int",
+          "notnull": false
+        },
+        {
+          "name": "ownerid",
+          "type": "int",
+          "notnull": true
+        }
+      ],
+      "Index": [
+        {
+          "type": "clustered",
+          "PrimaryKey": true,
+          "UniqueKey": false,
+          "Column": [
+            {
+              "name": "dbId"
+            }
+          ]
+        },
+        {
+          "type": "nonclustered",
+          "PrimaryKey": false,
+          "UniqueKey": false,
+          "Column": [
+            {
+              "name": "ownerid"
+            }
+          ]
+        }
+      ]
     }
   ],
 
@@ -214,6 +267,16 @@
         }
       ],
       "Body": "SET NOCOUNT ON; UPDATE [dbo].[Player] SET [Hp] = (@hp) WHERE [playerid] = (@playerid)"
+    },
+    {
+      "name": "ProcFindPlayerItemList",
+      "Param": [
+        {
+          "name": "@playerid",
+          "type": "int"
+        }
+      ],
+      "Body": "SET NOCOUNT ON;SELECT dbId , gameid , count , slot FROM [dbo].[Item] WHERE [ownerid] = (@playerid)"
     }
   ]
 }

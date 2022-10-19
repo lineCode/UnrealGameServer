@@ -53,3 +53,24 @@
 		__analysis_assume(expr);	\
 	}								\
 }
+
+/*-----------------------------------------------------------------------------
+이름     : GetSetMaker Macro
+용도     : 함수의 GetSet을 만들어주는 매크로 (반환형 , 함수이름 , 맴버변수)
+수정자   : 이민규
+수정날짜 : 2022.10.19
+------------------------------------------------------------------------------*/
+#define GetSetMaker(returntype , funcname , valuename)\
+returntype Get##funcname() {return valuename;} \
+void Set##funcname(returntype data) {valuename = data;}
+
+/*-----------------------------------------------------------------------------
+이름     : ProtoGetSetMaker Macro
+용도     : 프로토퍼버의 함수의 GetSet을 만들어주는 매크로
+			(반환형 , 함수이름 , Get 함수명 , Set 함수명 )
+수정자   : 이민규
+수정날짜 : 2022.10.19
+------------------------------------------------------------------------------*/
+#define ProtoGetSetMaker(returntype , funcname , getvalue , setvalue)\
+returntype Get##funcname() {return getvalue();} \
+void Set##funcname(returntype data) {setvalue(data);} 

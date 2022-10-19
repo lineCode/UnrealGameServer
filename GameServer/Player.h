@@ -4,6 +4,7 @@
 
 class GameRoom;
 class ServerSession;
+class Inventory;
 
 /*---------------------------------------------------------------------------------------------
 ¿Ã∏ß     : Player
@@ -17,15 +18,14 @@ public:
 	Player();
 	virtual ~Player() override;
 
-	void SetSession(shared_ptr<ServerSession> session) { _Session = session; }
-	shared_ptr<ServerSession> GetSession(){ return _Session; }
-
-	void SetPlayerDbId(int32 dbid) { _playerdbid = dbid; }
-	int32 GetPlayerDbId() { return _playerdbid; }
+	GetSetMaker(shared_ptr<ServerSession>, Session, _Session);
+	GetSetMaker(int32, PlayerDbId, _playerdbid);
+	GetSetMaker(Inventory*, Inventory, _Inventory);
 
 	void LeaveGame();
 
 private:
 	shared_ptr<ServerSession> _Session = nullptr;
 	int32 _playerdbid = 0;
+	Inventory* _Inventory = nullptr;
 };

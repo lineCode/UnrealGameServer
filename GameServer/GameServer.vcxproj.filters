@@ -22,6 +22,9 @@
     <Filter Include="Server">
       <UniqueIdentifier>{2a2d4bcc-84c0-462e-9d95-96d1d81558a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Item">
+      <UniqueIdentifier>{c32f8cc7-a52a-462f-829f-681927ff0299}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -78,6 +81,12 @@
     </ClCompile>
     <ClCompile Include="DBJobManager.cpp">
       <Filter>DB</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Inventory.cpp">
+      <Filter>Item</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +146,12 @@
     </ClInclude>
     <ClInclude Include="DBJobManager.h">
       <Filter>DB</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Inventory.h">
+      <Filter>Item</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

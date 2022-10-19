@@ -40,10 +40,14 @@
  void DataManager::LodaData()
  {
  	// TODO : PlayerStat 데이터 불러오는 부분
-     _PlayerStatDatas = LoadJson<playerStatData, int32, Protocol::StatInfo>("StatData").MakeGHashMap();
+     _PlayerStatDatas = LoadJson<playerStatLoader, int32, Protocol::StatInfo>("StatData").MakeGHashMap();
 
      // TODO : SkillStat 데이터 불러오는 부분
-     _SkillStatDatas = LoadJson<SkillStatData, int32, SkillStat>("SkillData").MakeGHashMap(); 
+     _SkillStatDatas = LoadJson<SkillStatLoader, int32, SkillStat>("SkillData").MakeGHashMap();
+
+     // TODO : Item 데이터 불러오는 부분
+     _ItemDatas = LoadJson<ItemLoader, int32, ItemData*>("ItemData").MakeGHashMap();
+
  }
 
 

@@ -1,0 +1,40 @@
+{
+  "weapons": [
+    {
+      "gameid": 1,
+      "name": "°ß½À»ýÀÇ °Ë",
+      "weaponType": "sword",
+      "damage": 10
+    },
+    {
+      "gameid": 2,
+      "name": "°ß½À»ýÀÇ È°",
+      "weaponType": "bow",
+      "damage": 5
+    }
+  ],
+
+  "armors": [
+    {
+      "gameid": 100,
+      "name": "»À °©¿Ê",
+      "armorType": "armor",
+      "defence": 15
+    },
+    {
+      "gameid": 101,
+      "name": "»À Åõ±¸",
+      "weaponType": "helmet",
+      "defence": 5
+    }
+  ],
+
+  "consumables": [
+    {
+      "gameid": 200,
+      "name": "HP ¹°¾à",
+      "consumableType": "potion",
+      "maxcount": 99
+    }
+  ]
+}

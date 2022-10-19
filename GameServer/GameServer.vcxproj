@@ -196,6 +196,8 @@ CALL $(SolutionDir)\Common\Procedure\ProcedureCreate</Command>
     </ClCompile>
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameServer.cpp" />
+    <ClCompile Include="Inventory.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="ObjectUtils.cpp" />
     <ClCompile Include="pch.cpp">
@@ -231,6 +233,8 @@ CALL $(SolutionDir)\Common\Procedure\ProcedureCreate</Command>
     <ClInclude Include="DBJobManager.h" />
     <ClInclude Include="Enum.pb.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Inventory.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="ObjectUtils.h" />
     <ClInclude Include="pch.h" />

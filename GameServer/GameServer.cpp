@@ -8,7 +8,6 @@
 #include "ThreadManager.h"
 #include "ServerPacketManager.h"
 #include "DBConnectionPool.h"
-#include "DBJobManager.h"
 #include "JsonDBSynchronizer.h"
 #include "ProcedureManager.h"
 
