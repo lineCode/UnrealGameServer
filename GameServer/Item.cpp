@@ -6,9 +6,9 @@
 이름     : Item::MakeItem
 용도     : 아이템 번호에 맞게 아이템을 생성하고 세팅해주는 함수
 수정자   : 이민규
-수정날짜 : 2022.10.19
+수정날짜 : 2022.10.23
 ----------------------------------------------------------------------------------------------*/
-Item* Item::MakeItem(int32 dbid, int32 gameid , int32 count)
+Item* Item::MakeItem(int32 dbid, int32 gameid , int32 count , int32 slot)
 {
 	auto * data = DataManager::GetInstacnce()->GetItemData(gameid);
 	if (data == nullptr)
@@ -39,6 +39,7 @@ Item* Item::MakeItem(int32 dbid, int32 gameid , int32 count)
 	if (item == nullptr)
 		return nullptr;
 
+	item->SetSlot(slot);
 	item->SetItemDbID(dbid);
 	item->SetCount(count);
 

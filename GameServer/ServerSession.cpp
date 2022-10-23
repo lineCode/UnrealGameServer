@@ -305,7 +305,7 @@ bool ServerSession::EnterPlayer(Protocol::CLIENT_ENTERGAME* pkt)
 		listitem.Execute();
 		while(listitem.Fetch())
 		{
-			Item* item = Item::MakeItem(dbid, gameid ,count);
+			Item* item = Item::MakeItem(dbid, gameid ,count ,slot);
 			if (item == nullptr)
 				break;
 

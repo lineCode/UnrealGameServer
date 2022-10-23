@@ -2,39 +2,44 @@
   "weapons": [
     {
       "gameid": 1,
-      "name": "°ß½À»ýÀÇ °Ë",
+      "name" : "°ß½À»ýÀÇ °Ë",
       "weaponType": "sword",
-      "damage": 10
+      "damage": 10,
+      "ItemPath" : "Texture2D'/Game/Resource/item1.item1'"
     },
     {
       "gameid": 2,
-      "name": "°ß½À»ýÀÇ È°",
+      "name" : "°ß½À»ýÀÇ È°",
       "weaponType": "bow",
-      "damage": 5
+      "damage": 5,
+      "ItemPath" : "Texture2D'/Game/Resource/item2.item2'"
     }
   ],
 
   "armors": [
     {
       "gameid": 100,
-      "name": "»À °©¿Ê",
+      "name" : "»À °©¿Ê",
       "armorType": "armor",
-      "defence": 15
+      "defence": 15,
+      "ItemPath" : "Texture2D'/Game/Resource/item3.item3'"
     },
     {
       "gameid": 101,
-      "name": "»À Åõ±¸",
+      "name" : "»À Åõ±¸",
       "weaponType": "helmet",
-      "defence": 5
+      "defence": 5,
+      "ItemPath" : "Texture2D'/Game/Resource/item4.item4'"
     }
   ],
 
   "consumables": [
     {
       "gameid": 200,
-      "name": "HP ¹°¾à",
+      "name" : "HP ¹°¾à",
       "consumableType": "potion",
-      "maxcount": 99
+      "maxcount": 99,
+      "ItemPath" : "Texture2D'/Game/Resource/item5.item5'"
     }
   ]
 }

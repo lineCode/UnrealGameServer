@@ -155,3 +155,6 @@ Player Stat DB 연동 추가
 Inventory 추가  
 Item 추가  
 Player Item DB 연동 추가
+
+- 2022.10.23  
+Player Inventory DB 연동 추가 
