@@ -277,6 +277,28 @@
         }
       ],
       "Body": "SET NOCOUNT ON;SELECT dbId , gameid , count , slot FROM [dbo].[Item] WHERE [ownerid] = (@playerid)"
+    },
+    {
+      "name": "ProcCreateItemInventory",
+      "Param": [
+        {
+          "name": "@itemid",
+          "type": "int"
+        },
+        {
+          "name": "@ownerid",
+          "type": "int"
+        },
+        {
+          "name": "@count",
+          "type": "int"
+        },
+        {
+          "name": "@slot",
+          "type": "int"
+        }
+      ],
+      "Body": "SET NOCOUNT ON; INSERT INTO [dbo].[Item]([gameid] , [ownerid] , [count] , [slot]) VALUES((@itemid) , (@ownerid) , (@count) , (@slot)) SELECT dbId FROM [dbo].[Item] WHERE dbId = scope_identity()"
     }
   ]
 }

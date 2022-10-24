@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ContentsData.h"
 #include "GameObject.h"
 
 /*---------------------------------------------------------------------------------------------
@@ -12,16 +13,22 @@ class Monster : public GameObject
 {
 public:
 	Monster();
-
 	void Update() override;
+
+	void Init(int32 monsterid);
+	GetSetMaker(int32, Monsterid, _Monsterid);
 
 protected:
 	virtual void UpdateIdle();
 	virtual void UpdateMove();
 	virtual void UpdateSkill();
 	virtual void UpdateDead();
+	virtual void OnDead(GameObject* attacker) override;
+
+	RewardData * GetRandomReward();
 
 	void BroadCastMove();
+
 protected:
 	class Player* _Target = nullptr;
 
@@ -32,6 +39,7 @@ protected:
 	int32 _SearchDistance = 3000;
 	int32 _ChaseDistance = 7000;
 	int32 _SkillRange = 300;
-	
+	int32 _Monsterid = 0;
+
 };
 

@@ -3,6 +3,12 @@
 
 #include "Item.h"
 
+Inventory::Inventory()
+{
+	for (int32 i = 0; i < 20; i++)
+		slots[i] = true;
+}
+
 Inventory::~Inventory()
 {
 	for (auto& item : _Items)
@@ -17,6 +23,7 @@ Inventory::~Inventory()
 ----------------------------------------------------------------------------------------------*/
 void Inventory::Add(Item* item)
 {
+	slots[item->GetSlot()] = false;
 	_Items.insert({ item->GetItemDbID() , item });
 }
 
@@ -53,4 +60,22 @@ Item* Inventory::Find(function<bool(Item*)> condition)
 	}
 
 	return nullptr;
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : Inventory::GetEmptySlot
+용도     : 인벤토리의 슬롯중 빈슬롯을 알려주는 함수
+           Full 일 경우 -1 반환
+수정자   : 이민규
+수정날짜 : 2022.10.24
+----------------------------------------------------------------------------------------------*/
+int32 Inventory::GetEmptySlot()
+{
+	for(int i = 0; i < 20; i++)
+	{
+		if (slots[i])
+			return i;
+	}
+
+	return -1;
 }

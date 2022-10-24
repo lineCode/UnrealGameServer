@@ -61,6 +61,7 @@ void GameObject::OnDead(GameObject* attacker)
 	room->PushAsync(&GameRoom::LeaveGame, GetId());
 
 	// TODO : 추후 몬스터 리스폰 전부 변경
+
 	std::random_device rd;
 
 	std::mt19937_64 gen(rd());
@@ -68,8 +69,9 @@ void GameObject::OnDead(GameObject* attacker)
 	std::uniform_int_distribution dis(-1000, 0);
 
 	Monster* monster = ObjectManager::GetInstance().Add<Monster>(Protocol::MonsterType::SAVAROG);
+	monster->Init(1);
+
 	Protocol::Vector vector;
-	monster->SetStat(DataManager::GetInstacnce()->GetPlayerStatData(3));
 	vector.set_x(dis(rd));
 	vector.set_y(dis(rd));
 	vector.set_z(97.6f);
@@ -77,7 +79,6 @@ void GameObject::OnDead(GameObject* attacker)
 
 	room->PushAsync(&GameRoom::EnterGame, static_cast<GameObject*>(monster));
 }
-
 
 void GameObject::Update()
 {

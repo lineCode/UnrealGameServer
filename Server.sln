@@ -24,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{EACE307D-5
 	ProjectSection(SolutionItems) = preProject
 		Binary\Debug\config.json = Binary\Debug\config.json
 		Resource\Data\ItemData.json = Resource\Data\ItemData.json
+		Resource\Data\MonsterData.json = Resource\Data\MonsterData.json
 		Resource\Data\SkillData.json = Resource\Data\SkillData.json
 		Resource\Data\StatData.json = Resource\Data\StatData.json
 	EndProjectSection

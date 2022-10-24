@@ -32,6 +32,8 @@ void WorkProcess(shared_ptr<ServerManager> & server)
 
 int main()
 {
+	srand((unsigned int)time(NULL));
+
 	ConfigManager::GetInstacnce()->LoadConfig();
 	DataManager::GetInstacnce()->LodaData();
 

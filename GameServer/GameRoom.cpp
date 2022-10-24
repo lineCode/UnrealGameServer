@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "GameRoom.h"
-#include "DataManager.h"
+#include <format>
 #include "Player.h"
 #include "Monster.h"
 #include "Projectile.h"
@@ -24,8 +24,9 @@ GameRoom::GameRoom()
 void GameRoom::Init(int32 mapid)
 {
 	Monster * monster = ObjectManager::GetInstance().Add<Monster>(Protocol::MonsterType::SAVAROG);
+	monster->Init(1);
+
 	Protocol::Vector vector;
-	monster->SetStat(DataManager::GetInstacnce()->GetPlayerStatData(3));
 	vector.set_x(-2200.f);
 	vector.set_y(-150.f);
 	vector.set_z(97.6f);
@@ -236,7 +237,6 @@ void GameRoom::PlayerMove(Player* player, Protocol::CLIENT_MOVE pkt)
 		return;
 
 	// TODO : 서버에서 검증 필요 추가 예정
-	printf("[CLIENT_MOVE_FUNC_ID[%d]] : %.1lf %.1lf %.1lf\n", player->GetInfo().objectid(), pkt.vector().x(), pkt.vector().y(), pkt.vector().z());
 
 	// TODO : 일단 서버에서 먼저 좌표 및 방향 이동
 	player->SetVector(pkt.vector());

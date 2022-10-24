@@ -472,7 +472,7 @@ void JsonDBSynchronizer::CompareDBModel()
 			if (_jsonRemovedTables.find(dbTable->_name) != _jsonRemovedTables.end())
 			{
 				// TODO : DB에는 존재하지만 JSON에는 없는 경우라서 테이블 삭제
-				GConsoleLogger->WriteStdOut(Color::YELLOW, L"Removing Table : [dbo].[%s]\n", dbTable->_name.c_str());
+				GConsoleLogManager->WriteStdOut(Color::YELLOW, L"Removing Table : [dbo].[%s]\n", dbTable->_name.c_str());
 				_updateQueries[QueryStep::DropTable].push_back(DBModel::Helpers::Format(L"DROP TABLE [dbo].[%s]", dbTable->_name.c_str()));
 			}
 		}
@@ -495,7 +495,7 @@ void JsonDBSynchronizer::CompareDBModel()
 		}
 
 		//TODO : JSON에 테이블을 DB에 생성
-		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Table : [dbo].[%s]\n", xmlTable->_name.c_str());
+		GConsoleLogManager->WriteStdOut(Color::YELLOW, L"Creating Table : [dbo].[%s]\n", xmlTable->_name.c_str());
 		_updateQueries[QueryStep::CreateTable].push_back(DBModel::Helpers::Format(L"CREATE TABLE [dbo].[%s] (%s)", xmlTable->_name.c_str(), columnsStr.c_str()));
 
 		//TODO : DB에 생성된 JSON 테이블 컬럼을 수정
@@ -514,7 +514,7 @@ void JsonDBSynchronizer::CompareDBModel()
 		//TODO : DB에 생성된 JSON 테이블 인덱스를 수정
 		for (shared_ptr<DBModel::Index>& xmlIndex : xmlTable->_indexes)
 		{
-			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", xmlTable->_name.c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetClusteredText().c_str(), xmlIndex->GetConstraintName().c_str());
+			GConsoleLogManager->WriteStdOut(Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", xmlTable->_name.c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetClusteredText().c_str(), xmlIndex->GetConstraintName().c_str());
 			if (xmlIndex->_primaryKey || xmlIndex->_uniqueConstraint)
 			{
 				_updateQueries[QueryStep::CreateIndex].push_back(DBModel::Helpers::Format(
@@ -568,7 +568,7 @@ void JsonDBSynchronizer::CompareTables(shared_ptr<DBModel::Table> dbTable, share
 		else
 		{
 			// TODO : Constrain이 있을 시 CONSTRAIN을 삭제한다
-			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Dropping Column : [%s].[%s]\n", dbTable->_name.c_str(), dbColumn->_name.c_str());
+			GConsoleLogManager->WriteStdOut(Color::YELLOW, L"Dropping Column : [%s].[%s]\n", dbTable->_name.c_str(), dbColumn->_name.c_str());
 			if (dbColumn->_defaultConstraintName.empty() == false)
 				_updateQueries[QueryStep::DropColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] DROP CONSTRAINT [%s]", dbTable->_name.c_str(), dbColumn->_defaultConstraintName.c_str()));
 
@@ -585,7 +585,7 @@ void JsonDBSynchronizer::CompareTables(shared_ptr<DBModel::Table> dbTable, share
 		newColumn._nullable = true;
 
 		// TODO : JSON 컬럼을 추가한다
-		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Adding Column : [%s].[%s]\n", dbTable->_name.c_str(), xmlColumn->_name.c_str());
+		GConsoleLogManager->WriteStdOut(Color::YELLOW, L"Adding Column : [%s].[%s]\n", dbTable->_name.c_str(), xmlColumn->_name.c_str());
 		_updateQueries[QueryStep::AddColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD %s %s",
 			dbTable->_name.c_str(), xmlColumn->_name.c_str(), xmlColumn->_typeText.c_str()));
 
@@ -627,7 +627,7 @@ void JsonDBSynchronizer::CompareTables(shared_ptr<DBModel::Table> dbTable, share
 		else
 		{
 			// TODO : 인덱스에 값이 다르거나 XML에는 없고 DB에 있는 경우 제거한다
-			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Dropping Index : [%s] [%s] %s %s\n", dbTable->_name.c_str(), dbIndex->_name.c_str(), dbIndex->GetKeyText().c_str(), dbIndex->GetClusteredText().c_str());
+			GConsoleLogManager->WriteStdOut(Color::YELLOW, L"Dropping Index : [%s] [%s] %s %s\n", dbTable->_name.c_str(), dbIndex->_name.c_str(), dbIndex->GetKeyText().c_str(), dbIndex->GetClusteredText().c_str());
 			if (dbIndex->_primaryKey || dbIndex->_uniqueConstraint)
 				_updateQueries[QueryStep::DropIndex].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] DROP CONSTRAINT [%s]", dbTable->_name.c_str(), dbIndex->_name.c_str()));
 			else
@@ -639,7 +639,7 @@ void JsonDBSynchronizer::CompareTables(shared_ptr<DBModel::Table> dbTable, share
 	for (auto& mapIt : xmlIndexMap)
 	{
 		shared_ptr<DBModel::Index> xmlIndex = mapIt.second;
-		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", dbTable->_name.c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetClusteredText().c_str(), xmlIndex->GetConstraintName().c_str());
+		GConsoleLogManager->WriteStdOut(Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", dbTable->_name.c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetClusteredText().c_str(), xmlIndex->GetConstraintName().c_str());
 		if (xmlIndex->_primaryKey || xmlIndex->_uniqueConstraint)
 		{
 			_updateQueries[QueryStep::CreateIndex].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] %s %s (%s)",
@@ -678,7 +678,7 @@ void JsonDBSynchronizer::CompareColumns(shared_ptr<DBModel::Table> dbTable, shar
 	// TODO : JSON 과 DB 컬럼의 다른 점이 있을 경우 출력
 	if (flag)
 	{
-		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Updating Column [%s] : (%s) -> (%s)\n", dbTable->_name.c_str(), dbColumn->CreateText().c_str(), xmlColumn->CreateText().c_str());
+		GConsoleLogManager->WriteStdOut(Color::YELLOW, L"Updating Column [%s] : (%s) -> (%s)\n", dbTable->_name.c_str(), dbColumn->CreateText().c_str(), xmlColumn->CreateText().c_str());
 	}
 
 	// TODO : 연관된 인덱스가 있으면 나중에 삭제하기 위해 기록한다.
@@ -787,7 +787,7 @@ void JsonDBSynchronizer::CompareStoredProcedures()
 			//TODO : 둘다 존재 할 경우 XML 과 DB의 Body가 같은지 확인 후 다를 경우 XML 기준으로 변경
 			if (DBModel::Helpers::RemoveWhiteSpace(dbProcedure->_fullBody) != DBModel::Helpers::RemoveWhiteSpace(xmlBody))
 			{
-				GConsoleLogger->WriteStdOut(Color::YELLOW, L"Updating Procedure : %s\n", dbProcedure->_name.c_str());
+				GConsoleLogManager->WriteStdOut(Color::YELLOW, L"Updating Procedure : %s\n", dbProcedure->_name.c_str());
 				_updateQueries[QueryStep::StoredProcecure].push_back(xmlProcedure->GenerateAlterQuery());
 			}
 			xmlProceduresMap.erase(findProcedure);
@@ -798,7 +798,7 @@ void JsonDBSynchronizer::CompareStoredProcedures()
 	for (auto& mapIt : xmlProceduresMap)
 	{
 		//TODO : JSON의 프로시저를 추가
-		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Updating Procedure : %s\n", mapIt.first.c_str());
+		GConsoleLogManager->WriteStdOut(Color::YELLOW, L"Updating Procedure : %s\n", mapIt.first.c_str());
 		_updateQueries[QueryStep::StoredProcecure].push_back(mapIt.second->GenerateCreateQuery());
 	}
 }

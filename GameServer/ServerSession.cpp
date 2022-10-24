@@ -149,7 +149,7 @@ bool ServerSession::Login(Protocol::CLIENT_LOGIN* pkt)
 		}
 
 		_Accountid = id;
-		GConsoleLogger->WriteStdOut(Color::GREEN, L"[LOGIN_SUCCESS] : %s\n", accountname.GetWCHAR());
+		GConsoleLogManager->WriteStdOut(Color::GREEN, L"[LOGIN_SUCCESS] : %s\n", accountname.GetWCHAR());
 		SendCheck(ServerPacketManager::MakeSendBuffer(pktlogin));
 		_ServerState = Protocol::SERVERSTATE_LOBBY;
 		GDBConnectionPool->Push(dbConn);
@@ -170,7 +170,7 @@ bool ServerSession::Login(Protocol::CLIENT_LOGIN* pkt)
 
 	while (findaccountid.Fetch())
 	{
-		GConsoleLogger->WriteStdOut(Color::GREEN, L"[ACCOUNT_CREATE] : %s %d \n", accountname.GetWCHAR(), id);
+		GConsoleLogManager->WriteStdOut(Color::GREEN, L"[ACCOUNT_CREATE] : %s %d \n", accountname.GetWCHAR(), id);
 		_Accountid = id;
 	}
 
@@ -239,7 +239,7 @@ bool ServerSession::CreatePlayer(Protocol::CLIENT_CREATEPLAYER* pkt)
 
 	SendCheck(ServerPacketManager::MakeSendBuffer(createpkt));
 
-	GConsoleLogger->WriteStdOut(Color::GREEN, L"[PLAYER_CREATE] : %s  \n", playername.GetWCHAR());
+	GConsoleLogManager->WriteStdOut(Color::GREEN, L"[PLAYER_CREATE] : %s  \n", playername.GetWCHAR());
 	GDBConnectionPool->Push(dbConn);
 }
 
@@ -321,13 +321,13 @@ bool ServerSession::EnterPlayer(Protocol::CLIENT_ENTERGAME* pkt)
 
 		_ServerState = Protocol::SERVERSTATE_GAME;
 
-		GConsoleLogger->WriteStdOut(Color::GREEN, L"[ENTER_PLAYER_SUCCESS] : %s  \n", playername.GetWCHAR());
+		GConsoleLogManager->WriteStdOut(Color::GREEN, L"[ENTER_PLAYER_SUCCESS] : %s  \n", playername.GetWCHAR());
 		GDBConnectionPool->Push(dbConn);
 		return true;
 	}
 
 
-	GConsoleLogger->WriteStdOut(Color::RED, L"[ENTER_PLAYER_FAIL] : %s  \n", playername.GetWCHAR());
+	GConsoleLogManager->WriteStdOut(Color::RED, L"[ENTER_PLAYER_FAIL] : %s  \n", playername.GetWCHAR());
 	GDBConnectionPool->Push(dbConn);
 	return false;
 }

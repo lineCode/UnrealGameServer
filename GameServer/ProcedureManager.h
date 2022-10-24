@@ -156,6 +156,30 @@ namespace ProcedureManager
     	int32 _playerid = {};
     };
 
+    /*---------------------------------------------------------------------------------------------
+    			  CreateItemInventory (Param : 4 Column : 1)
+    ----------------------------------------------------------------------------------------------*/
+    class CreateItemInventory : public DBBind<4,1>
+    {
+    public:
+    	CreateItemInventory(DBConnection& conn) : DBBind(conn, L"{CALL dbo.ProcCreateItemInventory(?,?,?,?)}") { }
+    	void Param_Itemid(int32& v) { BindParam(0, v); };
+    	void Param_Itemid(int32&& v) { _itemid = std::move(v); BindParam(0, _itemid); };
+    	void Param_Ownerid(int32& v) { BindParam(1, v); };
+    	void Param_Ownerid(int32&& v) { _ownerid = std::move(v); BindParam(1, _ownerid); };
+    	void Param_Count(int32& v) { BindParam(2, v); };
+    	void Param_Count(int32&& v) { _count = std::move(v); BindParam(2, _count); };
+    	void Param_Slot(int32& v) { BindParam(3, v); };
+    	void Param_Slot(int32&& v) { _slot = std::move(v); BindParam(3, _slot); };
+    	void Column_DbId(OUT int32& v) { BindCol(0, v); };
+
+    private:
+    	int32 _itemid = {};
+    	int32 _ownerid = {};
+    	int32 _count = {};
+    	int32 _slot = {};
+    };
+
 
      
 };

@@ -48,6 +48,9 @@
      // TODO : Item 데이터 불러오는 부분
      _ItemDatas = LoadJson<ItemLoader, int32, ItemData*>("ItemData").MakeGHashMap();
 
+     // TODO : Monster 데이터 불러오는 부분
+     _MonsterDatas = LoadJson<MonsterLoader, int32, MonsterData*>("MonsterData").MakeGHashMap();
+
  }
 
 

@@ -14,7 +14,7 @@ SendBufferManager* GSendBufferManager = nullptr;
 JobSerializer* GJobSerializerManager = nullptr;
 JobTimer* GJobTimerManager = nullptr;
 DBConnectionPool* GDBConnectionPool = nullptr;
-ConsoleLog* GConsoleLogger = nullptr;
+ConsoleLog* GConsoleLogManager = nullptr;
 
 /*---------------------------------------------------------------------------------------------
 ¿Ã∏ß     : CoreGlobal
@@ -33,7 +33,7 @@ public:
 		GJobSerializerManager = new JobSerializer();
 		GJobTimerManager = new JobTimer();
 		GDBConnectionPool = new DBConnectionPool();
-		GConsoleLogger = new ConsoleLog;
+		GConsoleLogManager = new ConsoleLog;
 		SocketUtils::Init();
 	}
 
@@ -45,7 +45,7 @@ public:
 		delete GJobSerializerManager;
 		delete GJobTimerManager;
 		delete GDBConnectionPool;
-		delete GConsoleLogger;
+		delete GConsoleLogManager;
 		SocketUtils::Clear();
 	}
 

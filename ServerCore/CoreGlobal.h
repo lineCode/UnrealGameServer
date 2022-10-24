@@ -6,4 +6,4 @@ extern class SendBufferManager* GSendBufferManager;
 extern class JobSerializer* GJobSerializerManager;
 extern class JobTimer * GJobTimerManager;
 extern class DBConnectionPool* GDBConnectionPool;
-extern class ConsoleLog* GConsoleLogger;
+extern class ConsoleLog* GConsoleLogManager;

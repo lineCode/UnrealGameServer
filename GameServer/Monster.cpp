@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "Monster.h"
+#include <format>
+#include "DataManager.h"
+#include "DBJobManager.h"
 #include "Player.h"
 #include "GameRoom.h"
 #include "ObjectUtils.h"
@@ -8,6 +11,19 @@
 Monster::Monster()
 {
 	SetObjectType(Protocol::ObjectType::MONSTER);
+}
+
+void Monster::Init(int32 monsterid)
+{
+	_Monsterid = monsterid;
+
+	MonsterData* monsterdata = DataManager::GetInstacnce()->GetMonsterData(monsterid);
+	if (monsterdata == nullptr)
+		GConsoleLogManager->WriteStdOut(Color::RED,L"[Monster] : %d Init Error", monsterid);
+
+	SetStat(monsterdata->stat);
+
+	_State = Protocol::ObjectState::IDLE;
 }
 
 /*---------------------------------------------------------------------------------------------
@@ -162,6 +178,62 @@ void Monster::UpdateSkill()
 
 void Monster::UpdateDead()
 {
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : Monster::OnDead
+용도     : 몬스터가 죽었을 때 호출 되는 함수
+수정자   : 이민규
+수정날짜 : 2022.10.24
+----------------------------------------------------------------------------------------------*/
+void Monster::OnDead(GameObject* attacker)
+{
+	GameObject::OnDead(attacker);
+
+	// TODO : 아이템 생성
+
+	GameObject* owner = attacker->GetOwner();
+	if(owner->GetObjectType() == Protocol::ObjectType::PLAYER)
+	{
+		RewardData* reward = GetRandomReward();
+		if (reward == nullptr)
+			return;
+			
+
+		Player* player = static_cast<Player*>(owner);
+		if (player == nullptr)
+			return;
+		DBJobManager::GetInstance()->RewardPlayer(player , reward , _Room);
+	}
+
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : Monster::GetRandomReward
+용도     : 몬스터의 Rewards 데이터 중 한개를 주는 함수
+수정자   : 이민규
+수정날짜 : 2022.10.24
+----------------------------------------------------------------------------------------------*/
+RewardData * Monster::GetRandomReward()
+{
+	MonsterData* monsterdata = DataManager::GetInstacnce()->GetMonsterData(_Monsterid);
+	if (monsterdata == nullptr)
+		GConsoleLogManager->WriteStdOut(Color::RED, L"[Monster] : %d GetRandomReward Error", _Monsterid);
+
+	int random = rand() % 101;
+
+	int sum = 0;
+
+	for(RewardData * reward : monsterdata->rewards)
+	{
+		sum += reward->probability;
+
+		if (random <= sum)
+			return reward;
+	}
+
+	return nullptr;
+
 }
 
 /*---------------------------------------------------------------------------------------------

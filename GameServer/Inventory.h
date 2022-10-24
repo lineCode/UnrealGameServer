@@ -11,12 +11,15 @@ class Item;
 class Inventory
 {
 public:
+	Inventory();
 	~Inventory();
 	void Add(Item* item);
 	Item* GetItem(int itemid);
 	Item* Find(function<bool(Item*)> condition);
+	int32 GetEmptySlot();
 
 private:
 	GhashMap<int32, Item*> _Items;
+	bool slots[20];
 };
 

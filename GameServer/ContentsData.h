@@ -237,3 +237,80 @@ struct ConsumableData : public ItemData
      rapidjson::Document& _Document;
  };
 #pragma endregion
+
+#pragma region MonsterData
+
+struct RewardData
+{
+    int probability; // 100분율
+    int itemid;
+    int count;
+};
+
+struct MonsterData
+{
+    int id;
+    string name;
+    Protocol::StatInfo stat;
+    Glist<RewardData*> rewards;
+};
+
+ /*---------------------------------------------------------------------------------------------
+ 이름     : MonsterLoader
+ 용도     : Json 오브젝트를 Monster에 맞게 데이터 직렬화 후 GHashMap을 만들어 반환하기 위한 객체
+ 수정자   : 이민규
+ 수정날짜 : 2022.10.24
+ ----------------------------------------------------------------------------------------------*/
+ class MonsterLoader : public ILoaderData<int32, MonsterData*>
+ {
+ public:
+     MonsterLoader(rapidjson::Document& document) : _Document(document) {}
+
+     /*---------------------------------------------------------------------------------------------
+     이름     : playerStatLoader::MakeTMap
+     용도     : Json 오브젝트를 Monster에 맞게 데이터 직렬화 후 GHashMap을 만들어 반환하는 함수
+     수정자   : 이민규
+     수정날짜 : 2022.10.24
+     ----------------------------------------------------------------------------------------------*/
+     GhashMap<int32, MonsterData*> MakeGHashMap() override
+     {
+         GhashMap<int32, MonsterData*> hashmap;
+
+         const rapidjson::Value& JsonValues = _Document["monsters"];
+
+         for (auto& JsonValue : JsonValues.GetArray())
+         {
+             MonsterData* monster = Gnew<MonsterData>();
+             monster->id = JsonValue["id"].GetInt();
+             monster->name = JsonValue["name"].GetString();
+
+             const rapidjson::Value& JsonStat = JsonValue["stat"];
+             monster->stat.set_level(JsonStat["level"].GetInt());
+             monster->stat.set_maxhp(JsonStat["hp"].GetInt());
+             monster->stat.set_hp(JsonStat["hp"].GetInt());
+             monster->stat.set_damage(JsonStat["damage"].GetInt());
+             monster->stat.set_speed(JsonStat["speed"].GetInt());
+             monster->stat.set_totalexp(JsonStat["exp"].GetInt());
+
+             const rapidjson::Value& JsonRewards = JsonValue["rewards"];
+             for (auto& reward : JsonRewards.GetArray())
+             {
+             	RewardData * rewarddata = Gnew<RewardData>();
+                rewarddata->probability = reward["probability"].GetInt();
+                rewarddata->itemid = reward["itemid"].GetInt();
+                rewarddata->count = reward["count"].GetInt();
+
+                monster->rewards.push_back(rewarddata);
+             }
+
+             hashmap.insert({ monster->id , monster });
+         }
+
+         return hashmap;
+     }
+
+ private:
+     rapidjson::Document& _Document;
+ };
+
+#pragma endregion

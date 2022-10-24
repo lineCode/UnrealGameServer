@@ -158,3 +158,7 @@ Player Item DB 연동 추가
 
 - 2022.10.23  
 Player Inventory DB 연동 추가 
+
+- 2002.10.24  
+Monster Reward 추가   
+Reward DB 연동 추가

@@ -16,40 +16,33 @@ public:
 	GameObject();
 	virtual ~GameObject();
 
-	Protocol::ObjectType GetObjectType() { return _ObjectType; }
-	void SetObjectType(Protocol::ObjectType type) { _ObjectType = type; }
+	GetSetMaker(Protocol::ObjectType, ObjectType, _ObjectType)
 
-	int32 GetType() { return _Type; }
-	void SetType(int32 type) { _Type = type; }
+	GetSetMaker(int32, Type, _Type)
 
-	shared_ptr<GameRoom> GetRoom() { return _Room; }
-	void SetRoom(shared_ptr<GameRoom> room) { _Room = room; }
+	GetSetMaker(shared_ptr<GameRoom>, Room, _Room)
+
+	ProtoGetSetMaker(Protocol::StatInfo, Stat, _Info.statinfo, _Info.mutable_statinfo()->CopyFrom)
+
+	ProtoGetSetMaker(Protocol::Vector, Vector, _Info.vector, _Info.mutable_vector()->CopyFrom)
+
+	ProtoGetSetMaker(Protocol::Rotator, Rotator, _Info.rotator, _Info.mutable_rotator()->CopyFrom)
+
+	ProtoGetSetMaker(int32, Id, _Info.objectid , _Info.set_objectid)
+
+	ProtoGetSetMaker(int32, Speed, _Info.statinfo().speed, _Info.mutable_statinfo()->set_speed)
 
 	Protocol::ObjectInfo& GetInfo() { return _Info; }
 	void SetInfo(Protocol::ObjectInfo info) { _Info = info; }
 
-	Protocol::StatInfo GetStat() { return _Info.statinfo(); }
-	void SetStat(Protocol::StatInfo  newstat) { _Info.mutable_statinfo()->CopyFrom(newstat); }
-
-	Protocol::Vector GetVector() { return _Info.vector(); }
-	void SetVector(Protocol::Vector newvector) { _Info.mutable_vector()->CopyFrom(newvector); }
-
-	Protocol::Rotator GetRotator() { return _Info.rotator(); }
-	void SetRotator(Protocol::Rotator newrotator) { _Info.mutable_rotator()->CopyFrom(newrotator); }
-
-	int32 GetId() { return _Info.objectid(); }
-	void SetId(int32 id) { return _Info.set_objectid(id); }
-
 	int32 GetHp() { return _Info.statinfo().hp(); }
 	void SetHp(int32 hp) { _Info.mutable_statinfo()->set_hp( std::clamp(hp, 0, GetStat().maxhp())); }
-
-	float GetSpeed() { return _Info.statinfo().speed(); }
-	void SetSpeed(float speed) { return _Info.mutable_statinfo()->set_speed(speed); }
-
 
 	virtual void Update();
 	virtual void OnDamaged(GameObject * attacker , int damage);
 	virtual void OnDead(GameObject * attacker);
+
+	virtual GameObject* GetOwner() { return this; }
 
 protected:
 	Protocol::ObjectType _ObjectType = Protocol::ObjectType::OBJECT_NONE;
