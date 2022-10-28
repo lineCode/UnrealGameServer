@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ContentsData.h"
 #include "GameObject.h"
 
 /*---------------------------------------------------------------------------------------------
@@ -16,7 +15,7 @@ public:
 	void Update() override;
 
 	void Init(int32 monsterid);
-	GetSetMaker(int32, Monsterid, _Monsterid);
+	GetSetMaker(int32, Monsterid, _Monsterid)
 
 protected:
 	virtual void UpdateIdle();
@@ -25,7 +24,7 @@ protected:
 	virtual void UpdateDead();
 	virtual void OnDead(GameObject* attacker) override;
 
-	RewardData * GetRandomReward();
+	class RewardData * GetRandomReward();
 
 	void BroadCastMove();
 

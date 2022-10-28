@@ -139,9 +139,9 @@ namespace ProcedureManager
     };
 
     /*---------------------------------------------------------------------------------------------
-    			  FindPlayerItemList (Param : 1 Column : 4)
+    			  FindPlayerItemList (Param : 1 Column : 5)
     ----------------------------------------------------------------------------------------------*/
-    class FindPlayerItemList : public DBBind<1,4>
+    class FindPlayerItemList : public DBBind<1,5>
     {
     public:
     	FindPlayerItemList(DBConnection& conn) : DBBind(conn, L"{CALL dbo.ProcFindPlayerItemList(?)}") { }
@@ -151,6 +151,7 @@ namespace ProcedureManager
     	void Column_Gameid(OUT int32& v) { BindCol(1, v); };
     	void Column_Count(OUT int32& v) { BindCol(2, v); };
     	void Column_Slot(OUT int32& v) { BindCol(3, v); };
+    	void Column_Equipped(OUT int32& v) { BindCol(4, v); };
 
     private:
     	int32 _playerid = {};
@@ -177,6 +178,26 @@ namespace ProcedureManager
     	int32 _itemid = {};
     	int32 _ownerid = {};
     	int32 _count = {};
+    	int32 _slot = {};
+    };
+
+    /*---------------------------------------------------------------------------------------------
+    			  ItemEquipChange (Param : 3 Column : 0)
+    ----------------------------------------------------------------------------------------------*/
+    class ItemEquipChange : public DBBind<3,0>
+    {
+    public:
+    	ItemEquipChange(DBConnection& conn) : DBBind(conn, L"{CALL dbo.ProcItemEquipChange(?,?,?)}") { }
+    	void Param_Itemdbid(int32& v) { BindParam(0, v); };
+    	void Param_Itemdbid(int32&& v) { _itemdbid = std::move(v); BindParam(0, _itemdbid); };
+    	void Param_Equip(int32& v) { BindParam(1, v); };
+    	void Param_Equip(int32&& v) { _equip = std::move(v); BindParam(1, _equip); };
+    	void Param_Slot(int32& v) { BindParam(2, v); };
+    	void Param_Slot(int32&& v) { _slot = std::move(v); BindParam(2, _slot); };
+
+    private:
+    	int32 _itemdbid = {};
+    	int32 _equip = {};
     	int32 _slot = {};
     };
 

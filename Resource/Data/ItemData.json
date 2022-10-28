@@ -26,10 +26,10 @@
     },
     {
       "gameid": 101,
-      "name" : "ª¿ ≈ı±∏",
-      "weaponType": "helmet",
+      "name": "ª¿ ≈ı±∏",
+      "armorType": "helmet",
       "defence": 5,
-      "ItemPath" : "Texture2D'/Game/Resource/item4.item4'"
+      "ItemPath": "Texture2D'/Game/Resource/item4.item4'"
     }
   ],
 

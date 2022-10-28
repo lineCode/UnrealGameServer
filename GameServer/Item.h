@@ -19,8 +19,9 @@ public:
 	ProtoGetSetMaker(int32,  ItemGameID , _info.itemgameid , _info.set_itemgameid);
 	ProtoGetSetMaker(int32,  Count, _info.count , _info.set_count);
 	ProtoGetSetMaker(int32,  Slot, _info.slot , _info.set_slot);
+	ProtoGetSetMaker(int32,  Equip, _info.equipped , _info.set_equipped);
 
-	static Item* MakeItem(int32 dbid , int32 gameid , int32 count , int32 slot);
+	static Item* MakeItem(int32 dbid , int32 gameid , int32 count , int32 slot , int32 equip);
 
 protected:
 	Protocol::ItemInfo _info;

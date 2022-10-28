@@ -159,6 +159,13 @@ Player Item DB 연동 추가
 - 2022.10.23  
 Player Inventory DB 연동 추가 
 
-- 2002.10.24  
+- 2022.10.24  
 Monster Reward 추가   
 Reward DB 연동 추가
+
+- 2022.10.28  
+Json Item 파싱 버그 수정  
+Player 스텟 추가  
+Equipment 추가   
+장비 DB 연동 추가   
+

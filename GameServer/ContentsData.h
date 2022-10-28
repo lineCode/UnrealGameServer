@@ -47,7 +47,7 @@
             statdata.set_level(JsonValue["level"].GetInt());
             statdata.set_maxhp(JsonValue["hp"].GetInt());
             statdata.set_hp(JsonValue["hp"].GetInt());
-            statdata.set_damage(JsonValue["damage"].GetInt());
+            statdata.set_attack(JsonValue["damage"].GetInt());
             statdata.set_speed(JsonValue["speed"].GetFloat());
             statdata.set_totalexp(JsonValue["exp"].GetInt());
 
@@ -194,6 +194,14 @@ struct ConsumableData : public ItemData
              weapondata->itemType = Protocol::ItemType::ITEM_TYPE_WEAPON;
              weapondata->damage = JsonValue["damage"].GetInt();
 
+             string type = JsonValue["weaponType"].GetString();
+             if(type.compare("sword") == 0)
+                 weapondata->weaponType = Protocol::WEAPON_TYPE_SWORD;
+             else if(type.compare("bow") == 0)
+                 weapondata->weaponType = Protocol::WEAPON_TYPE_BOW;
+             else
+                 weapondata->weaponType = Protocol::WEAPON_TYPE_NONE;
+
              weapons.push_back(weapondata);
          }
 
@@ -206,6 +214,16 @@ struct ConsumableData : public ItemData
              armordata->itemType = Protocol::ItemType::ITEM_TYPE_ARMOR;
              armordata->defence = JsonValue["defence"].GetInt();
 
+             string type = JsonValue["armorType"].GetString();
+             if (type.compare("helmet") == 0)
+                 armordata->ArmorType = Protocol::ARMOR_TYPE_HELMET;
+             else if (type.compare("armor") == 0)
+                 armordata->ArmorType = Protocol::ARMOR_TYPE_ARMOR;
+             else if (type.compare("boots") == 0)
+                 armordata->ArmorType = Protocol::ARMOR_TYPE_BOOTS;
+             else
+                 armordata->ArmorType = Protocol::ARMOR_TYPE_NONE;
+
              armors.push_back(armordata);
          }
 
@@ -217,6 +235,12 @@ struct ConsumableData : public ItemData
              consumabledata->name = JsonValue["name"].GetString();
              consumabledata->itemType = Protocol::ItemType::ITEM_TYPE_CONSUMABLE;
              consumabledata->maxcount = JsonValue["maxcount"].GetInt();
+
+             string type = JsonValue["consumableType"].GetString();
+             if (type.compare("potion") == 0)
+                 consumabledata->ConsumableType = Protocol::CONSUMABLE_TYPE_POTION;
+             else
+                 consumabledata->ConsumableType = Protocol::CONSUMABLE_TYPE_NONE;
 
              consumables.push_back(consumabledata);
          }
@@ -288,7 +312,7 @@ struct MonsterData
              monster->stat.set_level(JsonStat["level"].GetInt());
              monster->stat.set_maxhp(JsonStat["hp"].GetInt());
              monster->stat.set_hp(JsonStat["hp"].GetInt());
-             monster->stat.set_damage(JsonStat["damage"].GetInt());
+             monster->stat.set_attack(JsonStat["damage"].GetInt());
              monster->stat.set_speed(JsonStat["speed"].GetInt());
              monster->stat.set_totalexp(JsonStat["exp"].GetInt());
 

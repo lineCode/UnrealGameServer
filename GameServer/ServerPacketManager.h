@@ -23,19 +23,22 @@ enum : uint16
 	PACKET_SERVER_ENTERGAME = 1003,
 	PACKET_SERVER_ITEMLIST = 1004,
 	PACKET_SERVER_ADDITEM = 1005,
-	PACKET_SERVER_LEAVEGAME = 1006,
-	PACKET_SERVER_SPAWN = 1007,
-	PACKET_SERVER_DESTROY = 1008,
-	PACKET_SERVER_MOVE = 1009,
-	PACKET_SERVER_SKILL = 1010,
-	PACKET_SERVER_CHANGEHP = 1011,
-	PACKET_SERVER_DIE = 1012,
-	PACKET_CLIENT_LOGIN = 1013,
-	PACKET_CLIENT_CREATEPLAYER = 1014,
-	PACKET_CLIENT_ENTERGAME = 1015,
-	PACKET_CLIENT_MOVE = 1016,
-	PACKET_CLIENT_SKILL = 1017,
-	PACKET_CLIENT_DAMAGE = 1018,
+	PACKET_SERVER_EQUIPITEM = 1006,
+	PACKET_SERVER_CHANGESTAT = 1007,
+	PACKET_SERVER_LEAVEGAME = 1008,
+	PACKET_SERVER_SPAWN = 1009,
+	PACKET_SERVER_DESTROY = 1010,
+	PACKET_SERVER_MOVE = 1011,
+	PACKET_SERVER_SKILL = 1012,
+	PACKET_SERVER_CHANGEHP = 1013,
+	PACKET_SERVER_DIE = 1014,
+	PACKET_CLIENT_LOGIN = 1015,
+	PACKET_CLIENT_CREATEPLAYER = 1016,
+	PACKET_CLIENT_ENTERGAME = 1017,
+	PACKET_CLIENT_MOVE = 1018,
+	PACKET_CLIENT_SKILL = 1019,
+	PACKET_CLIENT_EQUIPITEM = 1020,
+	PACKET_CLIENT_DAMAGE = 1021,
 };
 
 /*---------------------------------------------------------------------------------------------
@@ -47,6 +50,7 @@ bool CLIENT_CREATEPLAYER_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIE
 bool CLIENT_ENTERGAME_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_ENTERGAME& pkt);
 bool CLIENT_MOVE_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_MOVE& pkt);
 bool CLIENT_SKILL_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_SKILL& pkt);
+bool CLIENT_EQUIPITEM_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_EQUIPITEM& pkt);
 bool CLIENT_DAMAGE_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_DAMAGE& pkt);
 
 /*---------------------------------------------------------------------------------------------
@@ -67,6 +71,7 @@ public:
 		GPacketFuncArray[PACKET_CLIENT_ENTERGAME] = [](std::shared_ptr<ServerSession>& session, BYTE* buffer, int32 len) { return PacketUpdate<Protocol::CLIENT_ENTERGAME>(CLIENT_ENTERGAME_FUNC, session, buffer, len); };
 		GPacketFuncArray[PACKET_CLIENT_MOVE] = [](std::shared_ptr<ServerSession>& session, BYTE* buffer, int32 len) { return PacketUpdate<Protocol::CLIENT_MOVE>(CLIENT_MOVE_FUNC, session, buffer, len); };
 		GPacketFuncArray[PACKET_CLIENT_SKILL] = [](std::shared_ptr<ServerSession>& session, BYTE* buffer, int32 len) { return PacketUpdate<Protocol::CLIENT_SKILL>(CLIENT_SKILL_FUNC, session, buffer, len); };
+		GPacketFuncArray[PACKET_CLIENT_EQUIPITEM] = [](std::shared_ptr<ServerSession>& session, BYTE* buffer, int32 len) { return PacketUpdate<Protocol::CLIENT_EQUIPITEM>(CLIENT_EQUIPITEM_FUNC, session, buffer, len); };
 		GPacketFuncArray[PACKET_CLIENT_DAMAGE] = [](std::shared_ptr<ServerSession>& session, BYTE* buffer, int32 len) { return PacketUpdate<Protocol::CLIENT_DAMAGE>(CLIENT_DAMAGE_FUNC, session, buffer, len); };
 	}
 
@@ -88,6 +93,8 @@ public:
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_ENTERGAME& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_ENTERGAME); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_ITEMLIST& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_ITEMLIST); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_ADDITEM& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_ADDITEM); }
+	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_EQUIPITEM& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_EQUIPITEM); }
+	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_CHANGESTAT& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_CHANGESTAT); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_LEAVEGAME& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_LEAVEGAME); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_SPAWN& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_SPAWN); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_DESTROY& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_DESTROY); }

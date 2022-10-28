@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "GameObject.h"
 #include <random>
-#include "DataManager.h"
 #include "GameRoom.h"
 #include "Monster.h"
 #include "ObjectManager.h"
@@ -28,6 +27,7 @@ void GameObject::OnDamaged(GameObject* attacker, int damage)
 	if (_Room == nullptr)
 		return;
 
+	damage =  max(damage - TotalDefence(), 0);
 	SetHp(GetHp() - damage);
 
 	if(GetHp() <= 0)

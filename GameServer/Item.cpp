@@ -8,7 +8,7 @@
 수정자   : 이민규
 수정날짜 : 2022.10.23
 ----------------------------------------------------------------------------------------------*/
-Item* Item::MakeItem(int32 dbid, int32 gameid , int32 count , int32 slot)
+Item* Item::MakeItem(int32 dbid, int32 gameid , int32 count , int32 slot , int32 equip)
 {
 	auto * data = DataManager::GetInstacnce()->GetItemData(gameid);
 	if (data == nullptr)
@@ -42,6 +42,7 @@ Item* Item::MakeItem(int32 dbid, int32 gameid , int32 count , int32 slot)
 	item->SetSlot(slot);
 	item->SetItemDbID(dbid);
 	item->SetCount(count);
+	item->SetEquip(equip);
 
 	return item;
 }

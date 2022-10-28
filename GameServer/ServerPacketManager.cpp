@@ -74,7 +74,7 @@ bool CLIENT_MOVE_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_MOVE&
 	if (room == nullptr)
 		return false;
 
-	room->PushAsync(&GameRoom::PlayerMove, player, pkt);
+	room->PushAsync(&GameRoom::PlayerMove, player, &pkt);
 
 	return true;
 }
@@ -97,7 +97,31 @@ bool CLIENT_SKILL_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_SKIL
 	if (room == nullptr)
 		return false;
 
-	room->PushAsync(&GameRoom::PlayerSkill, player, pkt);
+	room->PushAsync(&GameRoom::PlayerSkill, player, &pkt);
+
+	return true;
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : CLIENT_EUQIPITEM_FUNC
+용도     : 플레이어가 아이템 장착을 서버에 요청는 함수
+수정자   : 이민규
+수정날짜 : 2022.10.26
+----------------------------------------------------------------------------------------------*/
+bool CLIENT_EQUIPITEM_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_EQUIPITEM& pkt)
+{
+	auto clientsession = reinterpret_pointer_cast<ServerSession>(session);
+	if (clientsession == nullptr)
+		return false;
+
+	auto player = clientsession->GetMyPlayer();
+
+	auto room = player->GetRoom();
+	if (room == nullptr)
+		return false;
+
+
+	room->PushAsync(&GameRoom::PlayerEquipItem, player, &pkt);
 
 	return true;
 }

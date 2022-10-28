@@ -9,6 +9,7 @@
 #include "RoomManager.h"
 #include "ServerPacketManager.h"
 #include "ConverString.h"
+#include "Equipment.h"
 #include "Inventory.h"
 #include "Item.h"
 
@@ -137,7 +138,7 @@ bool ServerSession::Login(Protocol::CLIENT_LOGIN* pkt)
 			stat->set_level(level);
 			stat->set_maxhp(MaxHp);
 			stat->set_hp(Hp);
-			stat->set_damage(attack);
+			stat->set_attack(attack);
 			stat->set_speed(speed);
 			stat->set_totalexp(exp);
 
@@ -204,7 +205,7 @@ bool ServerSession::CreatePlayer(Protocol::CLIENT_CREATEPLAYER* pkt)
 
 	playercreate.Param_Name(playername.GetWCHAR(), playername.GetSize());
 	playercreate.Param_Accountid(_Accountid);
-	playercreate.Param_Attack(datastat.damage());
+	playercreate.Param_Attack(datastat.attack());
 	playercreate.Param_Hp(datastat.hp());
 	playercreate.Param_Level(datastat.level());
 	playercreate.Param_Maxhp(datastat.maxhp());
@@ -248,7 +249,7 @@ bool ServerSession::CreatePlayer(Protocol::CLIENT_CREATEPLAYER* pkt)
 용도     : 서버에서 클라이언트가 선택한 캐릭터를 입장시키는 함수
 		   클라이언트가 캐릭터의 이름을 보내주면 있을 경우 저장되어있는 값으로 캐릭터를 입장
 수정자   : 이민규
-수정날짜 : 2022.10.16
+수정날짜 : 2022.10.28
 ----------------------------------------------------------------------------------------------*/
 bool ServerSession::EnterPlayer(Protocol::CLIENT_ENTERGAME* pkt)
 {
@@ -295,21 +296,28 @@ bool ServerSession::EnterPlayer(Protocol::CLIENT_ENTERGAME* pkt)
 		int32 gameid;
 		int32 count;
 		int32 slot;
+		int32 Equip;
 
 		listitem.Param_Playerid(id);
 		listitem.Column_DbId(dbid);
 		listitem.Column_Gameid(gameid);
 		listitem.Column_Count(count);
 		listitem.Column_Slot(slot);
+		listitem.Column_Equipped(Equip);
 
 		listitem.Execute();
 		while(listitem.Fetch())
 		{
-			Item* item = Item::MakeItem(dbid, gameid ,count ,slot);
+			Item* item = Item::MakeItem(dbid, gameid ,count ,slot , Equip);
 			if (item == nullptr)
 				break;
 
-			player->GetInventory()->Add(item);
+			// 장착 아이템이냐 인벤토리냐 구분
+			if (slot >= 0 && slot <= 20)
+				player->GetInventory()->Add(item);
+			else
+				player->GetEquipment()->Add(item);
+			
 			itempkt.add_items()->CopyFrom(item->Getinfo());
 		}
 	

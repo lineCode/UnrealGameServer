@@ -1,6 +1,10 @@
 #include "pch.h"
-#include "GameRoom.h"
 #include <format>
+#include "GameRoom.h"
+
+#include "DBJobManager.h"
+#include "Inventory.h"
+#include "Item.h"
 #include "Player.h"
 #include "Monster.h"
 #include "Projectile.h"
@@ -10,6 +14,7 @@
 #include "ServerSession.h"
 #include "ObjectUtils.h"
 
+#pragma region GameRoom
 GameRoom::GameRoom()
 {
 	
@@ -60,6 +65,7 @@ void GameRoom::EnterGame(GameObject* gameobject)
 			if (player == nullptr)
 				return;
 
+			player->RefreshStat();
 			Protocol::SERVER_ENTERGAME enterpacket;
 			ObjectUtils::SetEnterPacket(enterpacket, gameobject);
 			_Players.insert({ player->GetId() , player });
@@ -226,53 +232,6 @@ void GameRoom::LeaveGame(int32 objectid)
 }
 
 /*---------------------------------------------------------------------------------------------
-이름     : GameRoom::PlayerMove
-용도     : 방에 있는 플레이어들에게 이동한 플레이어의 좌표 패킷을 보내주는 함수
-수정자   : 이민규
-수정날짜 : 2022.09.28
-----------------------------------------------------------------------------------------------*/
-void GameRoom::PlayerMove(Player* player, Protocol::CLIENT_MOVE pkt)
-{
-	if (player == nullptr)
-		return;
-
-	// TODO : 서버에서 검증 필요 추가 예정
-
-	// TODO : 일단 서버에서 먼저 좌표 및 방향 이동
-	player->SetVector(pkt.vector());
-	player->SetRotator(pkt.rotator());
-
-	// TODO : 다른 플레이어한테도 알려준다
-	Protocol::SERVER_MOVE movepacket;
-	ObjectUtils::SetMovePacket(movepacket, player);
-	BroadCast(ServerPacketManager::MakeSendBuffer(movepacket));
-}
-
-/*---------------------------------------------------------------------------------------------
-이름     : GameRoom::PlayerSkill
-용도     : 방에 있는 플레이어들에게 스킬을 사용한 플레이어의 스킬 패킷을 보내주는 함수
-수정자   : 이민규
-수정날짜 : 2022.09.25
-----------------------------------------------------------------------------------------------*/
-void GameRoom::PlayerSkill(Player* player, Protocol::CLIENT_SKILL pkt)
-{
-	if (player == nullptr)
-		return;
-
-	// TODO : 플레이어 스킬 사용을 보냄
-
-	Protocol::SERVER_SKILL skillpacket;
-	ObjectUtils::SetSkillPacket(skillpacket, player, pkt);
-	BroadCast(ServerPacketManager::MakeSendBuffer(skillpacket));
-
-	printf("[CLINET_Skill_FUNC_ID[%d]] : %d Use\n", skillpacket.objectid(), skillpacket.skillinfo().skillid());
-
-	// TODO : 스킬 충돌체크 일단은 클라언트에게 모두 맞김
-
-	// TODO : 쿨타임 검증만 추가 예정
-}
-
-/*---------------------------------------------------------------------------------------------
 이름     : GameRoom::OnDamage
 용도     : 방에 있는 크리쳐에게 데미지를 주는 함수
 수정자   : 이민규
@@ -351,4 +310,70 @@ Player * GameRoom::FindPlayer(function<bool(Player*)> condition)
 
 	return nullptr;
 }
+#pragma endregion
 
+#pragma region Battle
+/*---------------------------------------------------------------------------------------------
+이름     : GameRoom::PlayerMove
+용도     : 방에 있는 플레이어들에게 이동한 플레이어의 좌표 패킷을 보내주는 함수
+수정자   : 이민규
+수정날짜 : 2022.09.28
+----------------------------------------------------------------------------------------------*/
+void GameRoom::PlayerMove(Player* player, Protocol::CLIENT_MOVE* pkt)
+{
+	if (player == nullptr)
+		return;
+
+	// TODO : 서버에서 검증 필요 추가 예정
+
+	// TODO : 일단 서버에서 먼저 좌표 및 방향 이동
+	player->SetVector(pkt->vector());
+	player->SetRotator(pkt->rotator());
+
+	// TODO : 다른 플레이어한테도 알려준다
+	Protocol::SERVER_MOVE movepacket;
+	ObjectUtils::SetMovePacket(movepacket, player);
+	BroadCast(ServerPacketManager::MakeSendBuffer(movepacket));
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : GameRoom::PlayerSkill
+용도     : 방에 있는 플레이어들에게 스킬을 사용한 플레이어의 스킬 패킷을 보내주는 함수
+수정자   : 이민규
+수정날짜 : 2022.09.25
+----------------------------------------------------------------------------------------------*/
+void GameRoom::PlayerSkill(Player* player, Protocol::CLIENT_SKILL *pkt)
+{
+	if (player == nullptr)
+		return;
+
+	// TODO : 플레이어 스킬 사용을 보냄
+
+	Protocol::SERVER_SKILL skillpacket;
+	ObjectUtils::SetSkillPacket(skillpacket, player, *pkt);
+	BroadCast(ServerPacketManager::MakeSendBuffer(skillpacket));
+
+	printf("[CLINET_Skill_FUNC_ID[%d]] : %d Use\n", skillpacket.objectid(), skillpacket.skillinfo().skillid());
+
+	// TODO : 스킬 충돌체크 일단은 클라언트에게 모두 맞김
+
+	// TODO : 쿨타임 검증만 추가 예정
+}
+
+#pragma endregion
+
+#pragma region Item
+/*---------------------------------------------------------------------------------------------
+이름     : GameRoom::PlayerEquipItem
+용도     : 방에있는 플레이어의 아이템을 장착시키는 함수
+수정자   : 이민규
+수정날짜 : 2022.10.26
+----------------------------------------------------------------------------------------------*/
+void GameRoom::PlayerEquipItem(Player* player, Protocol::CLIENT_EQUIPITEM * pkt)
+{
+	if (player == nullptr)
+		return;
+
+	player->ItemEquip(pkt);
+}
+#pragma endregion

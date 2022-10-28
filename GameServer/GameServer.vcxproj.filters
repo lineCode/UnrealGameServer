@@ -88,6 +88,9 @@
     <ClCompile Include="Inventory.cpp">
       <Filter>Item</Filter>
     </ClCompile>
+    <ClCompile Include="Equipment.cpp">
+      <Filter>Item</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -151,6 +154,9 @@
       <Filter>Item</Filter>
     </ClInclude>
     <ClInclude Include="Inventory.h">
+      <Filter>Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Equipment.h">
       <Filter>Item</Filter>
     </ClInclude>
   </ItemGroup>

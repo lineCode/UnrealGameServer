@@ -42,6 +42,9 @@ public:
 	virtual void OnDamaged(GameObject * attacker , int damage);
 	virtual void OnDead(GameObject * attacker);
 
+	virtual int32 TotalAttack() { return GetStat().attack(); }
+	virtual int32 TotalDefence() { return 0; }
+
 	virtual GameObject* GetOwner() { return this; }
 
 protected:
