@@ -289,7 +289,17 @@ bool ServerSession::EnterPlayer(Protocol::CLIENT_ENTERGAME* pkt)
 		SetMyPlayer(player);
 		player->SetSession(GetServerSession());
 
-		// TODO : 플레이어 아이템을 가져옴
+		// 플레이어 능력치를 보내줌
+		Protocol::SERVER_ENTERGAME enterpkt;
+
+		auto setplayer = enterpkt.mutable_player();
+		setplayer->set_objectid(player->GetId());
+		setplayer->set_name(pkt->name());
+		setplayer->mutable_statinfo()->CopyFrom(player->GetStat());
+
+		SendCheck(ServerPacketManager::MakeSendBuffer(enterpkt));
+
+		// 플레이어 아이템을 가져옴
 		ProcedureManager::FindPlayerItemList listitem(*dbConn);
 		Protocol::SERVER_ITEMLIST itempkt;
 		int32 dbid;

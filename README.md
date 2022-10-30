@@ -167,5 +167,8 @@ Reward DB 연동 추가
 Json Item 파싱 버그 수정  
 Player 스텟 추가  
 Equipment 추가   
-장비 DB 연동 추가   
+장비 장착 DB 연동 추가 
+
+- 2022.10.29  
+플레이어 스텟 DB연동 추가
 
