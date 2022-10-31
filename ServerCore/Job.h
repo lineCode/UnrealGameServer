@@ -31,11 +31,14 @@ public:
 	이름     : Process
 	용도     : 캡슐화된 Job을 실행하는 함수
 	수정자   : 이민규
-	수정날짜 : 2022.08.31
+	수정날짜 : 2022.10.31
 	----------------------------------------------------------------------------------------------*/
-	void Process() { _CallBackFunc(); }
+	void Process() { if (_Cancel == false) { _CallBackFunc(); } }
+
+	GetSetMaker(bool , Cancel ,_Cancel)
 
 private:
 	CallBackFunc _CallBackFunc;
+	bool _Cancel = false;
 };
 

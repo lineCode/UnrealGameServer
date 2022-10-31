@@ -22,7 +22,7 @@ public:
 
 	void SetRoomId(int32 id) { _RoomId = id; }
 	int32 GetRoomId() { return _RoomId; }
-	void update();
+	void MonsterUpdate(Monster * monster);
 
 	Player* FindPlayer(function<bool(Player*)> condition);
 

@@ -43,27 +43,31 @@ public:
 	/*---------------------------------------------------------------------------------------------
 	이름     : JobQueue::TimerPush
 	용도     : GJobTimerManager에 Job을 시간을 예약해 놓고 시간이 됐을 경우 Push하는 방식
+	           만든 Job을 반환해서 Cancle을 수정이 가능함
 	수정자   : 이민규
-	수정날짜 : 2022.09.02
+	수정날짜 : 2022.10.31
 	----------------------------------------------------------------------------------------------*/
-	void TimerPush(uint64 processtime , CallBackFunc&& callbackfunc)
+	shared_ptr<Job> TimerPush(uint64 processtime , CallBackFunc&& callbackfunc)
 	{
 		const shared_ptr<Job> job = ObjectPool<Job>::MakeShared(std::move(callbackfunc));
 		GJobTimerManager->Reserve(processtime, shared_from_this(), job);
+		return job;
 	}
 
 	/*---------------------------------------------------------------------------------------------------
 	이름     : JobQueue::TimerPush
 	용도     : GJobTimerManager에 Job 맴버함수 방식을 시간을 예약해 놓고 시간이 됐을 경우  Push하는 방식
+			   만든 Job을 반환해서 Cancle을 수정이 가능함
 	수정자   : 이민규
-	수정날짜 : 2022.09.02
+	수정날짜 : 2022.10.31
 	----------------------------------------------------------------------------------------------------*/
 	template<typename T, typename Ret, typename... Args>
-	void TimerPush(uint64 processtime ,Ret(T::* memfunc)(Args...), Args... args)
+	shared_ptr<Job> TimerPush(uint64 processtime ,Ret(T::* memfunc)(Args...), Args... args)
 	{
 		shared_ptr<T> owner = static_pointer_cast<T>(shared_from_this());
 		shared_ptr<Job> job =ObjectPool<Job>::MakeShared(owner, memfunc, std::forward<Args>(args)...);
 		GJobTimerManager->Reserve(processtime, shared_from_this(), job);
+		return job;
 	}
 
 	void ClearJobs() { _Jobs.Clear(); }

@@ -12,6 +12,7 @@ class Monster : public GameObject
 {
 public:
 	Monster();
+	~Monster() override;
 	void Update() override;
 
 	void Init(int32 monsterid);
@@ -40,5 +41,6 @@ protected:
 	int32 _SkillRange = 300;
 	int32 _Monsterid = 0;
 
+	Gvector<shared_ptr<Job>> _jobs;
 };
 

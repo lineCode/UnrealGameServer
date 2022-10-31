@@ -96,6 +96,8 @@ void GameRoom::EnterGame(GameObject* gameobject)
 			Monster* monster = reinterpret_cast<Monster*>(gameobject);
 			_Monsters.insert({ monster->GetId() , monster });
 			monster->SetRoom(GetGameRoom());
+
+			monster->Update();
 			break;
 		}
 
@@ -283,15 +285,17 @@ void GameRoom::BroadCast(shared_ptr<SendBuffer> sendbuffer)
 }
 
 /*---------------------------------------------------------------------------------------------
-이름     : GameRoom::update
+이름     : GameRoom::MonsterUpdate
 용도     : 방에 있는 크리쳐들의 상태를 업데이트 해주는 함수
 수정자   : 이민규
-수정날짜 : 2022.10.03
+수정날짜 : 2022.10.31
 ----------------------------------------------------------------------------------------------*/
-void GameRoom::update()
+void GameRoom::MonsterUpdate(Monster* monster)
 {
-	for (const auto& [ID, monster] : _Monsters)
-		monster->Update();
+	if (monster == nullptr || monster->GetRoom() != GetGameRoom())
+		return;
+
+	monster->Update();
 }
 
 /*---------------------------------------------------------------------------------------------

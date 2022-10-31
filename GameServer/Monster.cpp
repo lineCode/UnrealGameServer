@@ -13,6 +13,11 @@ Monster::Monster()
 	SetObjectType(Protocol::ObjectType::MONSTER);
 }
 
+Monster::~Monster()
+{
+	_jobs.clear();
+}
+
 void Monster::Init(int32 monsterid)
 {
 	_Monsterid = monsterid;
@@ -64,6 +69,11 @@ void Monster::Update()
 
 	default: ;
 	}
+
+	// TODO : 이러면 모든 로직이 vector에 쌓이는 문제가 존재 추후 수정
+	// 5프레임 0.2초마다 한번씩 업데이트
+	if (_Room != nullptr)
+		_jobs.push_back(_Room->TimerPush(200, &GameRoom::MonsterUpdate, this));
 }
 
 /*---------------------------------------------------------------------------------------------
@@ -184,14 +194,19 @@ void Monster::UpdateDead()
 이름     : Monster::OnDead
 용도     : 몬스터가 죽었을 때 호출 되는 함수
 수정자   : 이민규
-수정날짜 : 2022.10.24
+수정날짜 : 2022.10.31
 ----------------------------------------------------------------------------------------------*/
 void Monster::OnDead(GameObject* attacker)
 {
+	// 몬스터가 죽으면 몬스터 관련 로직을 전부 취소시킴
+	for(auto & job : _jobs)
+		job->SetCancel(true);
+
+	_jobs.clear();
+
 	GameObject::OnDead(attacker);
 
-	// TODO : 아이템 생성
-
+	// 아이템 생성
 	GameObject* owner = attacker->GetOwner();
 	if(owner->GetObjectType() == Protocol::ObjectType::PLAYER)
 	{
@@ -205,7 +220,6 @@ void Monster::OnDead(GameObject* attacker)
 			return;
 		DBJobManager::GetInstance()->RewardPlayer(player , reward , _Room);
 	}
-
 }
 
 /*---------------------------------------------------------------------------------------------

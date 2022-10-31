@@ -64,13 +64,4 @@ int main()
 		});
 	}
 
-	// TODO : 추후 수정 (타이머 설정으로 변경)
-	while(true)
-	{
-		const auto gameroom = RoomManager::GetInstance().Find(1);
-		gameroom->PushAsync(&GameRoom::update);
-
-		this_thread::sleep_for(std::chrono::seconds(1s));
-	}
-
 }

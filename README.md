@@ -100,6 +100,9 @@ ConverString 추가
 GetSetMaker 추가  
 ProtoGetSetMaker 추가
 
+- 2022.10.31  
+Job Cancel 추가
+
 ## 언리얼 서버 패치노트
 - 2022.09.11   
 InGame 로직들 추가  
@@ -169,6 +172,8 @@ Player 스텟 추가
 Equipment 추가   
 장비 장착 DB 연동 추가 
 
-- 2022.10.29  
+- 2022.10.30  
 플레이어 스텟 DB연동 추가
 
+- 2022.10.31  
+몬스터 업데이트 로직변경
