@@ -103,6 +103,9 @@ ProtoGetSetMaker 추가
 - 2022.10.31  
 Job Cancel 추가
 
+- 2022.11.02  
+ThreadManager::GlobalFlushSend 추가
+
 ## 언리얼 서버 패치노트
 - 2022.09.11   
 InGame 로직들 추가  
@@ -177,3 +180,7 @@ Equipment 추가
 
 - 2022.10.31  
 몬스터 업데이트 로직변경
+
+- 2022.11.02  
+EnterGame 버그 수정  
+서버 구조 전체적으로 변경

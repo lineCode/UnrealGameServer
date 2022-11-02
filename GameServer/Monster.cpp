@@ -203,7 +203,6 @@ void Monster::OnDead(GameObject* attacker)
 		job->SetCancel(true);
 
 	_jobs.clear();
-
 	GameObject::OnDead(attacker);
 
 	// 아이템 생성
@@ -230,6 +229,8 @@ void Monster::OnDead(GameObject* attacker)
 ----------------------------------------------------------------------------------------------*/
 RewardData * Monster::GetRandomReward()
 {
+	srand((unsigned int)time(NULL));
+
 	MonsterData* monsterdata = DataManager::GetInstacnce()->GetMonsterData(_Monsterid);
 	if (monsterdata == nullptr)
 		GConsoleLogManager->WriteStdOut(Color::RED, L"[Monster] : %d GetRandomReward Error", _Monsterid);

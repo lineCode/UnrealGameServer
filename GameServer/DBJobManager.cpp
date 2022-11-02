@@ -101,9 +101,9 @@ void DBJobManager::RewardPlayer(Player* player, RewardData* reward, shared_ptr<G
 						// TODO : 클라이언트에게 추가된 아이템 전송
 						{
 							Protocol::SERVER_ADDITEM itempkt;
-							itempkt.add_items()->CopyFrom(item->Getinfo());
+							itempkt.add_items()->MergeFrom(item->Getinfo());
 
-							player->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(itempkt));
+							player->GetSession()->Send(ServerPacketManager::MakeSendBuffer(itempkt));
 						}
 					});
 			}

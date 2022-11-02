@@ -1,10 +1,6 @@
 #include "pch.h"
 #include <format>
 #include "GameRoom.h"
-
-#include "DBJobManager.h"
-#include "Inventory.h"
-#include "Item.h"
 #include "Player.h"
 #include "Monster.h"
 #include "Projectile.h"
@@ -70,7 +66,7 @@ void GameRoom::EnterGame(GameObject* gameobject)
 			ObjectUtils::SetEnterPacket(enterpacket, gameobject);
 			_Players.insert({ player->GetId() , player });
 			player->SetRoom(GetGameRoom());
-			player->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(enterpacket));
+			player->GetSession()->Send(ServerPacketManager::MakeSendBuffer(enterpacket));
 
 			// TODO : 같은 방에 있는 플레이어들을 생성하기 위한 정보를 나에게 보냄
 			if (!_Players.empty())
@@ -85,7 +81,7 @@ void GameRoom::EnterGame(GameObject* gameobject)
 				for (const auto [id, roommonster] : _Monsters)
 					ObjectUtils::SetSpawnPacket(spawnpacket, roommonster);
 
-				player->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(spawnpacket));
+				player->GetSession()->Send(ServerPacketManager::MakeSendBuffer(spawnpacket));
 			}
 			break;
 		}
@@ -137,7 +133,7 @@ void GameRoom::EnterGame(GameObject* gameobject)
 			auto ownerpacket = ObjectUtils::SetSpawnPacket(spawnpacket, gameobject);
 
 			for (const auto [id, roomplayer] : _Players)
-				roomplayer->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(spawnpacket));
+				roomplayer->GetSession()->Send(ServerPacketManager::MakeSendBuffer(spawnpacket));
 
 			break;
 		}
@@ -150,7 +146,7 @@ void GameRoom::EnterGame(GameObject* gameobject)
 			for (const auto [id, roomplayer] : _Players)
 			{
 				if (id != gameobject->GetId())
-					roomplayer->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(spawnpacket));
+					roomplayer->GetSession()->Send(ServerPacketManager::MakeSendBuffer(spawnpacket));
 			}
 			break;
 		}
@@ -182,7 +178,7 @@ void GameRoom::LeaveGame(int32 objectid)
 
 			// TODO : 자신에게 방에서 퇴장했다는 정보 전송
 			Protocol::SERVER_LEAVEGAME leavepacket;
-			player->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(leavepacket));
+			player->GetSession()->Send(ServerPacketManager::MakeSendBuffer(leavepacket));
 
 			// TODO : 플레이어도 방에서 나가는 함수 호출
 			player->LeaveGame();
@@ -227,7 +223,7 @@ void GameRoom::LeaveGame(int32 objectid)
 		for (const auto [id, roomplayer] : _Players)
 		{
 			if (objectid != roomplayer->GetId())
-				roomplayer->GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(destroypacket));
+				roomplayer->GetSession()->Send(ServerPacketManager::MakeSendBuffer(destroypacket));
 		}
 	}
 
@@ -281,7 +277,7 @@ void GameRoom::OnDamage(Protocol::CLIENT_DAMAGE pkt)
 void GameRoom::BroadCast(shared_ptr<SendBuffer> sendbuffer)
 {
 	for (const auto [id, player] : _Players)
-		player->GetSession()->SendCheck(sendbuffer);
+		player->GetSession()->Send(sendbuffer);
 }
 
 /*---------------------------------------------------------------------------------------------

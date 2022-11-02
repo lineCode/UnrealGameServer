@@ -20,6 +20,9 @@ MemoryPool::~MemoryPool()
 ----------------------------------------------------------------------------------------------*/
 void MemoryPool::Push(void * ptr)
 {
+	if (ptr == nullptr)
+		return;
+
 	const auto memory = static_cast<SLIST_ENTRY*>(ptr);
 	::InterlockedPushEntrySList(&_pool, memory);
 }

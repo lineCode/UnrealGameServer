@@ -47,7 +47,8 @@ bool IocpManager::IocpUpdate(uint32 timeoutms)
 	if(::GetQueuedCompletionStatus(_IocpHandle , &NumOfByte , &Key ,reinterpret_cast<LPOVERLAPPED*>(&iocpstorage) ,timeoutms))
 	{
 		shared_ptr<IocpObject> object = iocpstorage->_Object;
-		object->IocpUpdate(iocpstorage , NumOfByte);
+		if(object != nullptr)
+			object->IocpUpdate(iocpstorage , NumOfByte);
 	}
 	else
 	{
@@ -60,6 +61,9 @@ bool IocpManager::IocpUpdate(uint32 timeoutms)
 
 			//WSA_DISCONNECT 일 경우 Update를 다시 실행해서 Recv가 0 바이트를 확인하고 DisConnect를 실행해주는 부분
 		case WSA_DISCONNECT:
+			if (iocpstorage->_Object == nullptr)
+				return false;
+
 			iocpstorage->_Object->IocpUpdate(iocpstorage, NumOfByte);
 			break;
 

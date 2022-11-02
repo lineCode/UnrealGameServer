@@ -22,11 +22,11 @@ public:
 
 	GetSetMaker(shared_ptr<GameRoom>, Room, _Room)
 
-	ProtoGetSetMaker(Protocol::StatInfo, Stat, _Info.statinfo, _Info.mutable_statinfo()->CopyFrom)
+	ProtoGetSetMaker(Protocol::StatInfo, Stat, _Info.statinfo, _Info.mutable_statinfo()->MergeFrom)
 
-	ProtoGetSetMaker(Protocol::Vector, Vector, _Info.vector, _Info.mutable_vector()->CopyFrom)
+	ProtoGetSetMaker(Protocol::Vector, Vector, _Info.vector, _Info.mutable_vector()->MergeFrom)
 
-	ProtoGetSetMaker(Protocol::Rotator, Rotator, _Info.rotator, _Info.mutable_rotator()->CopyFrom)
+	ProtoGetSetMaker(Protocol::Rotator, Rotator, _Info.rotator, _Info.mutable_rotator()->MergeFrom)
 
 	ProtoGetSetMaker(int32, Id, _Info.objectid , _Info.set_objectid)
 

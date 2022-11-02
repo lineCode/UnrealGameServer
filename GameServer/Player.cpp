@@ -100,7 +100,7 @@ void Player::ItemEquip(Protocol::CLIENT_EQUIPITEM* pkt)
 			equippkt.set_itemdbid(unequipitem->GetItemDbID());
 			equippkt.set_equipped(unequipitem->GetEquip());
 			equippkt.set_slot(unequipitem->GetSlot());
-			GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(equippkt));
+			GetSession()->Send(ServerPacketManager::MakeSendBuffer(equippkt));
 		}
 
 		// 메모리 선 적용
@@ -149,7 +149,7 @@ void Player::ItemEquip(Protocol::CLIENT_EQUIPITEM* pkt)
 		equippkt.set_itemdbid(pkt->itemdbid());
 		equippkt.set_equipped(pkt->equipped());
 
-		GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(equippkt));
+		GetSession()->Send(ServerPacketManager::MakeSendBuffer(equippkt));
 
 		// 스텟 갱신
 		RefreshStat();
@@ -173,7 +173,7 @@ void Player::ItemEquip(Protocol::CLIENT_EQUIPITEM* pkt)
 		equippkt.set_itemdbid(item->GetItemDbID());
 		equippkt.set_equipped(item->GetEquip());
 		equippkt.set_slot(item->GetSlot());
-		GetSession()->SendCheck(ServerPacketManager::MakeSendBuffer(equippkt));
+		GetSession()->Send(ServerPacketManager::MakeSendBuffer(equippkt));
 
 		// 스텟 갱신
 		RefreshStat();

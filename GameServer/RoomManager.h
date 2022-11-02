@@ -6,13 +6,12 @@ class GameRoom;
 이름     : RoomManager
 용도     : 서버에서 GameRoom을 Map으로 관리하는 싱글톤 객체
 수정자   : 이민규
-수정날짜 : 2022.10.05
+수정날짜 : 2022.11.02
 ----------------------------------------------------------------------------------------------*/
-class RoomManager
+class RoomManager : public JobQueue
 {
 public:
 	static RoomManager& GetInstance();
-
 	shared_ptr<GameRoom> Add(int32 mapid);
 	bool Remove(int32 roomid);
 	shared_ptr<GameRoom> Find(int32 roomid);

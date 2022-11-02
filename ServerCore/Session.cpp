@@ -276,30 +276,20 @@ bool Session::ProcessRecv(int32 numofbyte)
 }
 
 /*---------------------------------------------------------------------------------------------
-이름     : Session::SendCheck
-용도     : Send를 보내기 전 SendBufferQueue에 데이터를 모으고 한명의 쓰레드만
-           Send를 담당할 수 있도록 점검 하고 RegisterSend 해주는 함수
+이름     : Session::Send
+용도     : SendBufferQueue에 SendBuffer를 등록해주는 함수
 수정자   : 이민규
-수정날짜 : 2022.08.19
+수정날짜 : 2022.11.02
 ----------------------------------------------------------------------------------------------*/
-bool Session::SendCheck(shared_ptr<SendBuffer> sendbuffer)
+bool Session::Send(shared_ptr<SendBuffer> sendbuffer)
 {
 	if (GetConnected() == false)
 		return false;
 
-	bool sended = false;
-
 	{
 		WRITELOCK;
-
 		_SendBufferQueue.push(sendbuffer);
-
-		if (_Sended.exchange(true) == false)
-			sended = true;
 	}
-
-	if (sended)
-		RegisterSend();
 
 	return true;
 }
@@ -310,11 +300,11 @@ bool Session::SendCheck(shared_ptr<SendBuffer> sendbuffer)
            Scatter-Gather 기법을 이용해서 _SendBufferQueue에 보낼 데이터를 모아 놓고
            WSABUF에 전부 옮긴 후 한번에 보냄
 수정자   : 이민규
-수정날짜 : 2022.08.19
+수정날짜 : 2022.11.02
 ----------------------------------------------------------------------------------------------*/
 bool Session::RegisterSend()
 {
-	if (GetConnected() == false)
+	if (GetConnected() == false || _SendBufferQueue.empty() == true)
 		return false;
 	
 	_SendEventStorage.Init();
@@ -353,7 +343,6 @@ bool Session::RegisterSend()
 		{
 			_SendEventStorage._Object = nullptr;
 			_SendEventStorage._SendBuffers.clear();
-			_Sended.store(false);
 			return false;
 		}
 	}
@@ -364,32 +353,26 @@ bool Session::RegisterSend()
 /*---------------------------------------------------------------------------------------------
 이름     : Session::ProcessSend
 용도     : Send를 받고 나서 사용하는 함수
-           SendBufferQueue가 비어 있을 경우 종료하지만 비어있지 않을 경우
-           이 쓰레드가 다시 RegisterSend를 하게 함으로 써
-           한 개의 쓰레드만 한 세션에 대해 Send하도록 함
 수정자   : 이민규
-수정날짜 : 2022.08.18
+수정날짜 : 2022.11.02
 ----------------------------------------------------------------------------------------------*/
 bool Session::ProcessSend(int32 numOfBytes)
 {
-	_SendEventStorage._Object = nullptr;
-	_SendEventStorage._SendBuffers.clear();
+
+	// TODO : 분명 문제가 있는거 같은데 왜 문제가 안터짐? 계속 고민해보자
+	{
+		WRITELOCK;
+		_SendEventStorage._Object = nullptr;
+		_SendEventStorage._SendBuffers.clear();
+	}
 
 	if(numOfBytes == 0)
 	{
-		DisConnect(L"Send Data 0");
+		DisConnect(L"WriteSend Data 0");
 		return false;
 	}
 
 	ContentsSend();
-
-	{
-		WRITELOCK;
-		if (_SendBufferQueue.empty())
-			_Sended.store(false);
-		else
-			RegisterSend();
-	}
 
 	return true;
 }

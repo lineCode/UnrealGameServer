@@ -5,6 +5,7 @@
 #include "RecvBuffer.h"
 #include "SendBuffer.h"
 #include "BufferWriter.h"
+#include "JobSerializer.h"
 
 class ServiceManager;
 
@@ -25,11 +26,12 @@ struct PacketHeader
 이름     : Session
 용도     : 클라이언트와 서버가 연결 후 상호작용에 사용하는 객체
 수정자   : 이민규
-수정날짜 : 2022.08.19
+수정날짜 : 2022.11.2
 ----------------------------------------------------------------------------------------------*/
-class Session : public IocpObject
+class Session : public IocpObject 
 {
 	friend class ListenManager;
+	friend class ThreadManager;
 
 	enum
 	{
@@ -48,9 +50,9 @@ public:
 	bool DisConnect(const WCHAR * cause);
 
 	template <typename... Args>
-	bool Send(uint16 protocolid, Args&&... args);
+	bool WriteSend(uint16 protocolid, Args&&... args);
 	template <typename T>
-	bool SendtoBuffer(uint16 protocolid, T* buffer ,int32 size);
+	bool WriteSendtoBuffer(uint16 protocolid, T* buffer ,int32 size);
 
 	void SetServerAddress(GWString ip, uint16 port);
 	void SetServerAddress(NetAddress address);
@@ -60,9 +62,8 @@ public:
 	NetAddress GetMyAddress() const { return _MyAddress; }
 	NetAddress GetServerAddress() const;
 	bool GetConnected() { return _Connected; }
-	bool GetSended() { return _Sended; }
 	shared_ptr<Session> GetSession() { return reinterpret_pointer_cast<Session>(shared_from_this()); }
-	bool SendCheck(shared_ptr<class SendBuffer> sendbuffer);
+	bool Send(shared_ptr<class SendBuffer> sendbuffer);
 
 	char  _AcceptBuffer[1000];
 
@@ -100,7 +101,6 @@ private:
 	SendEventStorage _SendEventStorage = {};
 
 	::queue<shared_ptr<SendBuffer>> _SendBufferQueue;
-	::atomic<bool> _Sended = false;
 
 	RecvBuffer _RecvBuffer;
 
@@ -109,17 +109,17 @@ private:
 };
 
 /*---------------------------------------------------------------------------------------------
-이름     : Session::Send
-용도     : 데이터를 보내는 함수
+이름     : Session::WriteSend
+용도     : 데이터를 직접 만들어서 보내는 함수
            GSendBufferManager을 통해서 SendBuffer을 할당받고
            PacketHeader로 size 와 id를 넣고 데이터를 넣은 다음
            BufferHelper를 통해 데이터를 넣고
-           SendCheck로 보내서 Send가 가능한지 체크해주는 함수
+           Send로 보내서 등록하는 함수
 수정자   : 이민규
 수정날짜 : 2022.08.23
 ----------------------------------------------------------------------------------------------*/
 template <typename... Args>
-bool Session::Send(uint16 protocolid , Args&&... args)
+bool Session::WriteSend(uint16 protocolid , Args&&... args)
 {
 	const shared_ptr<SendBuffer> sendbuffer = GSendBufferManager->Open(0x400);
 	BufferWriter BufferHelper(sendbuffer->GetBuffer(), 0x400);
@@ -131,23 +131,23 @@ bool Session::Send(uint16 protocolid , Args&&... args)
 	packet->_ProtocoliD = protocolid;
 
 	sendbuffer->Close(BufferHelper.GetWriteSize());
-	SendCheck(sendbuffer);
+	Send(sendbuffer);
 
 	return true;
 }
 
 /*---------------------------------------------------------------------------------------------
-이름     : Session::SendtoBuffer
-용도     : 버퍼형 데이터를 보내는 함수
+이름     : Session::WriteSendtoBuffer
+용도     : 버퍼형 데이터를 직접 만들어서 보내는 함수
 		   GSendBufferManager을 통해서 SendBuffer을 할당받고
 		   PacketHeader로 size 와 id를 넣고 데이터를 넣은 다음
 		   BufferWriter를 통해 데이터를 넣고
-		   SendCheck로 보내서 Send가 가능한지 체크해주는 함수
+		   Send로 보내서 등록하는 함수
 수정자   : 이민규
 수정날짜 : 2022.08.23
 ------------------------------------------------------------	----------------------------------*/
 template <typename T>
-bool Session::SendtoBuffer(uint16 protocolid, T* buffer , int32 size)
+bool Session::WriteSendtoBuffer(uint16 protocolid, T* buffer , int32 size)
 {
 	const shared_ptr<SendBuffer> sendbuffer = GSendBufferManager->Open(0x400);
 	BufferWriter BufferHelper(sendbuffer->GetBuffer(), 0x400);
@@ -160,7 +160,7 @@ bool Session::SendtoBuffer(uint16 protocolid, T* buffer , int32 size)
 	packet->_ProtocoliD = protocolid;
 
 	sendbuffer->Close(BufferHelper.GetWriteSize());
-	SendCheck(sendbuffer);
+	Send(sendbuffer);
 
 	return true;
 }

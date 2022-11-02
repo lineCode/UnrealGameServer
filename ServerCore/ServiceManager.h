@@ -41,6 +41,7 @@ public:
 	void ReleaseSession(shared_ptr<Session> session);
 	int32 GetCurrentSessionCount() { return _Sessionbuffer.size(); }
 	int32 GetListenKeeprCount() { return _CSSettingCount; }
+	Gset<shared_ptr<Session>> GetSessions();
 
 	ServiceType GetServiceType() { return _type; }
 	NetAddress GetNetAddress() { return _NetAddress; }

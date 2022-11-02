@@ -27,6 +27,8 @@ void WorkProcess(shared_ptr<ServerManager> & server)
 		ThreadManager::GlobalJobTImerProcess();
 
 		ThreadManager::GlobalJobSerializerProcess();
+
+		ThreadManager::GlobalFlushSend(server);
 	}
 }
 
@@ -56,7 +58,7 @@ int main()
 
 	CRASH_IF(server->Start() == false);
 
-	for(int i = 0; i < 3; i++)
+	for(int i = 0; i < 10; i++)
 	{
 		GThreadManager->Launch([&server]()
 		{

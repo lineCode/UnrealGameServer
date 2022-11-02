@@ -37,6 +37,9 @@
     <Filter Include="Json\RapidJson">
       <UniqueIdentifier>{89621374-1c21-4252-aa17-110e317268cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Session">
+      <UniqueIdentifier>{c22234fa-3a60-43c4-83b1-f74213de6caf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -91,12 +94,6 @@
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="ListenManager.h">
-      <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="Session.h">
-      <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="PacketSession.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="ServiceManager.h">
@@ -288,6 +285,12 @@
     <ClInclude Include="ConverString.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>Session</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketSession.h">
+      <Filter>Session</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -330,12 +333,6 @@
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="ListenManager.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Session.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="PacketSession.cpp">
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="ServiceManager.cpp">
@@ -400,6 +397,12 @@
     </ClCompile>
     <ClCompile Include="ConverString.cpp">
       <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>Session</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketSession.cpp">
+      <Filter>Session</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

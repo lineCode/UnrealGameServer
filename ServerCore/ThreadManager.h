@@ -24,9 +24,11 @@ public:
 	static void DestroyTLS();
 	static void GlobalJobSerializerProcess();
 	static void GlobalJobTImerProcess();
+	static void GlobalFlushSend(shared_ptr<class ServerManager> server);
 
 private:
 	RWLOCK_USE
 	vector<jthread> _JThreads;
+	static atomic<int> _send;
 };
 

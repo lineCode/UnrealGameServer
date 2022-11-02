@@ -26,7 +26,7 @@ void ServerSession::ContentsConnect()
 	Protocol::SERVER_CONNECT connectpacket;
 	connectpacket.set_connect(1);
 		
-	SendCheck( ServerPacketManager::MakeSendBuffer(connectpacket));
+	Send( ServerPacketManager::MakeSendBuffer(connectpacket));
 }
 
 /*---------------------------------------------------------------------------------------------
@@ -38,8 +38,15 @@ void ServerSession::ContentsConnect()
 ----------------------------------------------------------------------------------------------*/
 void ServerSession::ContentsDisConnect()
 {
-	auto room = RoomManager::GetInstance().Find(1);
-	room->PushAsync(&GameRoom::LeaveGame, _MyPlayer->GetInfo().objectid());
+	RoomManager::GetInstance().PushAsync([player = _MyPlayer]()
+		{
+			auto room = RoomManager::GetInstance().Find(1);
+			if (room == nullptr)
+				return;
+
+			room->PushAsync(&GameRoom::LeaveGame, player->GetInfo().objectid());
+		});
+
 }
 
 void ServerSession::ContentsSend()
@@ -146,12 +153,12 @@ bool ServerSession::Login(Protocol::CLIENT_LOGIN* pkt)
 			_LobbyPlayers[ConverString(username).GetWCHAR()] = player;
 
 			// TODO : 패킷에 넣어준다
-			pktlogin.add_players()->CopyFrom(player);
+			pktlogin.add_players()->MergeFrom(player);
 		}
 
 		_Accountid = id;
 		GConsoleLogManager->WriteStdOut(Color::GREEN, L"[LOGIN_SUCCESS] : %s\n", accountname.GetWCHAR());
-		SendCheck(ServerPacketManager::MakeSendBuffer(pktlogin));
+		Send(ServerPacketManager::MakeSendBuffer(pktlogin));
 		_ServerState = Protocol::SERVERSTATE_LOBBY;
 		GDBConnectionPool->Push(dbConn);
 		return true;
@@ -175,7 +182,7 @@ bool ServerSession::Login(Protocol::CLIENT_LOGIN* pkt)
 		_Accountid = id;
 	}
 
-	SendCheck(ServerPacketManager::MakeSendBuffer(pktlogin));
+	Send(ServerPacketManager::MakeSendBuffer(pktlogin));
 	_ServerState = Protocol::SERVERSTATE_LOBBY;
 
 	GDBConnectionPool->Push(dbConn);
@@ -228,7 +235,7 @@ bool ServerSession::CreatePlayer(Protocol::CLIENT_CREATEPLAYER* pkt)
 
 	Protocol::LobbyPlayerInfo player;
 	player.set_playerdbid(id);
-	player.mutable_statinfo()->CopyFrom(datastat);
+	player.mutable_statinfo()->MergeFrom(datastat);
 	player.set_name(pkt->name());
 	player.set_objectid(1);
 
@@ -236,9 +243,9 @@ bool ServerSession::CreatePlayer(Protocol::CLIENT_CREATEPLAYER* pkt)
 
 	Protocol::SERVER_CREATEPLAYER createpkt;
 
-	createpkt.mutable_player()->CopyFrom(player);
+	createpkt.mutable_player()->MergeFrom(player);
 
-	SendCheck(ServerPacketManager::MakeSendBuffer(createpkt));
+	Send(ServerPacketManager::MakeSendBuffer(createpkt));
 
 	GConsoleLogManager->WriteStdOut(Color::GREEN, L"[PLAYER_CREATE] : %s  \n", playername.GetWCHAR());
 	GDBConnectionPool->Push(dbConn);
@@ -295,9 +302,9 @@ bool ServerSession::EnterPlayer(Protocol::CLIENT_ENTERGAME* pkt)
 		auto setplayer = enterpkt.mutable_player();
 		setplayer->set_objectid(player->GetId());
 		setplayer->set_name(pkt->name());
-		setplayer->mutable_statinfo()->CopyFrom(player->GetStat());
+		setplayer->mutable_statinfo()->MergeFrom(player->GetStat());
 
-		SendCheck(ServerPacketManager::MakeSendBuffer(enterpkt));
+		Send(ServerPacketManager::MakeSendBuffer(enterpkt));
 
 		// 플레이어 아이템을 가져옴
 		ProcedureManager::FindPlayerItemList listitem(*dbConn);
@@ -328,14 +335,18 @@ bool ServerSession::EnterPlayer(Protocol::CLIENT_ENTERGAME* pkt)
 			else
 				player->GetEquipment()->Add(item);
 			
-			itempkt.add_items()->CopyFrom(item->Getinfo());
+			itempkt.add_items()->MergeFrom(item->Getinfo());
 		}
 	
-		SendCheck(ServerPacketManager::MakeSendBuffer(itempkt));
+		Send(ServerPacketManager::MakeSendBuffer(itempkt));
 
 		// TODO : 방에 입장
-		const auto room = RoomManager::GetInstance().Find(1);
-		room->PushAsync(&GameRoom::EnterGame , static_cast<GameObject*>(player));
+		RoomManager::GetInstance().PushAsync([player]()
+			{
+				const auto room = RoomManager::GetInstance().Find(1);
+				room->PushAsync(&GameRoom::EnterGame, static_cast<GameObject*>(player));
+			});
+	
 
 		_ServerState = Protocol::SERVERSTATE_GAME;
 

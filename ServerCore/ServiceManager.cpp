@@ -60,7 +60,18 @@ void ServiceManager::ReleaseSession(shared_ptr<Session> session)
 	CRASH_IF(_Sessionbuffer.erase(session) == 0);
 }
 
-
+/*---------------------------------------------------------------------------------------------
+이름     : ServiceManager::GetSessions
+용도     : 서버에 접속해 있는 모든 Session을 Set형태로 넘겨주는 함수
+수정자   : 이민규
+수정날짜 : 2022.11.02
+----------------------------------------------------------------------------------------------*/
+Gset<shared_ptr<Session>> ServiceManager::GetSessions()
+{
+	WRITELOCK;
+	Gset<shared_ptr<Session>> sessions = _Sessionbuffer;
+	return sessions;
+}
 
 
 ServerManager::ServerManager(NetAddress address, shared_ptr<IocpManager> iocpmanager, SessionMakeFunction func,int32 listenkeepcount)
