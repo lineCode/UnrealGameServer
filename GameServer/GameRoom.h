@@ -6,6 +6,12 @@ class Player;
 class Monster;
 class Projectile;
 
+struct Size
+{
+	int32 x;
+	int32 y;
+};
+
 /*---------------------------------------------------------------------------------------------
 이름     : GameRoom
 용도     : 플레이어들이 입장할 수 있는 공간을 만드는 객체
@@ -20,21 +26,29 @@ public:
 	GameRoom();
 	shared_ptr<GameRoom> GetGameRoom() { return  static_pointer_cast<GameRoom>(shared_from_this()); }
 
-	void SetRoomId(int32 id) { _RoomId = id; }
-	int32 GetRoomId() { return _RoomId; }
+	GetSetMaker(int32, RoomId, _RoomId)
+
 	void MonsterUpdate(Monster * monster);
 
 	Player* FindPlayer(function<bool(Player*)> condition);
 
-	void Init(int32 mapid);
+	void Init(int32 mapid , int32 zonesize = 2000);
 	void EnterGame(GameObject* gameobject);
 	void LeaveGame(int32 objectid);
 
 	void OnDamage(Protocol::CLIENT_DAMAGE pkt);
-	void BroadCast(shared_ptr<class SendBuffer> sendbuffer);
+	void BroadCast(shared_ptr<class SendBuffer> sendbuffer , Protocol::Vector pos);
+
+	class Zone* GetZone(Protocol::Vector pos);
+	GhashSet<Zone*> GetAdjacentZones(Protocol::Vector pos, int32 cell = 500);
 
 private:
 	int32 _RoomId = 0;
+	int32 _ZoneSize = 0;
+	Size _MapSize = { 0 , 0 };
+
+	Gvector<Gvector<Zone*>> _Zones;
+
 	GhashMap<int32, Player*> _Players;
 	GhashMap<int32, Monster*> _Monsters;
 	GhashMap<int32, Projectile*> _Projectiles;

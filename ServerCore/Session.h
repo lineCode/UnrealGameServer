@@ -76,7 +76,6 @@ protected:
 	virtual void ContentsConnect() {};
 	virtual void ContentsDisConnect() {};
 	virtual void ContentsSend() {};
-	
 
 private:
 	bool RegisterConnect();
@@ -89,8 +88,12 @@ private:
 	bool ProcessRecv(int32 numofbyte);
 	bool ProcessSend(int32 numOfBytes);
 
+protected:
+	// 샌드보내는 중인지 체크하는 변수
+	atomic<bool> _Send = false;
+
 private:
-	RWLOCK_USE;
+	RWLOCK_USE
 
 	NetAddress _MyAddress= {};
 	::atomic<bool> _Connected = false;

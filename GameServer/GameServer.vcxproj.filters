@@ -91,6 +91,9 @@
     <ClCompile Include="Equipment.cpp">
       <Filter>Item</Filter>
     </ClCompile>
+    <ClCompile Include="Zone.cpp">
+      <Filter>Room</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -158,6 +161,9 @@
     </ClInclude>
     <ClInclude Include="Equipment.h">
       <Filter>Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Zone.h">
+      <Filter>Room</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

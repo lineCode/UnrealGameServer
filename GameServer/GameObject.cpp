@@ -37,7 +37,7 @@ void GameObject::OnDamaged(GameObject* attacker, int damage)
 	pkthp.set_objectid(_Info.objectid());
 	pkthp.set_hp(GetHp());
 
-	_Room->BroadCast(ServerPacketManager::MakeSendBuffer(pkthp));
+	_Room->BroadCast(  ServerPacketManager::MakeSendBuffer(pkthp) , GetVector());
 }
 
 /*---------------------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ void GameObject::OnDead(GameObject* attacker)
 	Protocol::SERVER_DIE pktdie;
 	pktdie.set_objectid(GetId());
 	pktdie.set_attackerid(attacker->GetId());
-	_Room->BroadCast(ServerPacketManager::MakeSendBuffer(pktdie));
+	_Room->BroadCast(ServerPacketManager::MakeSendBuffer(pktdie) , GetVector());
 
 	auto room = _Room;
 

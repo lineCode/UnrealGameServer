@@ -9,6 +9,12 @@
 Player::Player()
 {
 	SetObjectType(Protocol::ObjectType::PLAYER);
+
+	Protocol::Vector vec;
+	vec.set_x(0);
+	vec.set_y(0);
+
+	SetVector(vec);
 	_Inventory = Gnew<Inventory>();
 	_Equipment = Gnew<Equipment>();
 }

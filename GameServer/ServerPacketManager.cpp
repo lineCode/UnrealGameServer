@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "ServerPacketManager.h"
-
 #include "GameRoom.h"
 #include "Player.h"
 #include "ProcedureManager.h"

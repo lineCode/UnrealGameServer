@@ -27,8 +27,6 @@ void WorkProcess(shared_ptr<ServerManager> & server)
 		ThreadManager::GlobalJobTImerProcess();
 
 		ThreadManager::GlobalJobSerializerProcess();
-
-		ThreadManager::GlobalFlushSend(server);
 	}
 }
 
@@ -56,14 +54,19 @@ int main()
 		GMakeShared<ServerSession>,
 		5);
 
-	CRASH_IF(server->Start() == false);
+	CRASH_IF(server->Start() == false)
 
-	for(int i = 0; i < 10; i++)
+	for(int i = 0; i < 3; i++)
 	{
 		GThreadManager->Launch([&server]()
 		{
 			WorkProcess(server);
 		});
 	}
+
+	// 메인 쓰레드는 Send 담당 하도록
+	while (true)
+		ThreadManager::GlobalFlushSend(server);
+
 
 }

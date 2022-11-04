@@ -300,18 +300,20 @@ bool Session::Send(shared_ptr<SendBuffer> sendbuffer)
            Scatter-Gather 기법을 이용해서 _SendBufferQueue에 보낼 데이터를 모아 놓고
            WSABUF에 전부 옮긴 후 한번에 보냄
 수정자   : 이민규
-수정날짜 : 2022.11.02
+수정날짜 : 2022.11.03
 ----------------------------------------------------------------------------------------------*/
 bool Session::RegisterSend()
 {
-	if (GetConnected() == false || _SendBufferQueue.empty() == true)
+	if (_Send == true || _SendBufferQueue.empty() == true || GetConnected() == false )
 		return false;
-	
+
+	_Send.store(true);
+
 	_SendEventStorage.Init();
 	_SendEventStorage._Object = shared_from_this();
 
 	{
-		WRITELOCK;
+		WRITELOCK
 
 		int32 writesize = 0;
 
@@ -354,17 +356,14 @@ bool Session::RegisterSend()
 이름     : Session::ProcessSend
 용도     : Send를 받고 나서 사용하는 함수
 수정자   : 이민규
-수정날짜 : 2022.11.02
+수정날짜 : 2022.11.03
 ----------------------------------------------------------------------------------------------*/
 bool Session::ProcessSend(int32 numOfBytes)
 {
+	_SendEventStorage._Object = nullptr;
+	_SendEventStorage._SendBuffers.clear();
 
-	// TODO : 분명 문제가 있는거 같은데 왜 문제가 안터짐? 계속 고민해보자
-	{
-		WRITELOCK;
-		_SendEventStorage._Object = nullptr;
-		_SendEventStorage._SendBuffers.clear();
-	}
+	_Send.store(false);
 
 	if(numOfBytes == 0)
 	{

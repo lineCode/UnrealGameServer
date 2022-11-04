@@ -261,5 +261,5 @@ void Monster::BroadCastMove()
 {
 	Protocol::SERVER_MOVE movepacket;
 	ObjectUtils::SetMovePacket(movepacket, this);
-	_Room->BroadCast(ServerPacketManager::MakeSendBuffer(movepacket));
+	_Room->BroadCast(ServerPacketManager::MakeSendBuffer(movepacket) ,  GetVector());
 }

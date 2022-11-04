@@ -9,6 +9,7 @@
 #include "ServerPacketManager.h"
 #include "ServerSession.h"
 #include "ObjectUtils.h"
+#include "Zone.h"
 
 #pragma region GameRoom
 GameRoom::GameRoom()
@@ -20,28 +21,48 @@ GameRoom::GameRoom()
 이름     : GameRoom::Init
 용도     : 방을 초기화 하는 부분
 수정자   : 이민규
-수정날짜 : 2022.09.19
+수정날짜 : 2022.11.03
 ----------------------------------------------------------------------------------------------*/
-void GameRoom::Init(int32 mapid)
+void GameRoom::Init(int32 mapid , int32 zonesize)
 {
-	Monster * monster = ObjectManager::GetInstance().Add<Monster>(Protocol::MonsterType::SAVAROG);
-	monster->Init(1);
+	// TODO : 나중에는 맵데이터도 긁어 와서 수정
+	_MapSize = {8000 ,8000};
 
-	Protocol::Vector vector;
-	vector.set_x(-2200.f);
-	vector.set_y(-150.f);
-	vector.set_z(97.6f);
-	monster->SetVector(vector);
-	monster->SetRoom(GetGameRoom());
+	// ZONE
+	_ZoneSize = zonesize;
 
-	PushAsync(&GameRoom::EnterGame, static_cast<GameObject*>(monster));
+	//TODO : 맵의 YSize XSize 나중에 받아서 수정 할것..
+	int32 countY =  ceil( (float)_MapSize.y / _ZoneSize);
+	int32 countX =  ceil((float)_MapSize.x / _ZoneSize);
+
+	for(int y = 0; y <= countY; y++)
+	{
+		Gvector<Zone*> zoon;
+		for(int x = 0; x <= countX; x++)
+		{
+			zoon.push_back(Gnew<Zone>(y, x));
+		}
+		_Zones.push_back(zoon);
+	}
+
+	// TODO : 나중에 삭제 예정
+	//Monster * monster = ObjectManager::GetInstance().Add<Monster>(Protocol::MonsterType::SAVAROG);
+	//monster->Init(1);
+	//Protocol::Vector vector;
+	//vector.set_x(-2200.f);
+	//vector.set_y(-150.f);
+	//vector.set_z(97.6f);
+	//monster->SetVector(vector);
+	//monster->SetRoom(GetGameRoom());
+
+	//PushAsync(&GameRoom::EnterGame, static_cast<GameObject*>(monster));
 }
 
 /*---------------------------------------------------------------------------------------------
 이름     : GameRoom::EnterGame
 용도     : 플레이어를 방에 입장시키는 함수
 수정자   : 이민규
-수정날짜 : 2022.09.19
+수정날짜 : 2022.11.04
 ----------------------------------------------------------------------------------------------*/
 void GameRoom::EnterGame(GameObject* gameobject)
 {
@@ -50,13 +71,13 @@ void GameRoom::EnterGame(GameObject* gameobject)
 
 	Protocol::ObjectType type = ObjectUtils::GetObjectType(gameobject->GetId());
 
-	// TODO : 본인한테 정보 전송
+	// 본인한테 정보 전송
 	{
 		switch (type)
 		{
 		case Protocol::ObjectType::PLAYER:
 		{
-			// TODO : 내 자신에게 들어왔음을 알려줌
+			// 내 자신에게 들어왔음을 알려줌
 			Player* player = reinterpret_cast<Player*>(gameobject);
 			if (player == nullptr)
 				return;
@@ -68,7 +89,10 @@ void GameRoom::EnterGame(GameObject* gameobject)
 			player->SetRoom(GetGameRoom());
 			player->GetSession()->Send(ServerPacketManager::MakeSendBuffer(enterpacket));
 
-			// TODO : 같은 방에 있는 플레이어들을 생성하기 위한 정보를 나에게 보냄
+			// 존 입장
+			GetZone(player->GetVector())->AddPlayer(player);
+
+			// 같은 방에 있는 플레이어들을 생성하기 위한 정보를 나에게 보냄
 			if (!_Players.empty())
 			{
 				Protocol::SERVER_SPAWN spawnpacket;
@@ -88,7 +112,7 @@ void GameRoom::EnterGame(GameObject* gameobject)
 
 		case Protocol::ObjectType::MONSTER:
 		{
-			// TODO : 몬스터를 _Monsters에 등록하는 부분
+			// 몬스터를 _Monsters에 등록하는 부분
 			Monster* monster = reinterpret_cast<Monster*>(gameobject);
 			_Monsters.insert({ monster->GetId() , monster });
 			monster->SetRoom(GetGameRoom());
@@ -99,7 +123,7 @@ void GameRoom::EnterGame(GameObject* gameobject)
 
 		case Protocol::ObjectType::PROJECTILE:
 		{
-			// TODO : 발사체를 _Projectiles에 등록하는 부분
+			// 발사체를 _Projectiles에 등록하는 부분
 			Projectile* projectile = reinterpret_cast<Projectile*>(gameobject);
 			_Projectiles.insert({ projectile->GetId() , projectile });
 			projectile->SetRoom(GetGameRoom());
@@ -124,7 +148,7 @@ void GameRoom::EnterGame(GameObject* gameobject)
 		{
 		case Protocol::ObjectType::PROJECTILE:
 		{
-			// TODO : 발사체일 경우
+			// 발사체일 경우
 			if (_Projectiles.contains(gameobject->GetId()) == false)
 				return;
 
@@ -140,7 +164,7 @@ void GameRoom::EnterGame(GameObject* gameobject)
 
 		default:
 		{
-			// TODO : 그 외 모든 경우
+			// 그 외 모든 경우
 			ObjectUtils::SetSpawnPacket(spawnpacket, gameobject);
 
 			for (const auto [id, roomplayer] : _Players)
@@ -170,30 +194,33 @@ void GameRoom::LeaveGame(int32 objectid)
 	{
 		case Protocol::ObjectType::PLAYER:
 		{
-			// TODO : 플레이어를 방에서 제거시키는 부분
+			// 플레이어를 방에서 제거시키는 부분
 			if (ObjectManager::GetInstance().Find(objectid) == nullptr)
 				return;
 
 			Player * player = _Players[objectid];
 
-			// TODO : 자신에게 방에서 퇴장했다는 정보 전송
+			// 자신에게 방에서 퇴장했다는 정보 전송
 			Protocol::SERVER_LEAVEGAME leavepacket;
 			player->GetSession()->Send(ServerPacketManager::MakeSendBuffer(leavepacket));
 
-			// TODO : 플레이어도 방에서 나가는 함수 호출
+			// 존에서 퇴장
+			GetZone(player->GetVector())->RemovePlayer(player);
+
+			// 플레이어도 방에서 나가는 함수 호출
 			player->LeaveGame();
 
-			// TODO : 나의 방에서도 플레이어 제거
+			// 나의 방에서도 플레이어 제거
 			_Players.erase(objectid);
 
-			// TODO : ObjectManager에서 플레이어를 제거
+			// ObjectManager에서 플레이어를 제거
 			ObjectManager::GetInstance().Remove(objectid);
 			break;
 		}
 
 		case Protocol::ObjectType::MONSTER:
 		{
-			// TODO : 몬스터를 방에서 제거시키는 부분
+			// 몬스터를 방에서 제거시키는 부분
 			if (_Monsters.contains(objectid) == false)
 				return;
 
@@ -204,7 +231,7 @@ void GameRoom::LeaveGame(int32 objectid)
 
 		case Protocol::ObjectType::PROJECTILE:
 		{
-			// TODO : 발사체를 방에서 제거시키는 부분
+			// 발사체를 방에서 제거시키는 부분
 			if (_Projectiles.contains(objectid) == false)
 				return;
 
@@ -215,7 +242,7 @@ void GameRoom::LeaveGame(int32 objectid)
 		}
 	}
 
-	// TODO : 같은 방에 있는 플레이어에게 퇴장한 나의 정보 전송
+	// 같은 방에 있는 플레이어에게 퇴장한 나의 정보 전송
 	{
 		Protocol::SERVER_DESTROY destroypacket;
 		destroypacket.add_objectids(objectid);
@@ -260,9 +287,7 @@ void GameRoom::OnDamage(Protocol::CLIENT_DAMAGE pkt)
 	}
 
 	default:
-		{
 		cout << format("[GameRoom] : OnDamage Error") << endl;
-		};
 	}
 
 	cout << format("Damage : Attacker : {} vicitim : {} Damage : {}", pkt.attackerid(), pkt.victimeid(), pkt.damage()) << endl;
@@ -270,14 +295,82 @@ void GameRoom::OnDamage(Protocol::CLIENT_DAMAGE pkt)
 
 /*---------------------------------------------------------------------------------------------
 이름     : GameRoom::BroadCast
-용도     : 방에 있는 모든 플레이어게 패킷을 전송해주는 함수
+용도     : 방에 있는  플레이어게 Zone 단위로 패킷을 전송해주는 함수
 수정자   : 이민규
-수정날짜 : 2022.09.13
+수정날짜 : 2022.11.04
 ----------------------------------------------------------------------------------------------*/
-void GameRoom::BroadCast(shared_ptr<SendBuffer> sendbuffer)
+void GameRoom::BroadCast(shared_ptr<SendBuffer> sendbuffer , Protocol::Vector pos)
 {
-	for (const auto [id, player] : _Players)
-		player->GetSession()->Send(sendbuffer);
+	// 해당좌표에 인접한 존을 탐색
+	GhashSet<Zone*> zones = GetAdjacentZones(pos);
+
+	for (auto zone : zones)
+	{
+		GConsoleLogManager->WriteStdOut(Color::YELLOW, L"Brodcast %d\n", zone->GetPlayers().size());
+		for (auto player : zone->GetPlayers())
+		{
+			player->GetSession()->Send(sendbuffer);
+		}
+	}
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : GameRoom::GetZone
+용도     : 좌표에 해당하는 Zone을 반환하는 함수
+           존재하지 않는 Zone의 좌표의 경우 nullptr 반환
+수정자   : 이민규
+수정날짜 : 2022.11.04
+----------------------------------------------------------------------------------------------*/
+Zone* GameRoom::GetZone(Protocol::Vector pos)
+{
+	int32 x = floor(((_MapSize.x / 2) + pos.x()) / _ZoneSize);
+	int32 y = floor(((_MapSize.y / 2) + pos.y()) / _ZoneSize);
+
+	if (x < 0 || x > floor((float)(_MapSize.x)/ _ZoneSize))
+		return nullptr;
+
+	if (y < 0 || y > floor((float)(_MapSize.y) / _ZoneSize))
+		return nullptr;
+
+	return _Zones[y][x];
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : GameRoom::GetAdjacentZones
+용도     : 좌표에 해당하는 인접한 Zone을 Gvector로 반환하는 함수
+		   존재하지 않는 Zone의 좌표의 경우 GhashSet size = 0
+수정자   : 이민규
+수정날짜 : 2022.11.04
+----------------------------------------------------------------------------------------------*/
+GhashSet<Zone*> GameRoom::GetAdjacentZones(Protocol::Vector pos, int32 cell)
+{
+	GhashSet<Zone*> zones;
+
+	// y기준으로 위 밑 / x기준으로 왼쪽 오른쪽 순차 검색
+	int32 delta[] = { -cell, +cell };
+
+	for(auto dy : delta)
+	{
+		for(auto dx : delta)
+		{
+			int32 y = pos.y() + dy;
+			int32 x = pos.x() + dx;
+
+			Protocol::Vector vector;
+			vector.set_x(x);
+			vector.set_y(y);
+
+			Zone* zone = GetZone(vector);
+
+			if(zone == nullptr || zone->GetPlayers().empty())
+				continue;
+
+			zones.insert(zone);
+		}
+	}
+
+	zones.insert(GetZone(pos));
+	return zones;
 }
 
 /*---------------------------------------------------------------------------------------------
@@ -326,14 +419,29 @@ void GameRoom::PlayerMove(Player* player, Protocol::CLIENT_MOVE* pkt)
 
 	// TODO : 서버에서 검증 필요 추가 예정
 
-	// TODO : 일단 서버에서 먼저 좌표 및 방향 이동
+	// 일단 서버에서 먼저 좌표 및 방향 이동
+	Zone* zonenow = player->GetRoom()->GetZone(player->GetVector());
+
 	player->SetVector(pkt->vector());
 	player->SetRotator(pkt->rotator());
 
-	// TODO : 다른 플레이어한테도 알려준다
+	// 존 이동
+	Zone* zoneafter = player->GetRoom()->GetZone(pkt->vector());
+
+	// 존 위치가 바뀌엇을 경우 존변경
+	if(zonenow != zoneafter)
+	{
+		if(zonenow != nullptr)
+			zonenow->RemovePlayer(player);
+
+		if(zoneafter != nullptr)
+			zoneafter->AddPlayer(player);
+	}
+
+	// 다른 플레이어한테도 알려준다
 	Protocol::SERVER_MOVE movepacket;
 	ObjectUtils::SetMovePacket(movepacket, player);
-	BroadCast(ServerPacketManager::MakeSendBuffer(movepacket));
+	BroadCast(ServerPacketManager::MakeSendBuffer(movepacket) , player->GetVector());
 }
 
 /*---------------------------------------------------------------------------------------------
@@ -347,11 +455,11 @@ void GameRoom::PlayerSkill(Player* player, Protocol::CLIENT_SKILL *pkt)
 	if (player == nullptr)
 		return;
 
-	// TODO : 플레이어 스킬 사용을 보냄
+	// 플레이어 스킬 사용을 보냄
 
 	Protocol::SERVER_SKILL skillpacket;
 	ObjectUtils::SetSkillPacket(skillpacket, player, *pkt);
-	BroadCast(ServerPacketManager::MakeSendBuffer(skillpacket));
+	BroadCast(ServerPacketManager::MakeSendBuffer(skillpacket) , player->GetVector());
 
 	printf("[CLINET_Skill_FUNC_ID[%d]] : %d Use\n", skillpacket.objectid(), skillpacket.skillinfo().skillid());
 

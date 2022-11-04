@@ -93,7 +93,7 @@ void ThreadManager::GlobalJobTImerProcess()
 수정자   : 이민규
 수정날짜 : 2022.11.02
 ----------------------------------------------------------------------------------------------*/
-void ThreadManager::GlobalFlushSend(shared_ptr<ServerManager> server)
+void ThreadManager::GlobalFlushSend(shared_ptr<ServerManager> &server)
 {
 	// 한개의 쓰레드만 할 수 있도록
 	if (_send == true)

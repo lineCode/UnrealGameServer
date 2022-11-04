@@ -25,11 +25,11 @@ RoomManager& RoomManager::GetInstance()
 수정자   : 이민규
 수정날짜 : 2022.10.05
 ----------------------------------------------------------------------------------------------*/
-shared_ptr<GameRoom> RoomManager::Add(int32 mapid)
+shared_ptr<GameRoom> RoomManager::Add(int32 mapid , int32 cell)
 {
 	shared_ptr<GameRoom> gameroom = GMakeShared<GameRoom>();
 
-	gameroom->PushAsync(&GameRoom::Init , mapid);
+	gameroom->PushAsync(&GameRoom::Init , mapid , cell);
 
 	WRITELOCK;
 	gameroom->SetRoomId(_Roomid);

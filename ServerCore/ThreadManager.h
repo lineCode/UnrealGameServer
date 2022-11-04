@@ -24,7 +24,7 @@ public:
 	static void DestroyTLS();
 	static void GlobalJobSerializerProcess();
 	static void GlobalJobTImerProcess();
-	static void GlobalFlushSend(shared_ptr<class ServerManager> server);
+	static void GlobalFlushSend(shared_ptr<class ServerManager>& server);
 
 private:
 	RWLOCK_USE
