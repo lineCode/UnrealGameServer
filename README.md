@@ -191,3 +191,9 @@ EnterGame 버그 수정
 - 2022.11.04  
 Zone 추가   
 BroadCast 방식 변경  
+
+- 2022.11.05  
+Monster MoveAI 로직 변경  
+Zone 개선  
+BroadCast 방식 개선  
+VisonCube 추가

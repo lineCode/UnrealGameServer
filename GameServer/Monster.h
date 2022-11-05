@@ -41,6 +41,6 @@ protected:
 	int32 _SkillRange = 300;
 	int32 _Monsterid = 0;
 
-	Gvector<shared_ptr<Job>> _jobs;
+	shared_ptr<Job> _jobs;
 };
 

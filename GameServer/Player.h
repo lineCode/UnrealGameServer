@@ -6,6 +6,7 @@ class GameRoom;
 class ServerSession;
 class Inventory;
 class Equipment;
+class VisionCube;
 
 /*---------------------------------------------------------------------------------------------
 ¿Ã∏ß     : Player
@@ -25,16 +26,20 @@ public:
 	GetSetMaker(Equipment*, Equipment, _Equipment)
 	GetSetMaker(int32, WeaponAttack, _WeaponAttack)
 	GetSetMaker(int32, ArmorDefence, _ArmorDefence)
+	GetSetMaker(VisionCube*, Vision, _Vision)
 
 	void LeaveGame();
 	void ItemEquip(Protocol::CLIENT_EQUIPITEM* pkt);
 	void RefreshStat();
+
+	void Update() override;
 
 	virtual int32 TotalAttack() override { return GetStat().attack() + _WeaponAttack; } 
 	virtual int32 TotalDefence() override { return _ArmorDefence; }
 
 private:
 	shared_ptr<ServerSession> _Session = nullptr;
+	 VisionCube* _Vision = nullptr;
 	int32 _playerdbid = 0;
 	Inventory* _Inventory = nullptr;
 	Equipment* _Equipment = nullptr;

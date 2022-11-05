@@ -7,6 +7,7 @@
 #include "GameRoom.h"
 #include "ObjectUtils.h"
 #include "ServerPacketManager.h"
+#include "Zone.h"
 
 Monster::Monster()
 {
@@ -15,7 +16,6 @@ Monster::Monster()
 
 Monster::~Monster()
 {
-	_jobs.clear();
 }
 
 void Monster::Init(int32 monsterid)
@@ -73,7 +73,7 @@ void Monster::Update()
 	// TODO : 이러면 모든 로직이 vector에 쌓이는 문제가 존재 추후 수정
 	// 5프레임 0.2초마다 한번씩 업데이트
 	if (_Room != nullptr)
-		_jobs.push_back(_Room->TimerPush(200, &GameRoom::MonsterUpdate, this));
+		_jobs = _Room->TimerPush(200, &GameRoom::MonsterUpdate, this);
 }
 
 /*---------------------------------------------------------------------------------------------
@@ -126,7 +126,6 @@ void Monster::UpdateMove()
 	{
 		_Target = nullptr;
 		_State = Protocol::ObjectState::IDLE;
-		BroadCastMove();
 		return;
 	}
 
@@ -137,7 +136,6 @@ void Monster::UpdateMove()
 	{
 		_Target = nullptr;
 		_State = Protocol::ObjectState::IDLE;
-		BroadCastMove();
 		return;
 	}
 
@@ -149,8 +147,19 @@ void Monster::UpdateMove()
 		return;
 	}
 
-	// TODO : 이동
+	// 존 위치가 바뀌엇을 경우 존변경
+	Zone* zonenow = GetRoom()->GetZone(GetVector());
 	SetVector(_Target->GetVector());
+	Zone* zoneafter = GetRoom()->GetZone(GetVector());
+
+	if (zonenow != zoneafter)
+	{
+		zonenow->RemoveMonster(this);
+		zoneafter->AddMonster(this);
+	}
+
+	// 이동
+	BroadCastMove();
 }
 
 void Monster::UpdateSkill()
@@ -199,10 +208,10 @@ void Monster::UpdateDead()
 void Monster::OnDead(GameObject* attacker)
 {
 	// 몬스터가 죽으면 몬스터 관련 로직을 전부 취소시킴
-	for(auto & job : _jobs)
-		job->SetCancel(true);
 
-	_jobs.clear();
+	_jobs->SetCancel(true);
+	_jobs = nullptr;
+
 	GameObject::OnDead(attacker);
 
 	// 아이템 생성
@@ -217,6 +226,7 @@ void Monster::OnDead(GameObject* attacker)
 		Player* player = static_cast<Player*>(owner);
 		if (player == nullptr)
 			return;
+
 		DBJobManager::GetInstance()->RewardPlayer(player , reward , _Room);
 	}
 }

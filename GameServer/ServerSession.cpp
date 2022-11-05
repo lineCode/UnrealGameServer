@@ -284,8 +284,8 @@ bool ServerSession::EnterPlayer(Protocol::CLIENT_ENTERGAME* pkt)
 		player->SetStat(_LobbyPlayers[playername.GetWCHAR()].statinfo());
 		player->SetPlayerDbId(_LobbyPlayers[playername.GetWCHAR()].playerdbid());
 		Protocol::Vector vector;
-		vector.set_x(-250);
-		vector.set_y(-200);
+		vector.set_x(0);
+		vector.set_y(0);
 		vector.set_z(97.65);
 		Protocol::Rotator rotator;
 		rotator.set_roll(0);

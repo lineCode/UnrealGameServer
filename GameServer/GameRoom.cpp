@@ -9,6 +9,7 @@
 #include "ServerPacketManager.h"
 #include "ServerSession.h"
 #include "ObjectUtils.h"
+#include "VisionCube.h"
 #include "Zone.h"
 
 #pragma region GameRoom
@@ -46,23 +47,23 @@ void GameRoom::Init(int32 mapid , int32 zonesize)
 	}
 
 	// TODO : 나중에 삭제 예정
-	//Monster * monster = ObjectManager::GetInstance().Add<Monster>(Protocol::MonsterType::SAVAROG);
-	//monster->Init(1);
-	//Protocol::Vector vector;
-	//vector.set_x(-2200.f);
-	//vector.set_y(-150.f);
-	//vector.set_z(97.6f);
-	//monster->SetVector(vector);
-	//monster->SetRoom(GetGameRoom());
+	Monster * monster = ObjectManager::GetInstance().Add<Monster>(Protocol::MonsterType::SAVAROG);
+	monster->Init(1);
+	Protocol::Vector vector;
+	vector.set_x(-2200.f);
+	vector.set_y(-150.f);
+	vector.set_z(97.6f);
+	monster->SetVector(vector);
+	monster->SetRoom(GetGameRoom());
 
-	//PushAsync(&GameRoom::EnterGame, static_cast<GameObject*>(monster));
+	PushAsync(&GameRoom::EnterGame, static_cast<GameObject*>(monster));
 }
 
 /*---------------------------------------------------------------------------------------------
 이름     : GameRoom::EnterGame
 용도     : 플레이어를 방에 입장시키는 함수
 수정자   : 이민규
-수정날짜 : 2022.11.04
+수정날짜 : 2022.11.05
 ----------------------------------------------------------------------------------------------*/
 void GameRoom::EnterGame(GameObject* gameobject)
 {
@@ -92,21 +93,8 @@ void GameRoom::EnterGame(GameObject* gameobject)
 			// 존 입장
 			GetZone(player->GetVector())->AddPlayer(player);
 
-			// 같은 방에 있는 플레이어들을 생성하기 위한 정보를 나에게 보냄
-			if (!_Players.empty())
-			{
-				Protocol::SERVER_SPAWN spawnpacket;
-				for (const auto [id, roomplayer] : _Players)
-				{
-					if (id != gameobject->GetId())
-						ObjectUtils::SetSpawnPacket(spawnpacket, roomplayer);
-				}
-
-				for (const auto [id, roommonster] : _Monsters)
-					ObjectUtils::SetSpawnPacket(spawnpacket, roommonster);
-
-				player->GetSession()->Send(ServerPacketManager::MakeSendBuffer(spawnpacket));
-			}
+			// 시야각 업데이트
+			player->GetVision()->Update();
 			break;
 		}
 
@@ -116,6 +104,9 @@ void GameRoom::EnterGame(GameObject* gameobject)
 			Monster* monster = reinterpret_cast<Monster*>(gameobject);
 			_Monsters.insert({ monster->GetId() , monster });
 			monster->SetRoom(GetGameRoom());
+
+			// 존 입장
+			GetZone(monster->GetVector())->AddMonster(monster);
 
 			monster->Update();
 			break;
@@ -132,49 +123,9 @@ void GameRoom::EnterGame(GameObject* gameobject)
 
 		default:
 		{
-			// TODO : 에러 부분
 			cout << "[GameRoom] : ObjectType Missing Error" << endl;
 			break;
 		}
-		}
-
-	}
-
-	// TODO : 같은방에 있는 다른 플레이어에게도 생성할 나의 정보를 전송
-	{
-		Protocol::SERVER_SPAWN spawnpacket;
-
-		switch (type)
-		{
-		case Protocol::ObjectType::PROJECTILE:
-		{
-			// 발사체일 경우
-			if (_Projectiles.contains(gameobject->GetId()) == false)
-				return;
-
-			int32 ownerId = _Projectiles[gameobject->GetId()]->GetOwner()->GetId();
-
-			auto ownerpacket = ObjectUtils::SetSpawnPacket(spawnpacket, gameobject);
-
-			for (const auto [id, roomplayer] : _Players)
-				roomplayer->GetSession()->Send(ServerPacketManager::MakeSendBuffer(spawnpacket));
-
-			break;
-		}
-
-		default:
-		{
-			// 그 외 모든 경우
-			ObjectUtils::SetSpawnPacket(spawnpacket, gameobject);
-
-			for (const auto [id, roomplayer] : _Players)
-			{
-				if (id != gameobject->GetId())
-					roomplayer->GetSession()->Send(ServerPacketManager::MakeSendBuffer(spawnpacket));
-			}
-			break;
-		}
-
 		}
 
 	}
@@ -184,7 +135,7 @@ void GameRoom::EnterGame(GameObject* gameobject)
 이름     : GameRoom::LeaveGame
 용도     : 오브젝트를 방에서 퇴장시키는 함수
 수정자   : 이민규
-수정날짜 : 2022.09.19
+수정날짜 : 2022.11.05
 ----------------------------------------------------------------------------------------------*/
 void GameRoom::LeaveGame(int32 objectid)
 {
@@ -224,6 +175,9 @@ void GameRoom::LeaveGame(int32 objectid)
 			if (_Monsters.contains(objectid) == false)
 				return;
 
+			// 존에서 퇴장
+			GetZone(_Monsters[objectid]->GetVector())->RemoveMonster(_Monsters[objectid]);
+
 			Gdelete(_Monsters[objectid]);
 			_Monsters.erase(objectid);
 			break;
@@ -241,19 +195,6 @@ void GameRoom::LeaveGame(int32 objectid)
 			break;
 		}
 	}
-
-	// 같은 방에 있는 플레이어에게 퇴장한 나의 정보 전송
-	{
-		Protocol::SERVER_DESTROY destroypacket;
-		destroypacket.add_objectids(objectid);
-
-		for (const auto [id, roomplayer] : _Players)
-		{
-			if (objectid != roomplayer->GetId())
-				roomplayer->GetSession()->Send(ServerPacketManager::MakeSendBuffer(destroypacket));
-		}
-	}
-
 }
 
 /*---------------------------------------------------------------------------------------------
@@ -297,7 +238,7 @@ void GameRoom::OnDamage(Protocol::CLIENT_DAMAGE pkt)
 이름     : GameRoom::BroadCast
 용도     : 방에 있는  플레이어게 Zone 단위로 패킷을 전송해주는 함수
 수정자   : 이민규
-수정날짜 : 2022.11.04
+수정날짜 : 2022.11.05
 ----------------------------------------------------------------------------------------------*/
 void GameRoom::BroadCast(shared_ptr<SendBuffer> sendbuffer , Protocol::Vector pos)
 {
@@ -306,9 +247,18 @@ void GameRoom::BroadCast(shared_ptr<SendBuffer> sendbuffer , Protocol::Vector po
 
 	for (auto zone : zones)
 	{
-		GConsoleLogManager->WriteStdOut(Color::YELLOW, L"Brodcast %d\n", zone->GetPlayers().size());
 		for (auto player : zone->GetPlayers())
 		{
+			//인접한 영역이더라도 내 시야각 보다 멀면 PASS
+			int32 dx = player->GetVector().x() - pos.x();
+			int32 dy = player->GetVector().y() - pos.y();
+
+			if (abs(dx) > VisionCells)
+				continue;
+
+			if (abs(dy) > VisionCells)
+				continue;
+
 			player->GetSession()->Send(sendbuffer);
 		}
 	}
@@ -368,8 +318,6 @@ GhashSet<Zone*> GameRoom::GetAdjacentZones(Protocol::Vector pos, int32 cell)
 			zones.insert(zone);
 		}
 	}
-
-	zones.insert(GetZone(pos));
 	return zones;
 }
 
@@ -377,7 +325,7 @@ GhashSet<Zone*> GameRoom::GetAdjacentZones(Protocol::Vector pos, int32 cell)
 이름     : GameRoom::MonsterUpdate
 용도     : 방에 있는 크리쳐들의 상태를 업데이트 해주는 함수
 수정자   : 이민규
-수정날짜 : 2022.10.31
+수정날짜 : 2022.11.05
 ----------------------------------------------------------------------------------------------*/
 void GameRoom::MonsterUpdate(Monster* monster)
 {
@@ -385,6 +333,20 @@ void GameRoom::MonsterUpdate(Monster* monster)
 		return;
 
 	monster->Update();
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : GameRoom::VisionUpdate
+용도     : 플레이어의 시야각을 업데이트 해주는 함수
+수정자   : 이민규
+수정날짜 : 2022.11.05
+----------------------------------------------------------------------------------------------*/
+void GameRoom::VisionUpdate(Player* player)
+{
+	if (player == nullptr || player->GetRoom() != GetGameRoom())
+		return;
+
+	player->Update();
 }
 
 /*---------------------------------------------------------------------------------------------
@@ -410,7 +372,7 @@ Player * GameRoom::FindPlayer(function<bool(Player*)> condition)
 이름     : GameRoom::PlayerMove
 용도     : 방에 있는 플레이어들에게 이동한 플레이어의 좌표 패킷을 보내주는 함수
 수정자   : 이민규
-수정날짜 : 2022.09.28
+수정날짜 : 2022.11.04
 ----------------------------------------------------------------------------------------------*/
 void GameRoom::PlayerMove(Player* player, Protocol::CLIENT_MOVE* pkt)
 {
@@ -421,22 +383,17 @@ void GameRoom::PlayerMove(Player* player, Protocol::CLIENT_MOVE* pkt)
 
 	// 일단 서버에서 먼저 좌표 및 방향 이동
 	Zone* zonenow = player->GetRoom()->GetZone(player->GetVector());
-
-	player->SetVector(pkt->vector());
-	player->SetRotator(pkt->rotator());
-
-	// 존 이동
 	Zone* zoneafter = player->GetRoom()->GetZone(pkt->vector());
 
 	// 존 위치가 바뀌엇을 경우 존변경
-	if(zonenow != zoneafter)
+	if (zonenow != zoneafter)
 	{
-		if(zonenow != nullptr)
-			zonenow->RemovePlayer(player);
-
-		if(zoneafter != nullptr)
-			zoneafter->AddPlayer(player);
+		zonenow->RemovePlayer(player);
+		zoneafter->AddPlayer(player);
 	}
+
+	player->SetVector(pkt->vector());
+	player->SetRotator(pkt->rotator());
 
 	// 다른 플레이어한테도 알려준다
 	Protocol::SERVER_MOVE movepacket;

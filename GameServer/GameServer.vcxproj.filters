@@ -94,6 +94,9 @@
     <ClCompile Include="Zone.cpp">
       <Filter>Room</Filter>
     </ClCompile>
+    <ClCompile Include="VisionCube.cpp">
+      <Filter>Room</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -165,5 +168,6 @@
     <ClInclude Include="Zone.h">
       <Filter>Room</Filter>
     </ClInclude>
+    <ClInclude Include="VisionCube.h" />
   </ItemGroup>
 </Project>

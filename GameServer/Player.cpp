@@ -5,6 +5,7 @@
 #include "DBJobManager.h"
 #include "Item.h"
 #include "ServerPacketManager.h"
+#include "VisionCube.h"
 
 Player::Player()
 {
@@ -17,6 +18,8 @@ Player::Player()
 	SetVector(vec);
 	_Inventory = Gnew<Inventory>();
 	_Equipment = Gnew<Equipment>();
+
+	_Vision = Gnew<VisionCube>(this);
 }
 
 Player::~Player()
@@ -24,6 +27,7 @@ Player::~Player()
 	SetSession(nullptr);
 	Gdelete(_Inventory);
 	Gdelete(_Equipment);
+	Gdelete(_Vision);
 }
 
 /*---------------------------------------------------------------------------------------------
@@ -217,4 +221,18 @@ void Player::RefreshStat()
 			}
 		}
 	}
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : Player::Update
+용도     : 플레이어가 주기적으로 업데이트 해야할 것을 해주는 함수
+수정자   : 이민규
+수정날짜 : 2022.11.05
+----------------------------------------------------------------------------------------------*/
+void Player::Update()
+{
+	GameObject::Update();
+
+	// 시야각을 주기적으로 업데이트
+	_Vision->Update();
 }

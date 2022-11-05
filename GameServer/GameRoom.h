@@ -5,6 +5,7 @@ class GameObject;
 class Player;
 class Monster;
 class Projectile;
+class Zone;
 
 struct Size
 {
@@ -29,6 +30,7 @@ public:
 	GetSetMaker(int32, RoomId, _RoomId)
 
 	void MonsterUpdate(Monster * monster);
+	void VisionUpdate(Player * player);
 
 	Player* FindPlayer(function<bool(Player*)> condition);
 
@@ -39,8 +41,12 @@ public:
 	void OnDamage(Protocol::CLIENT_DAMAGE pkt);
 	void BroadCast(shared_ptr<class SendBuffer> sendbuffer , Protocol::Vector pos);
 
-	class Zone* GetZone(Protocol::Vector pos);
-	GhashSet<Zone*> GetAdjacentZones(Protocol::Vector pos, int32 cell = 500);
+	Zone* GetZone(Protocol::Vector pos);
+	GhashSet<Zone*> GetAdjacentZones(Protocol::Vector pos, int32 cell = 1000);
+
+public:
+	// 플레이어 시야각
+	int32 VisionCells = 500;
 
 private:
 	int32 _RoomId = 0;
