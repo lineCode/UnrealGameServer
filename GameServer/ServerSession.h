@@ -23,6 +23,8 @@ public:
 	void SetMyPlayer(Player* player) { _MyPlayer = player; }
 	Player* GetMyPlayer() const { return _MyPlayer; }
 
+	void Ping();
+	void Pong();
 protected:
 	virtual void ContentsConnect() override;
 	virtual void ContentsDisConnect() override;
@@ -31,6 +33,8 @@ protected:
 
 private:
 	Player* _MyPlayer = nullptr;
+
+	uint64 _PingPongTick = 0;
 #pragma endregion
 
 #pragma region Game

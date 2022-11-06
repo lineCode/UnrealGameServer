@@ -129,6 +129,13 @@ void GameRoom::EnterGame(GameObject* gameobject)
 		}
 
 	}
+
+	// 타인에게 정보 전송
+	{
+		Protocol::SERVER_SPAWN spawnpkt;
+		spawnpkt.add_objects()->MergeFrom(gameobject->GetInfo());
+		BroadCast(ServerPacketManager::MakeSendBuffer(spawnpkt), gameobject->GetVector());
+	}
 }
 
 /*---------------------------------------------------------------------------------------------
@@ -141,6 +148,8 @@ void GameRoom::LeaveGame(int32 objectid)
 {
 	Protocol::ObjectType type = ObjectUtils::GetObjectType(objectid);
 
+	Protocol::Vector pos;
+
 	switch (type)
 	{
 		case Protocol::ObjectType::PLAYER:
@@ -150,6 +159,8 @@ void GameRoom::LeaveGame(int32 objectid)
 				return;
 
 			Player * player = _Players[objectid];
+
+			pos = player->GetVector();
 
 			// 자신에게 방에서 퇴장했다는 정보 전송
 			Protocol::SERVER_LEAVEGAME leavepacket;
@@ -175,6 +186,7 @@ void GameRoom::LeaveGame(int32 objectid)
 			if (_Monsters.contains(objectid) == false)
 				return;
 
+			pos = _Monsters[objectid]->GetVector();
 			// 존에서 퇴장
 			GetZone(_Monsters[objectid]->GetVector())->RemoveMonster(_Monsters[objectid]);
 
@@ -194,6 +206,13 @@ void GameRoom::LeaveGame(int32 objectid)
 
 			break;
 		}
+	}
+
+	// 타인에게 정보 전송
+	{
+		Protocol::SERVER_DESTROY destroypkt;
+		destroypkt.add_objectids(objectid);
+		BroadCast(ServerPacketManager::MakeSendBuffer(destroypkt) , pos);
 	}
 }
 

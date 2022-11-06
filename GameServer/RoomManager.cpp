@@ -2,21 +2,31 @@
 #include "RoomManager.h"
 #include "GameRoom.h"
 
-RoomManager* RoomManager::_Instance;
-
+shared_ptr<RoomManager> RoomManager::_Instance = nullptr;
 
 /*---------------------------------------------------------------------------------------------
 이름     : RoomManager::GetInstance
 용도     : RoomManager를 받아오는 싱글톤 함수
 수정자   : 이민규
-수정날짜 : 2022.09.12
+수정날짜 : 2022.11.06
 ----------------------------------------------------------------------------------------------*/
-RoomManager& RoomManager::GetInstance()
+shared_ptr<RoomManager> RoomManager::GetInstance()
 {
-	if(_Instance == nullptr)
-		_Instance = Gnew<RoomManager>();
+	if (_Instance == nullptr)
+		_Instance = GMakeShared<RoomManager>();
 
-	return *_Instance;
+	return _Instance;
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : RoomManager::DeleteInstance
+용도     : RoomManager의 Instance를 제거하는 함수
+수정자   : 이민규
+수정날짜 : 2022.11.06
+----------------------------------------------------------------------------------------------*/
+void RoomManager::DeleteInstance()
+{
+	_Instance = nullptr;
 }
 
 /*---------------------------------------------------------------------------------------------

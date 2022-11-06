@@ -145,3 +145,16 @@ bool CLIENT_DAMAGE_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_DAM
 
 	room->PushAsync(&GameRoom::OnDamage, pkt);
 }
+
+/*---------------------------------------------------------------------------------------------
+이름     : CLIENT_PONG_FUNC
+용도     : 클라이언트에게 보낸 Ping 요청이 왔을 때 사용하는 함수
+수정자   : 이민규
+수정날짜 : 2022.11.06
+----------------------------------------------------------------------------------------------*/
+bool CLIENT_PONG_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_PONG& pkt)
+{
+	session->Pong();
+
+	return true;
+}

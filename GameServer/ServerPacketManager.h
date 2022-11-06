@@ -32,13 +32,15 @@ enum : uint16
 	PACKET_SERVER_SKILL = 1012,
 	PACKET_SERVER_CHANGEHP = 1013,
 	PACKET_SERVER_DIE = 1014,
-	PACKET_CLIENT_LOGIN = 1015,
-	PACKET_CLIENT_CREATEPLAYER = 1016,
-	PACKET_CLIENT_ENTERGAME = 1017,
-	PACKET_CLIENT_MOVE = 1018,
-	PACKET_CLIENT_SKILL = 1019,
-	PACKET_CLIENT_EQUIPITEM = 1020,
-	PACKET_CLIENT_DAMAGE = 1021,
+	PACKET_SERVER_PING = 1015,
+	PACKET_CLIENT_LOGIN = 1016,
+	PACKET_CLIENT_CREATEPLAYER = 1017,
+	PACKET_CLIENT_ENTERGAME = 1018,
+	PACKET_CLIENT_MOVE = 1019,
+	PACKET_CLIENT_SKILL = 1020,
+	PACKET_CLIENT_EQUIPITEM = 1021,
+	PACKET_CLIENT_DAMAGE = 1022,
+	PACKET_CLIENT_PONG = 1023,
 };
 
 /*---------------------------------------------------------------------------------------------
@@ -52,6 +54,7 @@ bool CLIENT_MOVE_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_MOVE&
 bool CLIENT_SKILL_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_SKILL& pkt);
 bool CLIENT_EQUIPITEM_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_EQUIPITEM& pkt);
 bool CLIENT_DAMAGE_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_DAMAGE& pkt);
+bool CLIENT_PONG_FUNC(shared_ptr<ServerSession>& session, Protocol::CLIENT_PONG& pkt);
 
 /*---------------------------------------------------------------------------------------------
 							 GAMESERVER PACKET MANAGER CLASS
@@ -73,6 +76,7 @@ public:
 		GPacketFuncArray[PACKET_CLIENT_SKILL] = [](std::shared_ptr<ServerSession>& session, BYTE* buffer, int32 len) { return PacketUpdate<Protocol::CLIENT_SKILL>(CLIENT_SKILL_FUNC, session, buffer, len); };
 		GPacketFuncArray[PACKET_CLIENT_EQUIPITEM] = [](std::shared_ptr<ServerSession>& session, BYTE* buffer, int32 len) { return PacketUpdate<Protocol::CLIENT_EQUIPITEM>(CLIENT_EQUIPITEM_FUNC, session, buffer, len); };
 		GPacketFuncArray[PACKET_CLIENT_DAMAGE] = [](std::shared_ptr<ServerSession>& session, BYTE* buffer, int32 len) { return PacketUpdate<Protocol::CLIENT_DAMAGE>(CLIENT_DAMAGE_FUNC, session, buffer, len); };
+		GPacketFuncArray[PACKET_CLIENT_PONG] = [](std::shared_ptr<ServerSession>& session, BYTE* buffer, int32 len) { return PacketUpdate<Protocol::CLIENT_PONG>(CLIENT_PONG_FUNC, session, buffer, len); };
 	}
 
 	/*---------------------------------------------------------------------------------------------
@@ -102,6 +106,7 @@ public:
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_SKILL& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_SKILL); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_CHANGEHP& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_CHANGEHP); }
 	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_DIE& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_DIE); }
+	static shared_ptr<SendBuffer> MakeSendBuffer(Protocol::SERVER_PING& pkt) { return MakeSendBuffer(pkt, PACKET_SERVER_PING); }
 
 private:
 	/*---------------------------------------------------------------------------------------------

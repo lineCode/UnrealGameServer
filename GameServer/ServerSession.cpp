@@ -34,14 +34,17 @@ void ServerSession::ContentsConnect()
 용도     : 서버에서 연결이 끊어졌을 경우 발동하는 함수
 		   플레이어를 방에서 퇴장시키고 플레이어를 서버에서 제거함
 수정자   : 이민규
-수정날짜 : 2022.09.12
+수정날짜 : 2022.11.05
 ----------------------------------------------------------------------------------------------*/
 void ServerSession::ContentsDisConnect()
 {
-	RoomManager::GetInstance().PushAsync([player = _MyPlayer]()
+	RoomManager::GetInstance()->PushAsync([player = _MyPlayer]()
 		{
-			auto room = RoomManager::GetInstance().Find(1);
+			auto room = RoomManager::GetInstance()->Find(1);
 			if (room == nullptr)
+				return;
+
+			if (player == nullptr)
 				return;
 
 			room->PushAsync(&GameRoom::LeaveGame, player->GetInfo().objectid());
@@ -68,6 +71,46 @@ void ServerSession::ContentsRecv(BYTE* buffer, int32 datasize)
 
 	
 	ServerPacketManager::PacketUpdate(session, buffer, datasize);
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : ServerSession::Ping
+용도     : 서버가 클라이언트에게 응답을 일정 시간 이상 받지 못하는것을 체크하는 함수
+           5초에 한번 체크
+수정자   : 이민규
+수정날짜 : 2022.11.06
+----------------------------------------------------------------------------------------------*/
+void ServerSession::Ping()
+{
+	if(_PingPongTick > 0)
+	{
+		uint64 delta = GetTickCount64() - _PingPongTick;
+		if(delta > 30 * 1000)
+		{
+			GConsoleLogManager->WriteStdOut(Color::RED, L"[ServerSession] : DisConnect by PingCheck");
+			DisConnect(L"PingPong No Answer");
+			return;
+		}
+	}
+
+	Protocol::SERVER_PING pingpkt;
+	Send(ServerPacketManager::MakeSendBuffer(pingpkt));
+
+	RoomManager::GetInstance()->TimerPush(5000, [session = GetServerSession()]()
+	{
+		session->Ping();
+	});
+}
+
+/*---------------------------------------------------------------------------------------------
+이름     : ServerSession::Pong
+용도     : 서버가 클라이언트에게 응답을 받았을 때 사용하는 함수
+수정자   : 이민규
+수정날짜 : 2022.11.06
+----------------------------------------------------------------------------------------------*/
+void ServerSession::Pong()
+{
+	_PingPongTick = GetTickCount64();
 }
 
 #pragma endregion
@@ -341,17 +384,23 @@ bool ServerSession::EnterPlayer(Protocol::CLIENT_ENTERGAME* pkt)
 		Send(ServerPacketManager::MakeSendBuffer(itempkt));
 
 		// TODO : 방에 입장
-		RoomManager::GetInstance().PushAsync([player]()
+		RoomManager::GetInstance()->PushAsync([player]()
 			{
-				const auto room = RoomManager::GetInstance().Find(1);
+				const auto room = RoomManager::GetInstance()->Find(1);
 				room->PushAsync(&GameRoom::EnterGame, static_cast<GameObject*>(player));
 			});
-	
 
 		_ServerState = Protocol::SERVERSTATE_GAME;
 
 		GConsoleLogManager->WriteStdOut(Color::GREEN, L"[ENTER_PLAYER_SUCCESS] : %s  \n", playername.GetWCHAR());
 		GDBConnectionPool->Push(dbConn);
+
+		RoomManager::GetInstance()->TimerPush(5000,[session = this]()
+			{
+				session->Ping();
+			});
+
+	
 		return true;
 	}
 

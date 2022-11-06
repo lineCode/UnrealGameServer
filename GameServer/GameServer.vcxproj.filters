@@ -168,6 +168,8 @@
     <ClInclude Include="Zone.h">
       <Filter>Room</Filter>
     </ClInclude>
-    <ClInclude Include="VisionCube.h" />
+    <ClInclude Include="VisionCube.h">
+      <Filter>Room</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

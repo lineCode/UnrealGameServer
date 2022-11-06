@@ -197,3 +197,7 @@ Monster MoveAI 로직 변경
 Zone 개선  
 BroadCast 방식 개선  
 VisonCube 추가
+
+- 2022.11.06  
+RoomManager -> SharedFromThis 버그 수정  
+클라이언트와 Ping / Pong 추가

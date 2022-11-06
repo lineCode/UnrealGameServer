@@ -46,7 +46,7 @@ int main()
 	jsonsync.Synchronize(ConfigManager::GetInstacnce()->GetServerConfig()._DBPath.c_str());
 
 	ServerPacketManager::Init();
-	RoomManager::GetInstance().Add(1);
+	RoomManager::GetInstance()->Add(1);
 
 	shared_ptr<ServerManager> server = GMakeShared<ServerManager>(
 		NetAddress(L"127.0.0.1", 7777),

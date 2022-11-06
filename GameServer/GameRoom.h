@@ -46,7 +46,7 @@ public:
 
 public:
 	// 플레이어 시야각
-	int32 VisionCells = 500;
+	int32 VisionCells = 2000;
 
 private:
 	int32 _RoomId = 0;
